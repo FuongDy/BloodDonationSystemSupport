@@ -1,8 +1,8 @@
 ﻿-- Tạo database
-CREATE DATABASE BloodDonationTest;
+CREATE DATABASE BloodDonationDBv2;
 GO
 
-USE BloodDonationTest;
+USE BloodDonationDBv2;
 GO
 
 -- Tạo bảng blood_types
@@ -39,7 +39,7 @@ CREATE TABLE roles (
 -- Tạo bảng users
 CREATE TABLE users (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    username NVARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(150) NOT NULL,
