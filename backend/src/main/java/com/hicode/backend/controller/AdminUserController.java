@@ -7,9 +7,7 @@ import com.hicode.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,28 +21,13 @@ public class AdminUserController {
     @Autowired
     private UserService userService;
 
+
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) {
-
-        Sort.Direction direction = Sort.Direction.ASC;
-        String sortField = "id";
-
-        if (sort.length > 0 && !sort[0].isEmpty()) {
-            sortField = sort[0];
-        }
-        if (sort.length > 1 && !sort[1].isEmpty()) {
-            try {
-                direction = Sort.Direction.fromString(sort[1].toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // Keep default direction if invalid
-            }
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-        Page<UserResponse> usersPage = userService.getAllUsers(pageable);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String roleName,
+            Pageable pageable) {
+        Page<UserResponse> usersPage = userService.searchAllUsers(keyword, roleName, pageable);
         return ResponseEntity.ok(usersPage);
     }
 

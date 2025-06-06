@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "blood_types",
         uniqueConstraints = {
-                // Ràng buộc unique sẽ dựa trên giá trị chuỗi được lưu bởi converter
                 @UniqueConstraint(name = "UQ_blood_group_component", columnNames = {"blood_group", "component_type"})
         })
 @Getter
@@ -24,8 +23,6 @@ public class BloodType {
     @Column(name = "blood_group", length = 3, nullable = false)
     private String bloodGroup;
 
-    // KHÔNG sử dụng @Enumerated(EnumType.STRING) ở đây
-    // AttributeConverter sẽ tự động được áp dụng
     @Column(name = "component_type", length = 30, nullable = false)
     private BloodComponentType componentType;
 
@@ -43,6 +40,9 @@ public class BloodType {
 
     @Column(name = "volume_ml")
     private Integer volumeMl;
+
+    @Column(name = "active", nullable = false, columnDefinition = "BIT DEFAULT 1")
+    private Boolean active = true;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

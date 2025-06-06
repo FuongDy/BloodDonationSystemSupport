@@ -7,9 +7,7 @@ import com.hicode.backend.service.BloodManagementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,22 +22,12 @@ public class BloodCompatibilityController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<Page<BloodCompatibilityDetailResponse>> getAllCompatibilityRules(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,asc") String[] sort) {
-        Sort.Direction direction = Sort.Direction.ASC;
-        String sortField = "id";
-        if (sort.length > 0 && !sort[0].isEmpty()) sortField = sort[0];
-        if (sort.length > 1 && !sort[1].isEmpty()) {
-            try {
-                direction = Sort.Direction.fromString(sort[1].toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // default direction
-            }
-        }
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-        return ResponseEntity.ok(bloodManagementService.getAllCompatibilityRules(pageable));
+    public ResponseEntity<Page<BloodCompatibilityDetailResponse>> searchAllCompatibilityRules(
+            @RequestParam(required = false) Integer donorTypeId,
+            @RequestParam(required = false) Integer recipientTypeId,
+            Pageable pageable) {
+        Page<BloodCompatibilityDetailResponse> results = bloodManagementService.searchCompatibilityRules(donorTypeId, recipientTypeId, pageable);
+        return ResponseEntity.ok(results);
     }
 
     @GetMapping("/{id}")
@@ -81,16 +69,16 @@ public class BloodCompatibilityController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteCompatibilityRule(@PathVariable Integer id) {
+    public ResponseEntity<?> softDeleteCompatibilityRule(@PathVariable Integer id) {
         try {
-            bloodManagementService.deleteCompatibilityRule(id);
-            return ResponseEntity.noContent().build();
+            BloodCompatibilityDetailResponse deactivatedRule = bloodManagementService.softDeleteCompatibilityRule(id);
+            return ResponseEntity.ok(deactivatedRule);
         } catch (RuntimeException e) {
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (e.getMessage().toLowerCase().contains("not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
             System.err.println("Error deleting compatibility rule: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not delete rule.");
         }
     }
 }

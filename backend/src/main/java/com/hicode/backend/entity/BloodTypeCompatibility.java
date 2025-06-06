@@ -38,6 +38,9 @@ public class BloodTypeCompatibility {
     @Column(name = "notes", columnDefinition = "NVARCHAR(MAX)")
     private String notes;
 
+    @Column(name = "active", nullable = false, columnDefinition = "BIT DEFAULT 1")
+    private Boolean active = true;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

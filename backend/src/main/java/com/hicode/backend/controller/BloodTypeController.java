@@ -3,9 +3,12 @@ package com.hicode.backend.controller;
 import com.hicode.backend.dto.BloodTypeResponse;
 import com.hicode.backend.dto.CreateBloodTypeRequest;
 import com.hicode.backend.dto.UpdateBloodTypeRequest;
+import com.hicode.backend.entity.BloodComponentType;
 import com.hicode.backend.service.BloodManagementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,15 +65,25 @@ public class BloodTypeController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteBloodType(@PathVariable Integer id) {
+    public ResponseEntity<BloodTypeResponse> deleteBloodType(@PathVariable Integer id) {
         try {
-            bloodManagementService.deleteBloodType(id);
-            return ResponseEntity.noContent().build();
+            BloodTypeResponse deactivatedBloodType = bloodManagementService.softDeleteBloodType(id);
+            return ResponseEntity.ok(deactivatedBloodType);
         } catch (RuntimeException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Page<BloodTypeResponse>> searchBloodTypes(
+            @RequestParam(required = false) String bloodGroup,
+            @RequestParam(required = false) BloodComponentType componentType,
+            Pageable pageable) {
+        Page<BloodTypeResponse> results = bloodManagementService.searchBloodTypes(bloodGroup, componentType, pageable);
+        return ResponseEntity.ok(results);
     }
 }

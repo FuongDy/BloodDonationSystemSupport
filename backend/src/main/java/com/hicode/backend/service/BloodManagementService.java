@@ -1,6 +1,7 @@
 package com.hicode.backend.service;
 
 import com.hicode.backend.dto.*;
+import com.hicode.backend.entity.BloodComponentType;
 import com.hicode.backend.entity.BloodType;
 import com.hicode.backend.entity.BloodTypeCompatibility;
 
@@ -10,8 +11,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +49,7 @@ public class BloodManagementService {
     }
 
     public List<BloodTypeResponse> getAllBloodTypes() {
-        return bloodTypeRepository.findAll().stream()
+        return bloodTypeRepository.findAllByActiveTrue().stream()
                 .map(this::mapToBloodTypeResponse)
                 .collect(Collectors.toList());
     }
@@ -87,39 +91,36 @@ public class BloodManagementService {
         if (request.getDescription() != null) {
             bloodType.setDescription(request.getDescription());
         }
-        // If UpdateBloodTypeRequest is expanded to include componentType or other fields, handle them here.
-        // e.g., if (request.getComponentType() != null) bloodType.setComponentType(request.getComponentType()); // Assuming DTO contains BloodComponentType
 
         return mapToBloodTypeResponse(bloodTypeRepository.save(bloodType));
     }
 
     @Transactional
-    public void deleteBloodType(Integer id) {
+    public BloodTypeResponse softDeleteBloodType(Integer id) {
         BloodType bloodType = bloodTypeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("BloodType not found with id: " + id));
-
-        // Handle related BloodTypeCompatibility records
-        List<BloodTypeCompatibility> relatedCompatibilities = bloodCompatibilityRepository.findByDonorBloodTypeIdOrRecipientBloodTypeId(id, id);
-        if (!relatedCompatibilities.isEmpty()) {
-            bloodCompatibilityRepository.deleteAllInBatch(relatedCompatibilities); // Efficient batch deletion
-        }
-
-        // Placeholder for handling Users linked to this BloodType:
-        // List<User> usersWithThisBloodType = userRepository.findByBloodTypeId(id);
-        // if (!usersWithThisBloodType.isEmpty()) {
-        //     // Option 1: Prevent deletion
-        //     // throw new IllegalStateException("Cannot delete blood type. It is assigned to " + usersWithThisBloodType.size() + " users.");
-        //     // Option 2: Nullify the blood_type_id in linked users
-        //     // usersWithThisBloodType.forEach(user -> user.setBloodType(null));
-        //     // userRepository.saveAll(usersWithThisBloodType);
-        //     // System.out.println("Nullified blood type for " + usersWithThisBloodType.size() + " users.");
-        // }
-
-        bloodTypeRepository.delete(bloodType);
+        bloodType.setActive(false);
+        BloodType updatedBloodType = bloodTypeRepository.save(bloodType);
+        return mapToBloodTypeResponse(updatedBloodType);
     }
 
-    public Page<BloodCompatibilityDetailResponse> getAllCompatibilityRules(Pageable pageable) {
-        return bloodCompatibilityRepository.findAll(pageable).map(this::mapToBloodCompatibilityDetailResponse);
+    public Page<BloodCompatibilityDetailResponse> searchCompatibilityRules(Integer donorTypeId, Integer recipientTypeId, Pageable pageable) {
+        Specification<BloodTypeCompatibility> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.isTrue(root.get("active")));
+
+            if (donorTypeId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("donorBloodType").get("id"), donorTypeId));
+            }
+
+            if (recipientTypeId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("recipientBloodType").get("id"), recipientTypeId));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return bloodCompatibilityRepository.findAll(spec, pageable).map(this::mapToBloodCompatibilityDetailResponse);
     }
 
     public BloodCompatibilityDetailResponse getCompatibilityRuleDetails(Integer id) {
@@ -176,10 +177,33 @@ public class BloodManagementService {
     }
 
     @Transactional
-    public void deleteCompatibilityRule(Integer id) {
-        if (!bloodCompatibilityRepository.existsById(id)) {
-            throw new RuntimeException("Compatibility rule not found with id: " + id);
-        }
-        bloodCompatibilityRepository.deleteById(id);
+    public BloodCompatibilityDetailResponse softDeleteCompatibilityRule(Integer id) {
+        BloodTypeCompatibility rule = bloodCompatibilityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Compatibility rule not found with id: " + id));
+        rule.setActive(false);
+        BloodTypeCompatibility updatedRule = bloodCompatibilityRepository.save(rule);
+        return mapToBloodCompatibilityDetailResponse(updatedRule);
+    }
+
+    public Page<BloodTypeResponse> searchBloodTypes(String bloodGroup, BloodComponentType componentType, Pageable pageable) {
+        Specification<BloodType> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(criteriaBuilder.isTrue(root.get("active")));
+
+            if (bloodGroup != null && !bloodGroup.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("bloodGroup")),
+                        bloodGroup.trim().toLowerCase()
+                ));
+            }
+
+            if (componentType != null) {
+                predicates.add(criteriaBuilder.equal(root.get("componentType"), componentType));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        return bloodTypeRepository.findAll(spec, pageable).map(this::mapToBloodTypeResponse);
     }
 }

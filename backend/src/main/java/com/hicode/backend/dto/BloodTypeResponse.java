@@ -16,6 +16,7 @@ public class BloodTypeResponse {
     private Double storageTempMin;
     private Double storageTempMax;
     private Integer volumeMl;
+    private Boolean active;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

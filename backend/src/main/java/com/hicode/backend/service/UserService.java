@@ -14,12 +14,18 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -93,8 +99,32 @@ public class UserService {
         return userResponse;
     }
 
-    public Page<UserResponse> getAllUsers(Pageable pageable) {
-        Page<User> usersPage = userRepository.findAll(pageable);
+    // Sửa phương thức getAllUsers thành searchAllUsers
+    public Page<UserResponse> searchAllUsers(String keyword, String roleName, Pageable pageable) {
+        Specification<User> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Lọc theo từ khóa (keyword)
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String keywordPattern = "%" + keyword.toLowerCase().trim() + "%";
+                Predicate searchPredicate = criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), keywordPattern),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), keywordPattern),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), keywordPattern),
+                        criteriaBuilder.like(root.get("phone"), keywordPattern)
+                );
+                predicates.add(searchPredicate);
+            }
+
+            // 2. Lọc theo vai trò (roleName)
+            if (roleName != null && !roleName.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("role").get("name"), roleName.trim()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<User> usersPage = userRepository.findAll(spec, pageable);
         return usersPage.map(this::mapToUserResponse);
     }
 
