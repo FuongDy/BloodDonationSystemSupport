@@ -45,7 +45,7 @@ const UserProfilePage = () => {
                 gender: data.gender || '',
                 address: data.address || '',
                 emergencyContact: data.emergencyContact || '',
-                bloodTypeId: '', // Sẽ được set sau khi bloodTypes được fetch
+                bloodTypeId: '', 
                 medicalConditions: data.medicalConditions || '',
                 lastDonationDate: data.lastDonationDate || '',
                 isReadyToDonate: data.isReadyToDonate !== null ? data.isReadyToDonate : true,
