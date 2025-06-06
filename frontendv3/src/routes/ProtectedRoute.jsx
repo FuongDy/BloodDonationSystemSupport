@@ -1,15 +1,14 @@
-// src/routes/ProtectedRoute.jsx
+// frontendv2/src/routes/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth'; // Sử dụng useAuth hook
 import LoadingSpinner from '../components/common/LoadingSpinner'; // Component spinner
 
-const ProtectedRoute = ({ requiredRole }) => {
+const ProtectedRoute = ({ requiredRoles }) => { // Đổi prop thành requiredRoles (mảng)
     const { user, isAuthenticated, loading } = useAuth(); // Lấy trạng thái từ AuthContext
     const location = useLocation();
 
     if (loading) {
-        // Hiển thị một spinner hoặc fallback UI trong khi kiểm tra trạng thái xác thực
         return (
             <div className="flex justify-center items-center min-h-screen">
                 <LoadingSpinner />
@@ -22,11 +21,11 @@ const ProtectedRoute = ({ requiredRole }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Kiểm tra role nếu requiredRole được cung cấp
-    if (requiredRole && user?.role !== requiredRole) { //
+    // Kiểm tra role nếu requiredRoles được cung cấp
+    // user?.role là một string, requiredRoles là một mảng string
+    if (requiredRoles && !requiredRoles.includes(user?.role)) { // Kiểm tra nếu vai trò của người dùng không nằm trong các vai trò được phép
         // Người dùng đã đăng nhập nhưng không có quyền truy cập
-        // Có thể redirect đến trang "Forbidden" hoặc trang chủ
-        return <Navigate to="/forbidden" replace />; // Hoặc <Navigate to="/" replace />;
+        return <Navigate to="/forbidden" replace />;
     }
 
     return <Outlet />; // Hiển thị component con nếu đã xác thực và có quyền

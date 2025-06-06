@@ -1,17 +1,19 @@
 // src/pages/UserProfilePage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../hooks/useAuth'; //
-import userService from '../services/userService'; //
+import { useAuth } from '../hooks/useAuth';
+import userService from '../services/userService';
 import toast from 'react-hot-toast';
 import { UserCircle, Edit3, Save, CalendarDays, Droplet, Mail, Phone, MapPin, ShieldCheck, AlertTriangle } from 'lucide-react';
-import Navbar from '../components/layout/Navbar'; //
-import Footer from '../components/layout/Footer'; //
-import InputField from '../components/common/InputField'; //
-import Button from '../components/common/Button'; //
-import LoadingSpinner from '../components/common/LoadingSpinner'; //
-
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
+import InputField from '../components/common/InputField';
+import Button from '../components/common/Button';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { Link } from 'react-router-dom';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
+import CancelIcon from '@mui/icons-material/Cancel'; 
 const UserProfilePage = () => {
-    const { user: authUser, updateUserContext, loading: authLoading } = useAuth(); //
+    const { user: authUser, updateUserContext, loading: authLoading } = useAuth();
     const [profileData, setProfileData] = useState(null);
     const [formData, setFormData] = useState({
         fullName: '',
@@ -41,13 +43,14 @@ const UserProfilePage = () => {
             setFormData({
                 fullName: data.fullName || '',
                 phone: data.phone || '',
-                dateOfBirth: data.dateOfBirth || '',
+                // Format dates to YYYY-MM-DD for input type="date"
+                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : '',
                 gender: data.gender || '',
                 address: data.address || '',
                 emergencyContact: data.emergencyContact || '',
-                bloodTypeId: '', 
+                bloodTypeId: '', // Will be updated after fetching blood types
                 medicalConditions: data.medicalConditions || '',
-                lastDonationDate: data.lastDonationDate || '',
+                lastDonationDate: data.lastDonationDate ? new Date(data.lastDonationDate).toISOString().split('T')[0] : '',
                 isReadyToDonate: data.isReadyToDonate !== null ? data.isReadyToDonate : true,
             });
 
@@ -55,14 +58,17 @@ const UserProfilePage = () => {
             setBloodTypes(bloodTypesData || []);
 
             if (data.bloodTypeDescription && bloodTypesData) {
-                const matchedBloodType = bloodTypesData.find(bt => bt.description === data.bloodTypeDescription || (`${bt.bloodGroup} (${bt.componentType})` === data.bloodTypeDescription));
+                const matchedBloodType = bloodTypesData.find(bt =>
+                    bt.description === data.bloodTypeDescription ||
+                    (`${bt.bloodGroup} (${bt.componentType})` === data.bloodTypeDescription)
+                );
                 if (matchedBloodType) {
                     setFormData(prev => ({ ...prev, bloodTypeId: matchedBloodType.id.toString() }));
                 }
             }
 
         } catch (error) {
-            toast.error("Lỗi khi tải thông tin cá nhân: " + error.message);
+            toast.error("Lỗi khi tải thông tin cá nhân: " + (error.response?.data?.message || error.message || "Vui lòng thử lại."));
         } finally {
             setIsLoading(false);
         }
@@ -82,26 +88,29 @@ const UserProfilePage = () => {
         e.preventDefault();
         setIsSubmitting(true);
         const toastId = toast.loading("Đang cập nhật thông tin...");
+
+        // Prepare data for submission, explicitly setting empty strings to null for API
         const updateData = {
             ...formData,
-            bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId) : null,
+            bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
+            phone: formData.phone || null,
+            gender: formData.gender || null,
+            address: formData.address || null,
+            emergencyContact: formData.emergencyContact || null,
+            medicalConditions: formData.medicalConditions || null,
+            dateOfBirth: formData.dateOfBirth || null,
+            lastDonationDate: formData.lastDonationDate || null,
         };
-        if (updateData.phone === '') updateData.phone = null;
-        if (updateData.gender === '') updateData.gender = null;
-        if (updateData.address === '') updateData.address = null;
-        if (updateData.emergencyContact === '') updateData.emergencyContact = null;
-        if (updateData.medicalConditions === '') updateData.medicalConditions = null;
-        if (!updateData.dateOfBirth) updateData.dateOfBirth = null;
-        if (!updateData.lastDonationDate) updateData.lastDonationDate = null;
 
         try {
-            const updatedUser = await userService.updateUserProfile(updateData); //
-            setProfileData(updatedUser); // Cập nhật profileData hiển thị
-            updateUserContext(updatedUser); // Cập nhật AuthContext
+            const updatedUser = await userService.updateUserProfile(updateData);
+            setProfileData(updatedUser); // Update profileData displayed
+            updateUserContext(updatedUser); // Update AuthContext
             toast.success("Cập nhật thông tin thành công!", { id: toastId });
             setIsEditing(false);
         } catch (error) {
-            toast.error("Lỗi khi cập nhật: " + (error.message || "Vui lòng thử lại."), { id: toastId });
+            console.error("Error updating profile:", error);
+            toast.error("Lỗi khi cập nhật: " + (error.response?.data?.message || error.message || "Vui lòng thử lại."), { id: toastId });
             if (error.response && error.response.data && typeof error.response.data === 'object') {
                 setErrors(error.response.data);
             }
@@ -157,7 +166,6 @@ const UserProfilePage = () => {
 
                     {isEditing ? (
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Form fields similar to AdminUserEditPage, but for user's own profile */}
                             <InputField label="Họ và tên đầy đủ" name="fullName" value={formData.fullName} onChange={handleInputChange} required disabled={isSubmitting} error={errors.fullName} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Số điện thoại" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} disabled={isSubmitting} error={errors.phone} />
@@ -192,7 +200,7 @@ const UserProfilePage = () => {
                             </div>
 
                             <div className="flex justify-end space-x-3 pt-4">
-                                <Button type="button" variant="secondary" onClick={() => { setIsEditing(false); fetchProfile(); /* Reset form */ }} disabled={isSubmitting}>
+                                <Button type="button" variant="secondary" onClick={() => { setIsEditing(false); fetchProfile(); /* Reset form by refetching */ }} disabled={isSubmitting}>
                                     Hủy
                                 </Button>
                                 <Button type="submit" variant="primary" disabled={isSubmitting}>
@@ -205,15 +213,16 @@ const UserProfilePage = () => {
                         <dl className="divide-y divide-gray-200">
                             <ProfileDetailItem icon={Mail} label="Email" value={profileData.email} />
                             <ProfileDetailItem icon={Phone} label="Điện thoại" value={profileData.phone} />
-                            <ProfileDetailItem icon={CalendarDays} label="Ngày sinh" value={profileData.dateOfBirth ? new Date(profileData.dateOfBirth).toLocaleDateString() : null} />
+                            {/* Format dates for display only if they exist */}
+                            <ProfileDetailItem icon={CalendarDays} label="Ngày sinh" value={profileData.dateOfBirth ? new Date(profileData.dateOfBirth).toLocaleDateString('vi-VN') : null} />
                             <ProfileDetailItem icon={UserCircle} label="Giới tính" value={profileData.gender} />
                             <ProfileDetailItem icon={MapPin} label="Địa chỉ" value={profileData.address} />
                             <ProfileDetailItem icon={AlertTriangle} label="Liên hệ khẩn cấp" value={profileData.emergencyContact} />
                             <ProfileDetailItem icon={Droplet} label="Nhóm máu" value={displayBloodType} highlight={displayBloodType !== "Chưa cập nhật"} />
                             <ProfileDetailItem icon={ShieldCheck} label="Bệnh lý" value={profileData.medicalConditions} />
-                            <ProfileDetailItem icon={CalendarDays} label="Hiến máu lần cuối" value={profileData.lastDonationDate ? new Date(profileData.lastDonationDate).toLocaleDateString() : null} />
+                            <ProfileDetailItem icon={CalendarDays} label="Hiến máu lần cuối" value={profileData.lastDonationDate ? new Date(profileData.lastDonationDate).toLocaleDateString('vi-VN') : null} />
                             <ProfileDetailItem
-                                icon={profileData.isReadyToDonate ? CheckCircle : XCircle}
+                                icon={profileData.isReadyToDonate ? CheckCircleIcon : CancelIcon} // <--- CORRECTED: Icon usage
                                 label="Sẵn sàng hiến máu"
                                 value={profileData.isReadyToDonate ? "Có" : "Không"}
                                 highlight={profileData.isReadyToDonate === true}
@@ -238,6 +247,5 @@ const ProfileDetailItem = ({ icon: Icon, label, value, highlight }) => (
         </dd>
     </div>
 );
-
 
 export default UserProfilePage;
