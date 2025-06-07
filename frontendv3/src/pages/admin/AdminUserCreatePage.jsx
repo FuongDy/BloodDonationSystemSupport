@@ -83,8 +83,8 @@ const AdminUserCreatePage = () => {
 
         const requestData = {
             ...formData,
+
             phone: formData.phone.trim() || null,
-            description: formData.description.trim() || null,
             bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
         };
         delete requestData.confirmPassword; // Không gửi confirmPassword lên server
