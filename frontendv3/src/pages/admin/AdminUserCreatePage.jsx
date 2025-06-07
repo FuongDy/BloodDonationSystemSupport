@@ -156,7 +156,7 @@ const AdminUserCreatePage = () => {
                     <select id="bloodTypeId" name="bloodTypeId" value={formData.bloodTypeId} onChange={handleInputChange} disabled={isLoading || bloodTypes.length === 0}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
                         <option value="">-- Chọn nhóm máu --</option>
-                        {bloodTypes.map(bt => <option key={bt.id} value={bt.bloodGroup}></option>)}
+                        {bloodTypes.map(bt => <option key={bt.id} value={bt.id}>{bt.bloodGroup}</option>)}
                     </select>
                 </div>
 
