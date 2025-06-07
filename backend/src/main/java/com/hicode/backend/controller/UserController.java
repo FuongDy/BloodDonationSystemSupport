@@ -1,5 +1,6 @@
 package com.hicode.backend.controller;
 
+import com.hicode.backend.dto.DonorSearchResponse;
 import com.hicode.backend.dto.UpdateUserRequest;
 import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.service.UserService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -48,5 +51,18 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating profile: " + e.getMessage());
         }
+    }
+
+    // --- Thêm endpoint tìm kiếm người hiến máu ---
+    @GetMapping("/search-donors")
+    @PreAuthorize("isAuthenticated()") // Yêu cầu người dùng phải đăng nhập để tìm kiếm
+    public ResponseEntity<List<DonorSearchResponse>> searchDonors(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam double distanceInKm,
+            @RequestParam Integer bloodTypeId
+    ) {
+        List<DonorSearchResponse> donors = userService.findDonorsByDistance(latitude, longitude, distanceInKm, bloodTypeId);
+        return ResponseEntity.ok(donors);
     }
 }

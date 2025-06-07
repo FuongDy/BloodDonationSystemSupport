@@ -23,5 +23,14 @@ public class RegisterRequest {
     @Size(min = 6, max = 100, message = "Password need to longer than 6")
     private String password;
 
+    @NotBlank(message = "Phone number is required")
+    private String phone;
+
+    @NotBlank(message = "Address is required")
+    private String address;
+
+    private Double latitude;
+    private Double longitude;
+
     private Integer bloodTypeId;
 }

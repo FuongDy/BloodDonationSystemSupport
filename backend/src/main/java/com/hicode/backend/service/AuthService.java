@@ -48,8 +48,12 @@ public class AuthService {
         User user = new User();
         user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
-        user.setUsername(registerRequest.getEmail());
+        user.setUsername(registerRequest.getEmail()); // Vẫn dùng email làm username
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setLatitude(registerRequest.getLatitude());
+        user.setLongitude(registerRequest.getLongitude());
+        user.setPhone(registerRequest.getPhone());
+        user.setAddress(registerRequest.getAddress());
 
         if (registerRequest.getBloodTypeId() != null) {
             Optional<BloodType> bloodTypeOptional = bloodTypeRepository.findById(registerRequest.getBloodTypeId());
@@ -64,6 +68,7 @@ public class AuthService {
 
         return userRepository.save(user);
     }
+
 
     public AuthResponse loginUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(

@@ -1,9 +1,6 @@
 package com.hicode.backend.service;
 
-import com.hicode.backend.dto.AdminCreateUserRequest;
-import com.hicode.backend.dto.AdminUpdateUserRequest;
-import com.hicode.backend.dto.UpdateUserRequest;
-import com.hicode.backend.dto.UserResponse;
+import com.hicode.backend.dto.*;
 import com.hicode.backend.entity.BloodType;
 import com.hicode.backend.entity.Role;
 import com.hicode.backend.entity.User;
@@ -25,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -216,5 +214,39 @@ public class UserService {
         user.setStatus("Suspended");
         User deactivatedUser = userRepository.save(user);
         return mapToUserResponse(deactivatedUser);
+    }
+
+    // --- Thêm phương thức service mới ---
+    public List<DonorSearchResponse> findDonorsByDistance(double latitude, double longitude, double distanceInKm, Integer bloodTypeId) {
+        List<User> foundUsers = userRepository.findDonorsInRadius(latitude, longitude, distanceInKm, bloodTypeId);
+        List<DonorSearchResponse> responseList = new ArrayList<>();
+
+        for (User user : foundUsers) {
+            // Tính lại khoảng cách để hiển thị (tránh gọi lại query phức tạp)
+            double calculatedDistance = haversine(latitude, longitude, user.getLatitude(), user.getLongitude());
+            UserResponse userResponse = mapToUserResponse(user); // Dùng lại phương thức map đã có
+            responseList.add(new DonorSearchResponse(userResponse, calculatedDistance));
+        }
+
+        // Sắp xếp kết quả theo khoảng cách gần nhất
+        responseList.sort(Comparator.comparingDouble(DonorSearchResponse::getDistanceInKm));
+
+        return responseList;
+    }
+
+    // Hàm phụ để tính khoảng cách Haversine
+    private double haversine(double lat1, double lon1, double lat2, double lon2) {
+        if ((lat1 == lat2 && lon1 == lon2) || lat2 == 0 || lon1 == 0) { // Thêm kiểm tra null/zero cho tọa độ user
+            return 0;
+        }
+        final int R = 6371; // Bán kính Trái Đất bằng km
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 }
