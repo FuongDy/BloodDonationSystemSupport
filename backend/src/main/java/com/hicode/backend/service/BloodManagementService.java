@@ -65,19 +65,36 @@ public class BloodManagementService {
         Optional<BloodType> existingBloodTypeOpt = bloodTypeRepository.findByBloodGroupAndComponentType(
                 request.getBloodGroup(), request.getComponentType());
 
+        BloodType bloodType;
         if (existingBloodTypeOpt.isPresent()) {
-            throw new IllegalArgumentException("Blood type with group '" + request.getBloodGroup() +
-                    "' and component '" + request.getComponentType().name() + "' already exists.");
-        }
+            // Đã tìm thấy bản ghi, kiểm tra xem nó có active không
+            bloodType = existingBloodTypeOpt.get();
 
-        BloodType bloodType = new BloodType();
-        bloodType.setBloodGroup(request.getBloodGroup());
-        bloodType.setComponentType(request.getComponentType());
-        bloodType.setDescription(request.getDescription());
-        bloodType.setShelfLifeDays(request.getShelfLifeDays());
-        bloodType.setStorageTempMin(request.getStorageTempMin());
-        bloodType.setStorageTempMax(request.getStorageTempMax());
-        bloodType.setVolumeMl(request.getVolumeMl());
+            if (bloodType.getActive()) {
+                // Nếu đang active, thì đây mới thực sự là lỗi trùng lặp
+                throw new IllegalArgumentException("Blood type with group '" + request.getBloodGroup() +
+                        "' and component '" + request.getComponentType().name() + "' already exists and is active.");
+            } else {
+                // Nếu không active (đã bị xóa mềm), hãy "hồi sinh" và cập nhật nó
+                bloodType.setActive(true);
+                // Cập nhật các trường khác từ request
+                bloodType.setDescription(request.getDescription());
+                bloodType.setShelfLifeDays(request.getShelfLifeDays());
+                bloodType.setStorageTempMin(request.getStorageTempMin());
+                bloodType.setStorageTempMax(request.getStorageTempMax());
+                bloodType.setVolumeMl(request.getVolumeMl());
+            }
+        } else {
+            // Nếu không tìm thấy bản ghi nào, hãy tạo mới hoàn toàn
+            bloodType = new BloodType();
+            bloodType.setBloodGroup(request.getBloodGroup());
+            bloodType.setComponentType(request.getComponentType());
+            bloodType.setDescription(request.getDescription());
+            bloodType.setShelfLifeDays(request.getShelfLifeDays());
+            bloodType.setStorageTempMin(request.getStorageTempMin());
+            bloodType.setStorageTempMax(request.getStorageTempMax());
+            bloodType.setVolumeMl(request.getVolumeMl());
+        }
 
         BloodType savedBloodType = bloodTypeRepository.save(bloodType);
         return mapToBloodTypeResponse(savedBloodType);

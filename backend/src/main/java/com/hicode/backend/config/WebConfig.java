@@ -11,15 +11,16 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
 
         registry.addMapping("/api/**")
-                .allowedOrigins(
-                        "http://localhost:3000",
-                        "http://localhost:3001",
-                        "http://localhost:5173",
-                        "http://localhost:63342"  // <<<< Đảm bảo dòng này có và đúng
-                )
+//                .allowedOrigins(
+//                        "http://localhost:3000",
+//                        "http://localhost:3001",
+//                        "http://localhost:5173",
+//                        "http://localhost:63342"  // <<<< Đảm bảo dòng này có và đúng
+//                )
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 }
