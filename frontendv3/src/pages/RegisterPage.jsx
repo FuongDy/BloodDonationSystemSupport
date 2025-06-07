@@ -190,7 +190,7 @@ const RegisterPage = () => {
                                     >
                                         <option value="">-- Chọn nhóm máu --</option>
                                         {bloodTypesFromApi.map(bt => (
-                                            <option key={bt.id} value={bt.id}>{`${bt.bloodGroup} (${bt.componentType})`}</option>
+                                            <option key={bt.id} value={bt.id}>{`${bt.bloodGroup}`}</option>
                                         ))}
                                     </select>
                                 )}

@@ -74,7 +74,7 @@ const BloodCompatibilityCheckerPage = () => {
 
     const formatBloodTypeDisplay = (bloodType) => {
         if (!bloodType) return 'N/A';
-        return `${bloodType.bloodGroup}${bloodType.rhFactor || ''} (${bloodType.componentType})`;
+        return `${bloodType.bloodGroup} (${bloodType.componentType})`;
     };
 
     const simplifiedBloodGroups = [

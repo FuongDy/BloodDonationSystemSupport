@@ -10,12 +10,12 @@ const AdminLayout = () => {
 
     const menuItems = [
         { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin'] }, 
-        { path: "/admin/users", icon: Users, label: "Quản lý Người dùng", roles: ['Admin'] }, 
-        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý Loại máu", roles: ['Admin'] }, 
-        { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý Tương thích", roles: ['Admin'] }, 
-        { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Yêu cầu Khẩn cấp", roles: ['Admin', 'Staff'] }, 
-        { path: "/admin/donation-history", icon: History, label: "Lịch sử Hiến máu", roles: ['Admin', 'Staff'] }, 
-        { path: "/admin/blood-inventory", icon: Warehouse, label: "Tồn kho máu", roles: ['Admin', 'Staff'] }, 
+        { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] }, 
+        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin'] }, 
+        { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích", roles: ['Admin'] }, 
+        { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu Khẩn cấp", roles: ['Admin', 'Staff'] }, 
+        { path: "/admin/donation-history", icon: History, label: "Quản lí lịch sử hiến máu", roles: ['Admin', 'Staff'] }, 
+        { path: "/admin/blood-inventory", icon: Warehouse, label: "Quản lý kho máu", roles: ['Admin', 'Staff'] }, 
     ];
 
     const isActive = (path) => {
@@ -56,13 +56,13 @@ const AdminLayout = () => {
                     })}
                 </nav>
                 <div className="px-2 py-4 border-t border-gray-700 space-y-1">
-                    {/* Mục quay về trang chủ công khai */}
+                    {/* Mục quay về trang chủ */}
                     <Link
                         to="/"
                         className="w-full flex items-center px-2 py-2.5 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white"
                     >
                         <Home size={20} className="mr-3" />
-                        Về trang chủ công khai
+                        Về trang chủ
                     </Link>
                     <button
                         onClick={logout}

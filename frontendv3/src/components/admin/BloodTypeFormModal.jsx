@@ -96,9 +96,7 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
         };
 
         try {
-            if (bloodType?.id) {
-                // Backend hiện chỉ chấp nhận description, shelfLifeDays, storageTempMin, storageTempMax, volumeMl
-                // cho API update, nên chỉ gửi các trường này.
+            if (bloodType?.id) {              
                 const updateRequestData = {
                     description: dataToSend.description,
                     shelfLifeDays: dataToSend.shelfLifeDays,
