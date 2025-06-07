@@ -33,10 +33,10 @@ const AdminUserCreatePage = () => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const rolesData = await userService.getRoles(); 
+                const rolesData = await userService.getRoles();
                 setRoles(rolesData || []); //
-                const bloodTypesData = await userService.getBloodTypes(); 
-                setBloodTypes(bloodTypesData || []); 
+                const bloodTypesData = await userService.getBloodTypes();
+                setBloodTypes(bloodTypesData || []);
             } catch (error) {
                 toast.error("Lỗi khi tải dữ liệu Roles hoặc Blood Types: " + error.message);
             }
@@ -83,8 +83,8 @@ const AdminUserCreatePage = () => {
 
         const requestData = {
             ...formData,
+
             phone: formData.phone.trim() || null,
-            description: formData.description.trim() || null,
             bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
         };
         delete requestData.confirmPassword; // Không gửi confirmPassword lên server
