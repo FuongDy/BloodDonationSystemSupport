@@ -1,4 +1,4 @@
-// src/pages/RegisterPage.jsx
+// src/pages/RegisterPage.jsxAdd commentMore actions
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus as UserPlusIcon } from 'lucide-react';
@@ -16,10 +16,10 @@ const RegisterPage = () => {
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
-        phone: '', 
+        phone: '',
         password: '',
         confirmPassword: '',
-        bloodTypeId: '', 
+        bloodTypeId: '',
         agreeTerms: false
     });
     const [showPassword, setShowPassword] = useState(false);
@@ -135,7 +135,7 @@ const RegisterPage = () => {
                                     required
                                     disabled={authLoading || isFetchingBloodTypes}
                                 />
-                                <InputField 
+                                <InputField
                                     label="Số điện thoại (Tùy chọn)"
                                     id="phone"
                                     name="phone"
