@@ -2,7 +2,7 @@
 import { http, HttpResponse } from 'msw';
 import { API_URL } from '../config'; // Đảm bảo đường dẫn này đúng
 
-const mockUser = {
+let mockUser = {
     id: 1,
     username: 'mockuser',
     email: 'mock.user@example.com',
@@ -115,7 +115,7 @@ export const handlers = [
         const { email, password } = await request.json();
         console.log('MSW Login attempt:', email);
         if (password === "password") { // Simple password check for mock
-            let userToLogin = { ...mockUser };
+            let userToLogin = { ...mockUser }; // Create a new object for the current login session
             if (email.includes("admin")) {
                 userToLogin.role = "Admin";
                 userToLogin.fullName = "Mock Admin";
@@ -125,6 +125,9 @@ export const handlers = [
                 userToLogin.fullName = "Mock Member";
                 userToLogin.email = email;
             }
+            // Update the global mockUser state to reflect the currently "logged-in" mock user
+            Object.assign(mockUser, userToLogin);
+
             return HttpResponse.json({
                 accessToken: `msw-token-for-${email}`,
                 refreshToken: 'msw-refresh-token',
@@ -243,7 +246,7 @@ export const handlers = [
     // UserService - General User Profile
     http.get(`${API_URL}/users/me/profile`, () => {
         console.log('MSW GET /users/me/profile');
-        // Giả sử user đã login là mockUser
+        // Bây giờ mockUser sẽ phản ánh người dùng đã "đăng nhập" gần nhất
         return HttpResponse.json(mockUser);
     }),
 
