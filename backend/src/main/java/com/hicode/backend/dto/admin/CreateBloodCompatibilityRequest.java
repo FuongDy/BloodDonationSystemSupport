@@ -1,4 +1,4 @@
-package com.hicode.backend.dto;
+package com.hicode.backend.dto.admin;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

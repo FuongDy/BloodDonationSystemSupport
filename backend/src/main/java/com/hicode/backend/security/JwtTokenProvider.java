@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -25,9 +26,6 @@ public class JwtTokenProvider {
 
     public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret,
                             @Value("${jwt.expiration.ms}") long jwtExpirationInMs) {
-        if (jwtSecret.getBytes(StandardCharsets.UTF_8).length * 8 < 512) {
-            logger.warn("JWT Secret key may be too short for HS512. Ensure it's at least 512 bits (64 bytes) for production.");
-        }
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         this.jwtExpirationInMs = jwtExpirationInMs;
     }

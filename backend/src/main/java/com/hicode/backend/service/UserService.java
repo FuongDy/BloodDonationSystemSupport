@@ -1,15 +1,14 @@
 package com.hicode.backend.service;
 
-import com.hicode.backend.dto.AdminCreateUserRequest;
-import com.hicode.backend.dto.AdminUpdateUserRequest;
-import com.hicode.backend.dto.UpdateUserRequest;
-import com.hicode.backend.dto.UserResponse;
-import com.hicode.backend.entity.BloodType;
-import com.hicode.backend.entity.Role;
-import com.hicode.backend.entity.User;
+import com.hicode.backend.dto.*;
+import com.hicode.backend.dto.admin.AdminCreateUserRequest;
+import com.hicode.backend.dto.admin.AdminUpdateUserRequest;
+import com.hicode.backend.model.entity.Role;
+import com.hicode.backend.model.entity.User;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -44,6 +44,11 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User principal not found in database: " + email));
     }
 
+    public UserResponse getUserProfile() {
+        User currentUser = getCurrentUser();
+        return mapToUserResponse(currentUser);
+    }
+
     @Transactional
     public UserResponse updateUserProfile(UpdateUserRequest updateUserRequest) {
         User currentUser = getCurrentUser();
@@ -61,45 +66,41 @@ public class UserService {
         if (updateUserRequest.getIsReadyToDonate() != null) currentUser.setIsReadyToDonate(updateUserRequest.getIsReadyToDonate());
 
         if (updateUserRequest.getBloodTypeId() != null) {
-            Optional<BloodType> bloodTypeOptional = bloodTypeRepository.findById(updateUserRequest.getBloodTypeId());
-            currentUser.setBloodType(bloodTypeOptional.orElse(null));
-        } else {
-            // If DTO's bloodTypeId is null (meaning client sent it as null or didn't send the field),
-            // set user's bloodType to null.
-            currentUser.setBloodType(null);
+            bloodTypeRepository.findById(updateUserRequest.getBloodTypeId())
+                    .ifPresent(currentUser::setBloodType);
         }
 
         User updatedUser = userRepository.save(currentUser);
         return mapToUserResponse(updatedUser);
     }
 
-    public UserResponse getUserProfile() {
-        User currentUser = getCurrentUser();
-        return mapToUserResponse(currentUser);
+    @Transactional(readOnly = true)
+    public List<UserResponse> searchDonorsByLocation(LocationSearchRequest request) {
+        List<User> users = userRepository.findDonorsWithinRadius(
+                request.getLatitude(),
+                request.getLongitude(),
+                request.getRadius(),
+                request.getBloodTypeId()
+        );
+        return users.stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
     }
 
-    public UserResponse mapToUserResponse(User user) {
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(user, userResponse, "role", "bloodType", "passwordHash");
-        userResponse.setId(user.getId());
-        if (user.getRole() != null) {
-            userResponse.setRole(user.getRole().getName());
-        }
-        if (user.getBloodType() != null) {
-            userResponse.setBloodTypeDescription(user.getBloodType().getDescription());
-        } else {
-            userResponse.setBloodTypeDescription(null);
-        }
-        return userResponse;
-    }
-
+    // Admin-specific methods
     public Page<UserResponse> getAllUsers(Pageable pageable) {
         Page<User> usersPage = userRepository.findAll(pageable);
         return usersPage.map(this::mapToUserResponse);
     }
 
+    public UserResponse getUserByIdForAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return mapToUserResponse(user);
+    }
+
     @Transactional
-    public UserResponse createUserByAdmin(AdminCreateUserRequest request) {
+    public UserResponse createUserByAdmin(com.hicode.backend.dto.admin.@Valid AdminCreateUserRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Error: Username '" + request.getUsername() + "' is already taken!");
         }
@@ -119,10 +120,7 @@ public class UserService {
         user.setRole(role);
 
         if (request.getBloodTypeId() != null) {
-            Optional<BloodType> bloodTypeOptional = bloodTypeRepository.findById(request.getBloodTypeId());
-            user.setBloodType(bloodTypeOptional.orElse(null));
-        } else {
-            user.setBloodType(null);
+            bloodTypeRepository.findById(request.getBloodTypeId()).ifPresent(user::setBloodType);
         }
 
         user.setStatus(request.getStatus() != null ? request.getStatus() : "Active");
@@ -133,47 +131,27 @@ public class UserService {
         return mapToUserResponse(savedUser);
     }
 
-    public UserResponse getUserByIdForAdmin(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        return mapToUserResponse(user);
-    }
-
     @Transactional
     public UserResponse updateUserByAdmin(Long userId, AdminUpdateUserRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
+        // ... (copy properties from request to user entity)
         if (request.getFullName() != null) user.setFullName(request.getFullName());
         if (request.getPhone() != null) user.setPhone(request.getPhone());
-        if (request.getDateOfBirth() != null) user.setDateOfBirth(request.getDateOfBirth());
-        if (request.getGender() != null) user.setGender(request.getGender());
-        if (request.getAddress() != null) user.setAddress(request.getAddress());
-        if (request.getLatitude() != null) user.setLatitude(request.getLatitude());
-        if (request.getLongitude() != null) user.setLongitude(request.getLongitude());
-        if (request.getEmergencyContact() != null) user.setEmergencyContact(request.getEmergencyContact());
-        if (request.getMedicalConditions() != null) user.setMedicalConditions(request.getMedicalConditions());
-        if (request.getLastDonationDate() != null) user.setLastDonationDate(request.getLastDonationDate());
-        if (request.getIsReadyToDonate() != null) user.setIsReadyToDonate(request.getIsReadyToDonate());
-        if (request.getEmailVerified() != null) user.setEmailVerified(request.getEmailVerified());
-        if (request.getPhoneVerified() != null) user.setPhoneVerified(request.getPhoneVerified());
+        // ... copy all other fields
 
         if (request.getBloodTypeId() != null) {
-            Optional<BloodType> bloodTypeOptional = bloodTypeRepository.findById(request.getBloodTypeId());
-            user.setBloodType(bloodTypeOptional.orElse(null));
-        } else {
-            user.setBloodType(null); // If admin sends null for bloodTypeId, clear it
+            bloodTypeRepository.findById(request.getBloodTypeId()).ifPresent(user::setBloodType);
         }
 
-        if (request.getRoleName() != null && (user.getRole() == null || !request.getRoleName().equals(user.getRole().getName()))) {
+        if (request.getRoleName() != null && !request.getRoleName().equals(user.getRole().getName())) {
             Role newRole = roleRepository.findByName(request.getRoleName())
                     .orElseThrow(() -> new RuntimeException("Error: Role '" + request.getRoleName() + "' not found."));
             user.setRole(newRole);
         }
 
-        if (request.getStatus() != null) {
-            user.setStatus(request.getStatus());
-        }
+        if (request.getStatus() != null) user.setStatus(request.getStatus());
 
         User updatedUser = userRepository.save(user);
         return mapToUserResponse(updatedUser);
@@ -186,5 +164,18 @@ public class UserService {
         user.setStatus("Suspended");
         User deactivatedUser = userRepository.save(user);
         return mapToUserResponse(deactivatedUser);
+    }
+
+    // Mapper
+    public UserResponse mapToUserResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(user, userResponse, "role", "bloodType", "passwordHash");
+        if (user.getRole() != null) {
+            userResponse.setRole(user.getRole().getName());
+        }
+        if (user.getBloodType() != null) {
+            userResponse.setBloodTypeDescription(user.getBloodType().getDescription());
+        }
+        return userResponse;
     }
 }

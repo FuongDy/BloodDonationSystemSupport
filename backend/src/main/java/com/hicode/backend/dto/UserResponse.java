@@ -1,12 +1,9 @@
 package com.hicode.backend.dto;
-
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-@Getter
-@Setter
+@Getter @Setter
 public class UserResponse {
     private Long id;
     private String username;
@@ -19,7 +16,7 @@ public class UserResponse {
     private Double latitude;
     private Double longitude;
     private String emergencyContact;
-    private String bloodTypeDescription;
+    private String bloodTypeDescription; // Note: Not the full object to prevent loops
     private String medicalConditions;
     private LocalDate lastDonationDate;
     private Boolean isReadyToDonate;

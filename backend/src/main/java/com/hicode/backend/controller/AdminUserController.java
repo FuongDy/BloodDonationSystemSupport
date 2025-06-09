@@ -1,7 +1,7 @@
 package com.hicode.backend.controller;
 
-import com.hicode.backend.dto.AdminCreateUserRequest;
-import com.hicode.backend.dto.AdminUpdateUserRequest;
+import com.hicode.backend.dto.admin.AdminCreateUserRequest;
+import com.hicode.backend.dto.admin.AdminUpdateUserRequest;
 import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.service.UserService;
 import jakarta.validation.Valid;
@@ -29,73 +29,30 @@ public class AdminUserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id,asc") String[] sort) {
 
-        Sort.Direction direction = Sort.Direction.ASC;
-        String sortField = "id";
-
-        if (sort.length > 0 && !sort[0].isEmpty()) {
-            sortField = sort[0];
-        }
-        if (sort.length > 1 && !sort[1].isEmpty()) {
-            try {
-                direction = Sort.Direction.fromString(sort[1].toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // Keep default direction if invalid
-            }
-        }
+        Sort.Direction direction = sort.length > 1 && sort[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String sortField = sort.length > 0 ? sort[0] : "id";
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-        Page<UserResponse> usersPage = userService.getAllUsers(pageable);
-        return ResponseEntity.ok(usersPage);
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
     @PostMapping
-    public ResponseEntity<?> createUserByAdmin(@Valid @RequestBody AdminCreateUserRequest request) {
-        try {
-            UserResponse newUser = userService.createUserByAdmin(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("Admin Create User Error: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not create user: " + e.getMessage());
-        }
+    public ResponseEntity<UserResponse> createUserByAdmin(@Valid @RequestBody AdminCreateUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUserByAdmin(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserByIdForAdmin(@PathVariable Long id) {
-        try {
-            UserResponse user = userService.getUserByIdForAdmin(id);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<UserResponse> getUserByIdForAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserByIdForAdmin(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUserByAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateUserRequest request) {
-        try {
-            UserResponse updatedUser = userService.updateUserByAdmin(id, request);
-            return ResponseEntity.ok(updatedUser);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("Admin Update User Error for ID " + id + ": " + e.getMessage());
-            e.printStackTrace();
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not update user: " + e.getMessage());
-        }
+    public ResponseEntity<UserResponse> updateUserByAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUserByAdmin(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> softDeleteUserByAdmin(@PathVariable Long id) {
-        try {
-            UserResponse deactivatedUser = userService.softDeleteUserByAdmin(id);
-            return ResponseEntity.ok(deactivatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<UserResponse> softDeleteUserByAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.softDeleteUserByAdmin(id));
     }
 }

@@ -1,8 +1,9 @@
 package com.hicode.backend.controller;
 
 import com.hicode.backend.dto.BloodTypeResponse;
-import com.hicode.backend.dto.CreateBloodTypeRequest;
-import com.hicode.backend.dto.UpdateBloodTypeRequest;
+import com.hicode.backend.dto.admin.CreateBloodTypeRequest;
+import com.hicode.backend.dto.admin.UpdateBloodTypeRequest;
+import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.service.BloodManagementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,57 +21,38 @@ public class BloodTypeController {
     private BloodManagementService bloodManagementService;
 
     @GetMapping
-    @PreAuthorize("permitAll()")
     public ResponseEntity<List<BloodTypeResponse>> getAllBloodTypes() {
         return ResponseEntity.ok(bloodManagementService.getAllBloodTypes());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
     public ResponseEntity<BloodTypeResponse> getBloodTypeById(@PathVariable Integer id) {
-        try {
-            return ResponseEntity.ok(bloodManagementService.getBloodTypeDetails(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(bloodManagementService.getBloodTypeDetails(id));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createBloodType(@Valid @RequestBody CreateBloodTypeRequest request) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(bloodManagementService.createBloodType(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating blood type: " + e.getMessage());
-        }
+    public ResponseEntity<BloodTypeResponse> createBloodType(@Valid @RequestBody CreateBloodTypeRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bloodManagementService.createBloodType(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<?> updateBloodType(@PathVariable Integer id, @Valid @RequestBody UpdateBloodTypeRequest request) {
-        try {
-            return ResponseEntity.ok(bloodManagementService.updateBloodType(id, request));
-        } catch (RuntimeException e) {
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-            }
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<BloodTypeResponse> updateBloodType(@PathVariable Integer id, @Valid @RequestBody UpdateBloodTypeRequest request) {
+        return ResponseEntity.ok(bloodManagementService.updateBloodType(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBloodType(@PathVariable Integer id) {
-        try {
-            bloodManagementService.deleteBloodType(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        bloodManagementService.deleteBloodType(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/users")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<UserResponse>> getUsersByBloodType(@PathVariable Integer id) {
+        List<UserResponse> users = bloodManagementService.findUsersByBloodTypeId(id);
+        return ResponseEntity.ok(users);
     }
 }

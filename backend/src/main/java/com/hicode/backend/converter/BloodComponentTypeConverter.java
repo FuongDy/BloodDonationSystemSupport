@@ -1,15 +1,14 @@
 package com.hicode.backend.converter;
 
-import com.hicode.backend.entity.BloodComponentType;
+import com.hicode.backend.model.enums.BloodComponentType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter(autoApply = true) // Tự động áp dụng converter này cho tất cả các trường kiểu BloodComponentType
+@Converter(autoApply = true)
 public class BloodComponentTypeConverter implements AttributeConverter<BloodComponentType, String> {
 
     @Override
     public String convertToDatabaseColumn(BloodComponentType attribute) {
-        // Khi lưu vào DB, lấy displayName từ enum
         if (attribute == null) {
             return null;
         }
@@ -18,7 +17,6 @@ public class BloodComponentTypeConverter implements AttributeConverter<BloodComp
 
     @Override
     public BloodComponentType convertToEntityAttribute(String dbData) {
-        // Khi đọc từ DB, chuyển chuỗi dbData thành enum tương ứng
         if (dbData == null || dbData.trim().isEmpty()) {
             return null;
         }

@@ -3,14 +3,13 @@ package com.hicode.backend.controller;
 import com.hicode.backend.dto.AuthResponse;
 import com.hicode.backend.dto.LoginRequest;
 import com.hicode.backend.dto.RegisterRequest;
-import com.hicode.backend.entity.User;
+import com.hicode.backend.model.entity.User;
 import com.hicode.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +30,6 @@ public class AuthController {
                     .body("User registered successfully! Email: " + registeredUser.getEmail());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("Registration error: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred during registration.");
         }
     }
 
@@ -46,13 +40,6 @@ public class AuthController {
             return ResponseEntity.ok(authResponse);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The email or password is invalid");
-        } catch (AuthenticationException e) {
-            System.err.println("Authentication failed: " + e.getClass().getName() + " - " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed. Please check server logs for details.");
-        } catch (Exception e) {
-            System.err.println("Unexpected error during login: " + e.getClass().getName() + " - " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred during login.");
         }
     }
 }

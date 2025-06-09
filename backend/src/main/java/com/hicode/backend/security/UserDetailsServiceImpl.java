@@ -1,6 +1,6 @@
 package com.hicode.backend.security;
 
-import com.hicode.backend.entity.User;
+import com.hicode.backend.model.entity.User;
 import com.hicode.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

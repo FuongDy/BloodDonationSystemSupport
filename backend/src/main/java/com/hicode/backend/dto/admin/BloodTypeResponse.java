@@ -1,4 +1,4 @@
-package com.hicode.backend.dto;
+package com.hicode.backend.dto.admin;
 
 import com.hicode.backend.model.enums.BloodComponentType;
 import lombok.Getter;
@@ -12,6 +12,9 @@ public class BloodTypeResponse {
     private String bloodGroup;
     private BloodComponentType componentType;
     private String description;
+    private Integer shelfLifeDays;
+    private Double storageTempMin;
+    private Double storageTempMax;
     private Integer volumeMl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

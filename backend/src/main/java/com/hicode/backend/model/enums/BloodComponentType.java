@@ -1,4 +1,4 @@
-package com.hicode.backend.entity;
+package com.hicode.backend.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -30,7 +30,6 @@ public enum BloodComponentType {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown display name: '" + displayName + "' for BloodComponentType"));
     }
 
-    // Giúp Jackson serialize/deserialize enum này thành/từ displayName trong JSON
     @JsonValue
     public String toJsonValue() {
         return displayName;

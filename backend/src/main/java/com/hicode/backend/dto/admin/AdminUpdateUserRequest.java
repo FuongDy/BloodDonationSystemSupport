@@ -1,4 +1,4 @@
-package com.hicode.backend.dto;
+package com.hicode.backend.dto.admin;
 
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -11,7 +11,6 @@ public class AdminUpdateUserRequest {
 
     @Size(min = 3, max = 150)
     private String fullName;
-
     private String phone;
     private LocalDate dateOfBirth;
     private String gender;
@@ -23,7 +22,6 @@ public class AdminUpdateUserRequest {
     private String medicalConditions;
     private LocalDate lastDonationDate;
     private Boolean isReadyToDonate;
-
     private String roleName;
     private String status;
     private Boolean emailVerified;

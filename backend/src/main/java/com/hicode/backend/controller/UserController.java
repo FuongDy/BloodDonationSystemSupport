@@ -1,5 +1,6 @@
 package com.hicode.backend.controller;
 
+import com.hicode.backend.dto.LocationSearchRequest;
 import com.hicode.backend.dto.UpdateUserRequest;
 import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.service.UserService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,34 +21,20 @@ public class UserController {
 
     @GetMapping("/me/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getCurrentUserProfile() {
-        try {
-            UserResponse userProfile = userService.getUserProfile();
-            return ResponseEntity.ok(userProfile);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Error fetching current user profile: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not retrieve user profile.");
-        }
+    public ResponseEntity<UserResponse> getCurrentUserProfile() {
+        return ResponseEntity.ok(userService.getUserProfile());
     }
 
     @PutMapping("/me/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateUserProfile(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        try {
-            UserResponse updatedUser = userService.updateUserProfile(updateUserRequest);
-            return ResponseEntity.ok(updatedUser);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("Error updating user profile: " + e.getMessage());
-            e.printStackTrace();
-            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating profile: " + e.getMessage());
-        }
+    public ResponseEntity<UserResponse> updateUserProfile(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        return ResponseEntity.ok(userService.updateUserProfile(updateUserRequest));
+    }
+
+    @PostMapping("/search/donors-by-location")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<UserResponse>> searchDonorsByLocation(@Valid @RequestBody LocationSearchRequest request) {
+        List<UserResponse> donors = userService.searchDonorsByLocation(request);
+        return ResponseEntity.ok(donors);
     }
 }

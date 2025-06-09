@@ -42,19 +42,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // <<< KÍCH HOẠT SỬ DỤNG CORS CONFIG
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <<< CHO PHÉP PREFLIGHT
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        // CHO PHÉP CÁC API BLOOD MANAGEMENT CÔNG KHAI CHO GET
                         .requestMatchers(HttpMethod.GET, "/api/blood-types", "/api/blood-types/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-compatibility/{id}").permitAll()
-                        // ----------------------------------------------------
+                        .requestMatchers(HttpMethod.GET, "/api/blood-types/{id}/users").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/blood-requests", "/api/blood-requests/search").authenticated()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated() // Các request khác cần xác thực
+                        .anyRequest().authenticated()
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

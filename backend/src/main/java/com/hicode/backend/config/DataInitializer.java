@@ -1,6 +1,6 @@
 package com.hicode.backend.config;
 
-import com.hicode.backend.entity.Role;
+import com.hicode.backend.model.entity.Role;
 import com.hicode.backend.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,10 +18,10 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeRoles() {
-        createRoleIfNotFound("Guest", "[\"view_public_content\", \"search_blood_compatibility\"]", "Public users with limited access");
-        createRoleIfNotFound("Member", "[\"view_content\", \"donate_blood\", \"request_blood\", \"view_profile\", \"schedule_appointment\"]", "Registered users - donors and requesters");
-        createRoleIfNotFound("Staff", "[\"manage_donations\", \"conduct_health_checks\", \"manage_inventory\", \"view_reports\", \"manage_appointments\"]", "Medical staff and technicians");
-        createRoleIfNotFound("Admin", "[\"full_access\", \"manage_users\", \"manage_system\", \"view_all_reports\", \"manage_all_appointments\"]", "System administrators");
+        createRoleIfNotFound("Guest", "[\"view_public_content\"]", "Public users with limited access");
+        createRoleIfNotFound("Member", "[\"view_content\", \"request_blood\", \"view_profile\"]", "Registered users - donors and requesters");
+        createRoleIfNotFound("Staff", "[\"manage_donations\", \"manage_inventory\", \"view_reports\"]", "Medical staff and technicians");
+        createRoleIfNotFound("Admin", "[\"full_access\", \"manage_users\", \"manage_system\"]", "System administrators");
     }
 
     private void createRoleIfNotFound(String name, String permissions, String description) {

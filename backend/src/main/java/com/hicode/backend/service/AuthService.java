@@ -3,9 +3,9 @@ package com.hicode.backend.service;
 import com.hicode.backend.dto.AuthResponse;
 import com.hicode.backend.dto.LoginRequest;
 import com.hicode.backend.dto.RegisterRequest;
-import com.hicode.backend.entity.BloodType;
-import com.hicode.backend.entity.Role;
-import com.hicode.backend.entity.User;
+import com.hicode.backend.model.entity.BloodType;
+import com.hicode.backend.model.entity.Role;
+import com.hicode.backend.model.entity.User;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -50,16 +51,20 @@ public class AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setUsername(registerRequest.getEmail());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setPhone(registerRequest.getPhone());
+        user.setAddress(registerRequest.getAddress());
+
+        // --- PHẦN THÊM MỚI ---
+        user.setDateOfBirth(registerRequest.getDateOfBirth());
+        // --- KẾT THÚC PHẦN THÊM MỚI ---
 
         if (registerRequest.getBloodTypeId() != null) {
             Optional<BloodType> bloodTypeOptional = bloodTypeRepository.findById(registerRequest.getBloodTypeId());
             user.setBloodType(bloodTypeOptional.orElse(null));
-        } else {
-            user.setBloodType(null);
         }
 
         Role userRole = roleRepository.findByName("Member")
-                .orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found."));
+                .orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found. Please run DataInitializer."));
         user.setRole(userRole);
 
         return userRepository.save(user);

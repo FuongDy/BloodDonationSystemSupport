@@ -1,10 +1,7 @@
 package com.hicode.backend.dto;
-
 import lombok.Getter;
 import lombok.Setter;
-
-@Getter
-@Setter
+@Getter @Setter
 public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
@@ -12,7 +9,6 @@ public class AuthResponse {
     private String email;
     private String fullName;
     private String role;
-
     public AuthResponse(String accessToken, Long userId, String email, String fullName, String role) {
         this.accessToken = accessToken;
         this.userId = userId;

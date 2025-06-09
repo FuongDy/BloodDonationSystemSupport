@@ -1,4 +1,4 @@
-package com.hicode.backend.dto;
+package com.hicode.backend.dto.admin;
 
 import lombok.Getter;
 import lombok.Setter;
