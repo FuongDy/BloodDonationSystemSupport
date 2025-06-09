@@ -40,42 +40,45 @@ const AdminLayout = () => {
         <div className="flex flex-col min-h-screen">
             <Navbar />
             <div className="flex flex-1 pt-16"> {/* pt-16 cho navbar cố định chiều cao h-16 */}
-                <aside className="w-64 bg-gray-100 text-gray-800 p-4 space-y-2 fixed top-16 left-0 h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200">
-                    <h2 className="text-xl font-semibold mb-4 px-2 text-gray-900">Admin Panel</h2>
+                <aside className="w-64 bg-slate-800 text-slate-100 p-4 space-y-2 fixed top-16 left-0 h-[calc(100vh-4rem)] overflow-y-auto shadow-lg">
+                    <h2 className="text-xl font-semibold mb-6 px-2 text-slate-50">Admin Panel</h2>
                     <nav>
                         <ul>
                             {menuItems.map((item) => (
-                                <li key={item.path}>
+                                <li key={item.path} className="mb-1">
                                     <Link
                                         to={item.path}
-                                        className={`flex items-center p-2 rounded transition-colors ${isActive(item.path) ? 'bg-red-100 text-red-800' : 'text-gray-700 hover:bg-red-50 hover:text-red-700'
+                                        className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 ease-in-out group ${
+                                            isActive(item.path)
+                                                ? 'bg-red-600 text-white shadow-md' 
+                                                : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                                             }`}
                                     >
-                                        <item.icon size={20} className="mr-3" />
-                                        {item.label}
+                                        <item.icon size={20} className={`mr-3 group-hover:text-red-400 ${isActive(item.path) ? 'text-white' : 'text-slate-400'}`} />
+                                        <span className="font-medium">{item.label}</span>
                                     </Link>
                                 </li>
                             ))}
-                            <hr className="my-2 border-gray-300" />
+                            <hr className="my-4 border-slate-600" />
                             <li>
-                                <Link to="/" className="flex items-center p-2 text-gray-700 hover:bg-red-50 hover:text-red-700 rounded">
-                                    <HomeIcon size={20} className="mr-3" />
-                                    Về trang chủ
+                                <Link to="/" className="flex items-center py-2.5 px-3 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg transition-all duration-200 ease-in-out group">
+                                    <HomeIcon size={20} className="mr-3 text-slate-400 group-hover:text-red-400" />
+                                    <span className="font-medium">Về trang chủ</span>
                                 </Link>
                             </li>
-                            <li>
+                            <li className="mt-1">
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center p-2 text-gray-700 hover:bg-red-50 hover:text-red-700 rounded text-left"
+                                    className="w-full flex items-center py-2.5 px-3 text-slate-300 hover:bg-slate-700 hover:text-white rounded-lg text-left transition-all duration-200 ease-in-out group"
                                 >
-                                    <LogOut size={20} className="mr-3" />
-                                    Đăng xuất
+                                    <LogOut size={20} className="mr-3 text-slate-400 group-hover:text-red-400" />
+                                    <span className="font-medium">Đăng xuất</span>
                                 </button>
                             </li>
                         </ul>
                     </nav>
                 </aside>
-                <main className="flex-1 p-6 bg-gray-100 ml-64"> {/* ml-64 cho sidebar cố định */}
+                <main className="flex-1 p-6 bg-gray-50 ml-64"> {/* Changed bg-gray-100 to bg-gray-50 for a lighter content area */}
                     <Outlet />
                 </main>
             </div>
