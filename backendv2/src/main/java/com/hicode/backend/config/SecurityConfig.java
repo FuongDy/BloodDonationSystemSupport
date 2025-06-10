@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/blood-compatibility/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-types/{id}/users").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/blood-requests", "/api/blood-requests/search").authenticated()
-                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/error").permitAll().requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
