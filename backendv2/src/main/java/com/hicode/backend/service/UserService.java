@@ -100,7 +100,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse createUserByAdmin(com.hicode.backend.dto.admin.@Valid AdminCreateUserRequest request) {
+    public UserResponse createUserByAdmin(AdminCreateUserRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Error: Username '" + request.getUsername() + "' is already taken!");
         }
@@ -114,6 +114,10 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
+
+        // --- PHẦN THÊM MỚI ---
+        user.setDateOfBirth(request.getDateOfBirth());
+        // --- KẾT THÚC PHẦN THÊM MỚI ---
 
         Role role = roleRepository.findByName(request.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Error: Role '" + request.getRoleName() + "' not found."));
