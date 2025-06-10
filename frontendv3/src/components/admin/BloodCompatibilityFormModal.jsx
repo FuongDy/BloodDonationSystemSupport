@@ -7,7 +7,7 @@ import bloodCompatibilityService from '../../services/bloodCompatibilityService'
 import bloodTypeService from '../../services/bloodTypeService';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { useAuth } from '../../hooks/useAuth'; // Import useAuth hook
+import useAuth from '../../hooks/useAuth';
 
 const BloodCompatibilityFormModal = ({ isOpen, onClose, onSaveSuccess, rule }) => {
     const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ const BloodCompatibilityFormModal = ({ isOpen, onClose, onSaveSuccess, rule }) =
     const [isLoading, setIsLoading] = useState(false);
     const [isDataLoading, setIsDataLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const { user } = useAuth(); // Lấy user từ useAuth
+    const { user } = useAuth(); 
 
     const fetchDropdownData = useCallback(async () => {
         setIsDataLoading(true);
@@ -88,7 +88,7 @@ const BloodCompatibilityFormModal = ({ isOpen, onClose, onSaveSuccess, rule }) =
     const handleSubmit = async (e) => {
         e.preventDefault();
         // Kiểm tra quyền trước khi gửi form
-        if (user?.role !== 'Admin') { //
+        if (user?.role !== 'Admin') { // Đã có logic kiểm tra
             toast.error("Bạn không có quyền thực hiện thao tác này.");
             return;
         }
@@ -125,7 +125,7 @@ const BloodCompatibilityFormModal = ({ isOpen, onClose, onSaveSuccess, rule }) =
     };
 
     // Vô hiệu hóa các input và nút nếu người dùng không phải Admin
-    const isReadOnly = user?.role !== 'Admin'; //
+    const isReadOnly = user?.role !== 'Admin';
 
     const modalFooter = (
         <>

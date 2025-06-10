@@ -333,7 +333,6 @@ const BloodCompatibilityCheckerPage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
         </>
     );
 };

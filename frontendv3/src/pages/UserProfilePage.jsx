@@ -1,169 +1,217 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect, useCallback } from 'react';
+import toast from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
+import useAuth from '../hooks/useAuth';
 import userService from '../services/userService';
-import { toast } from 'react-hot-toast';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import donationService from '../services/donationService';
+import { User, Lock, History } from 'lucide-react';
 import Button from '../components/common/Button';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import InputField from '../components/common/InputField';
-import { format, parseISO } from 'date-fns';
-import { useAuth } from '../hooks/useAuth';
-import authService from '../services/authService';
+import { format } from 'date-fns';
 
-// Material-UI Icons
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PersonIcon from '@mui/icons-material/Person';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CakeIcon from '@mui/icons-material/Cake';
-import BloodtypeIcon from '@mui/icons-material/Bloodtype';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+// ====================================================================
+// 1. Component con cho Tab "Hồ sơ cá nhân"
+// ====================================================================
+const ProfileTab = () => {
+    const { user, updateUserContext } = useAuth();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+    const [profile, setProfile] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-const ProfileDetailItem = ({ icon: Icon, label, value, highlight }) => (
-    <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt className="text-sm font-medium text-gray-500 flex items-center">
-            {Icon && <Icon sx={{ fontSize: 18, marginRight: '8px', color: highlight ? '#16a34a' : 'inherit' }} />}
-            {label}
-        </dt>
-        <dd className={`mt-1 text-sm sm:mt-0 sm:col-span-2 ${highlight ? 'font-semibold text-green-700' : 'text-gray-800'}`}>
-            {value || <span className="italic text-gray-400">Chưa cập nhật</span>}
-        </dd>
-    </div>
-);
+    // Lấy thông tin profile khi component được render
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await userService.getCurrentUserProfile();
+                setProfile(response.data);
+                reset(response.data); // Cập nhật giá trị mặc định cho form
+            } catch (error) {
+                toast.error("Không thể tải thông tin cá nhân.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProfile();
+    }, [reset]);
 
-
-const UserProfilePage = () => {
-    const { user, setUser } = useAuth();
-    const queryClient = useQueryClient();
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [formData, setFormData] = useState({});
-
+    // Xử lý khi submit form cập nhật
     const onSubmit = async (data) => {
         try {
-            const response = await authService.updateProfile(data);
-            setUser(response.data); // Cập nhật lại thông tin user trong context
-            toast.success('Cập nhật thông tin thành công!'); // Giữ nguyên, đã tương thích
+            const response = await userService.updateUserProfile(data);
+            updateUserContext(response.data); // Cập nhật lại thông tin user trong context
+            toast.success("Cập nhật hồ sơ thành công!");
         } catch (error) {
-            console.error('Failed to update profile:', error);
-            toast.error(error.response?.data?.message || 'Có lỗi xảy ra.'); // Giữ nguyên, đã tương thích
+            toast.error(`Lỗi khi cập nhật: ${error.response?.data?.message || error.message}`);
         }
     };
 
-    const { data: profileData, isLoading, isError, error } = useQuery({
-        queryKey: ['userProfile', user?.id],
-        queryFn: () => userService.getCurrentUserProfile(),
-        enabled: !!user,
-        onSuccess: (data) => {
-            setFormData({
-                ...data,
-                dateOfBirth: data.dateOfBirth ? format(parseISO(data.dateOfBirth), 'yyyy-MM-dd') : '',
-            });
-        }
-    });
-
-    const { mutate: updateUser, isLoading: isUpdating } = useMutation({
-        mutationFn: (updateData) => userService.updateUserProfile(updateData),
-        onSuccess: (updatedUser) => {
-            toast.success('Cập nhật hồ sơ thành công!');
-            queryClient.setQueryData(['userProfile', user.id], updatedUser);
-            // Cập nhật lại thông tin user trong context nếu cần
-            setUser({ ...user, fullName: updatedUser.fullName });
-            setIsEditMode(false);
-        },
-        onError: (err) => {
-            toast.error(err.response?.data?.message || 'Lỗi khi cập nhật hồ sơ.');
-        }
-    });
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const { fullName, phone, address, dateOfBirth, isReadyToDonate, medicalConditions } = formData;
-        updateUser({ fullName, phone, address, dateOfBirth, isReadyToDonate, medicalConditions });
-    };
-
-    if (isLoading) return <div className="flex justify-center items-center h-screen"><LoadingSpinner /></div>;
-    if (isError) return <div className="text-red-500 text-center mt-10">Lỗi khi tải thông tin: {error.message}</div>;
+    if (isLoading) return <div className="flex justify-center p-10"><LoadingSpinner /></div>;
+    if (!profile) return <p>Không tìm thấy thông tin hồ sơ.</p>;
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-                <div className="px-4 py-5 sm:px-6 flex justify-between items-center bg-gray-50 border-b">
-                    <div>
-                        <h3 className="text-2xl leading-6 font-bold text-gray-900">
-                            Hồ Sơ Cá Nhân
-                        </h3>
-                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                            Thông tin chi tiết về tài khoản của bạn.
-                        </p>
-                    </div>
-                    <div>
-                        {!isEditMode ? (
-                            <Button onClick={() => setIsEditMode(true)} startIcon={<EditIcon />}>
-                                Chỉnh sửa
-                            </Button>
-                        ) : (
-                            <div className="flex gap-2">
-                                <Button onClick={() => setIsEditMode(false)} variant="secondary" startIcon={<CancelIcon />}>
-                                    Hủy
-                                </Button>
-                                <Button onClick={handleSubmit} isLoading={isUpdating} startIcon={<SaveIcon />}>
-                                    Lưu
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <InputField
+                label="Họ và Tên"
+                name="fullName"
+                register={register}
+                validation={{ required: 'Họ tên là bắt buộc' }}
+                error={errors.fullName}
+                defaultValue={profile.fullName}
+            />
+            <InputField
+                label="Email"
+                name="email"
+                type="email"
+                register={register}
+                validation={{ required: 'Email là bắt buộc' }}
+                error={errors.email}
+                defaultValue={profile.email}
+                disabled={true} // Không cho phép sửa email
+            />
+            <InputField
+                label="Số điện thoại"
+                name="phoneNumber"
+                register={register}
+                error={errors.phoneNumber}
+                defaultValue={profile.phoneNumber}
+            />
+            <InputField
+                label="Địa chỉ"
+                name="address"
+                register={register}
+                error={errors.address}
+                defaultValue={profile.address}
+            />
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Đang lưu...' : 'Lưu Thay Đổi'}
+            </Button>
+        </form>
+    );
+};
 
-                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                    {!isEditMode ? (
-                        <dl className="sm:divide-y sm:divide-gray-200">
-                            <ProfileDetailItem icon={PersonIcon} label="Họ và tên" value={profileData.fullName} />
-                            <ProfileDetailItem icon={EmailIcon} label="Email" value={profileData.email} />
-                            <ProfileDetailItem icon={PhoneIcon} label="Số điện thoại" value={profileData.phone} />
-                            <ProfileDetailItem icon={LocationOnIcon} label="Địa chỉ" value={profileData.address} />
-                            <ProfileDetailItem icon={CakeIcon} label="Ngày sinh" value={profileData.dateOfBirth ? format(parseISO(profileData.dateOfBirth), 'dd/MM/yyyy') : ''} />
-                            <ProfileDetailItem icon={BloodtypeIcon} label="Nhóm máu" value={profileData.bloodTypeDescription} />
-                            <ProfileDetailItem icon={MedicalInformationIcon} label="Tình trạng bệnh lý" value={profileData.medicalConditions} />
-                            <ProfileDetailItem
-                                icon={profileData.isReadyToDonate ? CheckCircleIcon : CancelIcon}
-                                label="Sẵn sàng hiến máu"
-                                value={profileData.isReadyToDonate ? "Có" : "Không"}
-                                highlight={profileData.isReadyToDonate}
-                            />
-                        </dl>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                            <InputField label="Họ và tên" name="fullName" value={formData.fullName || ''} onChange={handleChange} />
-                            <InputField label="Email" name="email" value={formData.email || ''} onChange={handleChange} disabled />
-                            <InputField label="Số điện thoại" name="phone" value={formData.phone || ''} onChange={handleChange} />
-                            <InputField label="Địa chỉ" name="address" value={formData.address || ''} onChange={handleChange} />
-                            <InputField label="Ngày sinh" name="dateOfBirth" type="date" value={formData.dateOfBirth || ''} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-                            <InputField label="Nhóm máu" name="bloodTypeDescription" value={formData.bloodTypeDescription || ''} onChange={handleChange} disabled />
-                            <InputField label="Tình trạng bệnh lý (nếu có)" name="medicalConditions" value={formData.medicalConditions || ''} onChange={handleChange} />
-                            <div className="flex items-center">
-                                <input
-                                    id="isReadyToDonate"
-                                    name="isReadyToDonate"
-                                    type="checkbox"
-                                    checked={formData.isReadyToDonate || false}
-                                    onChange={handleChange}
-                                    className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="isReadyToDonate" className="ml-2 block text-sm text-gray-900">
-                                    Tôi sẵn sàng nhận thông báo và tham gia hiến máu
-                                </label>
-                            </div>
-                        </form>
-                    )}
+// ====================================================================
+// 2. Component con cho Tab "Đổi mật khẩu"
+// ====================================================================
+const ChangePasswordTab = () => {
+    // (Logic cho việc đổi mật khẩu sẽ được thêm vào đây)
+    // Hiện tại chỉ là placeholder
+    return (
+        <div>
+            <p className="text-gray-600">Chức năng đổi mật khẩu đang được phát triển.</p>
+        </div>
+    );
+};
+
+
+// ====================================================================
+// 3. Component con cho Tab "Lịch sử hiến máu"
+// ====================================================================
+const DonationHistoryTab = () => {
+    const [history, setHistory] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Lấy lịch sử hiến máu của user
+    useEffect(() => {
+        const fetchHistory = async () => {
+            setIsLoading(true);
+            try {
+                const response = await donationService.getMyDonationHistory();
+                // Sắp xếp lịch sử theo ngày tạo mới nhất
+                const sortedHistory = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                setHistory(sortedHistory);
+            } catch (error) {
+                toast.error("Không thể tải lịch sử hiến máu.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchHistory();
+    }, []);
+
+    const statusStyles = {
+        COMPLETED: 'bg-green-100 text-green-800',
+        CANCELLED: 'bg-gray-100 text-gray-800',
+        REJECTED: 'bg-red-100 text-red-800',
+        default: 'bg-blue-100 text-blue-800'
+    };
+
+    const getStatusStyle = (status) => statusStyles[status] || statusStyles.default;
+
+
+    if (isLoading) return <div className="flex justify-center p-10"><LoadingSpinner /></div>;
+    if (history.length === 0) return <p className="text-center text-gray-500 py-10">Bạn chưa có lịch sử hiến máu nào.</p>;
+
+    return (
+        <div className="space-y-4">
+            {history.map(item => (
+                <div key={item.id} className="p-4 border rounded-lg bg-gray-50 transition-shadow hover:shadow-md">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="font-semibold text-md text-gray-800">
+                                Lịch hẹn: {item.appointment ? format(new Date(item.appointment.appointmentDateTime), 'dd/MM/yyyy') : 'Chưa có'}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Ngày đăng ký: {format(new Date(item.createdAt), 'dd/MM/yyyy HH:mm')}
+                            </p>
+                        </div>
+                        <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusStyle(item.status)}`}>
+                            {item.status.replace(/_/g, ' ')}
+                        </span>
+                    </div>
                 </div>
+            ))}
+        </div>
+    );
+};
+
+
+// ====================================================================
+// 4. Component chính của trang UserProfile
+// ====================================================================
+const UserProfilePage = () => {
+    const [activeTab, setActiveTab] = useState('profile');
+
+    // Hàm render nội dung tương ứng với tab được chọn
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'profile':
+                return <ProfileTab />;
+            case 'password':
+                return <ChangePasswordTab />;
+            case 'history':
+                return <DonationHistoryTab />;
+            default:
+                return <ProfileTab />;
+        }
+    };
+
+    // Hàm tạo class cho tab để highlight tab đang active
+    const getTabClassName = (tabName) => {
+        return `flex items-center px-4 py-2 -mb-px border-b-2 transition-colors duration-200 ${activeTab === tabName
+                ? 'border-red-500 text-red-600'
+                : 'border-transparent text-gray-500 hover:text-red-600'
+            }`;
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto my-10 p-4 sm:p-6 bg-white rounded-lg shadow-md">
+            {/* Thanh điều hướng các tab */}
+            <div className="flex border-b mb-6">
+                <button onClick={() => setActiveTab('profile')} className={getTabClassName('profile')}>
+                    <User size={18} className="mr-2" /> Hồ Sơ
+                </button>
+                <button onClick={() => setActiveTab('password')} className={getTabClassName('password')}>
+                    <Lock size={18} className="mr-2" /> Đổi Mật Khẩu
+                </button>
+                <button onClick={() => setActiveTab('history')} className={getTabClassName('history')}>
+                    <History size={18} className="mr-2" /> Lịch Sử Hiến Máu
+                </button>
+            </div>
+
+            {/* Nội dung của tab */}
+            <div>
+                {renderContent()}
             </div>
         </div>
     );

@@ -5,7 +5,7 @@ import Button from '../common/Button';
 import { toast } from 'react-hot-toast'; // SỬA: Thay đổi import từ react-toastify sang react-hot-toast
 import bloodTypeService from '../../services/bloodTypeService';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 
 // THÊM: Định nghĩa các tùy chọn cho thành phần máu
 const componentTypeOptions = [
@@ -15,7 +15,7 @@ const componentTypeOptions = [
     'Huyết tương',
 ];
 
-const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
+const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => { 
     const initialFormData = {
         bloodGroup: '',
         componentType: 'Toàn phần', // SỬA: Đồng bộ giá trị mặc định

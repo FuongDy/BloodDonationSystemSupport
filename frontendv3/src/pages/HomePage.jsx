@@ -8,8 +8,6 @@ import Footer from '../components/layout/Footer'; //
 const HomePage = () => {
     return (
         <div className="min-h-screen bg-white">
-            <Navbar />
-            {/* Thêm pt-16 cho main content để không bị Navbar che */}
             <main className="pt-16">
                 {/* Hero Section */}
                 <section className="bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 py-20 lg:py-32">
@@ -110,7 +108,6 @@ const HomePage = () => {
                     </div>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 };

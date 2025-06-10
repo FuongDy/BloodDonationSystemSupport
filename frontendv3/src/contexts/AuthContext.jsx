@@ -1,27 +1,36 @@
-// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import authService from '../services/authService';
+import { jwtDecode } from 'jwt-decode';
 
-const AuthContext = createContext(null);
+// ĐÚNG: Export `AuthContext` như một hằng số (named export)
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+    // ... phần còn lại của component giữ nguyên
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const initializeAuth = useCallback(() => {
         setLoading(true);
-        const currentUserData = authService.getCurrentUser(); // Lấy từ localStorage
-        const token = authService.getAuthToken();
-
-        if (currentUserData && token) {
-            setUser(currentUserData); // user từ localStorage đã có role
-            setIsAuthenticated(true);
-        } else {
-            setUser(null);
-            setIsAuthenticated(false);
-            if (token) { // Nếu có token mà không có user data thì xóa token
-                authService.logout();
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                if (decoded.exp * 1000 > Date.now()) {
+                    setUser({
+                        id: decoded.userId,
+                        email: decoded.sub,
+                        role: decoded.role,
+                        fullName: decoded.fullName,
+                    });
+                    setIsAuthenticated(true);
+                } else {
+                    localStorage.removeItem('token');
+                }
+            } catch (error) {
+                console.error("Invalid token:", error);
+                localStorage.removeItem('token');
             }
         }
         setLoading(false);
@@ -29,40 +38,26 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         initializeAuth();
-
-        const handleStorageChange = (event) => {
-            if (event.key === 'authToken' || event.key === 'user') {
-                initializeAuth();
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-
     }, [initializeAuth]);
 
     const login = async (email, password) => {
         setLoading(true);
         try {
-            const loginResponseData = await authService.login(email, password);
-            const userDataFromStorage = authService.getCurrentUser(); // Lấy lại user data đã chuẩn hóa từ localStorage
-            setUser(userDataFromStorage);
-            setIsAuthenticated(true);
+            const response = await authService.login(email, password);
+            localStorage.setItem('token', response.token);
+            initializeAuth();
             setLoading(false);
-            return userDataFromStorage; // Trả về user data có role
+            return response;
         } catch (error) {
-            setUser(null);
-            setIsAuthenticated(false);
             setLoading(false);
             throw error;
         }
     };
-
-    const register = async (fullName, email, password, phone, address, dateOfBirth, bloodTypeId) => {
+    
+    const register = async (userData) => {
         setLoading(true);
         try {
-            const response = await authService.register({ fullName, email, password, phone, address, dateOfBirth, bloodTypeId }); // Truyền object
+            const response = await authService.register(userData);
             setLoading(false);
             return response;
         } catch (error) {
@@ -72,18 +67,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        authService.logout();
+        localStorage.removeItem('token');
         setUser(null);
         setIsAuthenticated(false);
     };
-
-    const updateUserContext = (updatedPartialUserData) => {
-        // Hàm này được gọi khi user tự cập nhật profile
-        // hoặc khi admin cập nhật thông tin user (nếu cần phản ánh ngay)
-        const currentUserData = authService.getCurrentUser(); // Lấy user data hiện tại (có role)
-        const mergedUser = { ...currentUserData, ...updatedPartialUserData };
-        setUser(mergedUser);
-        localStorage.setItem('user', JSON.stringify(mergedUser)); // Cập nhật localStorage
+    
+    const updateUserContext = (newUserData) => {
+        setUser(prevUser => ({...prevUser, ...newUserData}));
     };
 
     return (
@@ -93,4 +83,3 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export default AuthContext;

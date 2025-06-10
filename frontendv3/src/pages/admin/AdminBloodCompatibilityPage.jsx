@@ -7,7 +7,7 @@ import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import BloodCompatibilityFormModal from '../../components/admin/BloodCompatibilityFormModal';
 import Pagination from '../../components/common/Pagination';
-import { useAuth } from '../../hooks/useAuth'; // Import useAuth
+import useAuth from '../../hooks/useAuth'; 
 
 const AdminBloodCompatibilityPage = () => {
     const [rulesPage, setRulesPage] = useState(null);

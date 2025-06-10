@@ -1,51 +1,34 @@
 import apiClient from './apiClient';
 
 class UserService {
-    getAllUsers(page = 0, size = 10, sort = 'id,asc', search = '') {
-        const searchParam = search ? `&search=${search}` : '';
-        return apiClient.get(`/admin/users?page=${page}&size=${size}&sort=${sort}${searchParam}`);
+    getAllUsers(page = 0, size = 10, sort = 'id,asc') {
+        return apiClient.get(`/admin/users?page=${page}&size=${size}&sort=${sort}`);
     }
 
     getUserById(id) {
         return apiClient.get(`/admin/users/${id}`);
     }
 
-    createUser(userData) {
+    createUserByAdmin(userData) {
         return apiClient.post('/admin/users', userData);
     }
-    
-    updateUser(id, userData) {
+
+    updateUserByAdmin(id, userData) {
         return apiClient.put(`/admin/users/${id}`, userData);
     }
 
+    // Backend thực hiện soft-delete
     deleteUser(id) {
         return apiClient.delete(`/admin/users/${id}`);
     }
 
-    async getBloodTypes() {
-        try {
-            const response = await apiClient.get('/blood-types?size=500'); 
-            return response.data.content; 
-        } catch (error) { 
-            console.error("Error fetching blood types in userService:", error.response?.data || error.message);
-            return [];
-        }
+    // --- Public user endpoints ---
+    getCurrentUserProfile() {
+        return apiClient.get('/users/me');
     }
 
-    // SỬA: Hoàn thiện hàm getRoles để gọi API
-    async getRoles() {
-        try {
-            const response = await apiClient.get('/roles');
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching roles:", error.response?.data || error.message);
-            // Trả về dữ liệu mặc định nếu API lỗi để tránh crash ứng dụng
-            return [
-                { id: 1, name: 'Admin' },
-                { id: 2, name: 'Staff' },
-                { id: 3, name: 'Member' },
-            ];
-        }
+    updateCurrentUserProfile(userData) {
+        return apiClient.put('/users/me', userData);
     }
 }
 

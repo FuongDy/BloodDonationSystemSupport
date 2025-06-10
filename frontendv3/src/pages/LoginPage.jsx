@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';
 

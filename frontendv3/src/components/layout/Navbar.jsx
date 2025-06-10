@@ -1,8 +1,8 @@
 // src/components/layout/Navbar.jsx
 import React from 'react';
-import { Heart, Home, Search, BookOpen, User, LogOut, UserCircle, LogIn, UserPlus, Shield, ClipboardList, Package } from 'lucide-react';
+import { Shield, UserCircle, LogIn, UserPlus, LogOut, ClipboardList } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth'; // SỬA 1: Sửa thành default import
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
@@ -17,10 +17,10 @@ const Navbar = () => {
 
     const navLinks = [
         { to: "/", label: "Trang chủ" },
-        { to: "/blood-compatibility-checker", label: "Kiểm tra tương thích" }, 
+        { to: "/compatibility-check", label: "Kiểm tra tương thích" },
         { to: "/find-donors", label: "Tìm người hiến" },
         { to: "/emergency-request", label: "Yêu cầu khẩn cấp" },
-        { to: "/blog", label: "Blog" },
+        { to: "/blog", label: "Blog" }, // SỬA 2: Bỏ dấu phẩy thừa
     ];
 
     return (
@@ -43,7 +43,7 @@ const Navbar = () => {
                             </Link>
                         ))}
                     </nav>
-                   
+
                     <div className="flex items-center space-x-3">
                         {loading ? (
                             <span className="text-sm text-gray-500">Đang tải...</span>
@@ -59,14 +59,14 @@ const Navbar = () => {
                                         Admin
                                     </Link>
                                 )}
-                                {user.role === 'Staff' && ( // Thêm link cho Staff Dashboard
+                                {user.role === 'Staff' && (
                                     <Link
-                                        to="/staff"
+                                        to="/admin" // SỬA 3: Link cho Staff cũng phải trỏ đến /admin
                                         className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 px-3 py-1.5 rounded-md bg-blue-100 hover:bg-blue-200 transition-colors"
                                         title="Staff Dashboard"
                                     >
                                         <ClipboardList size={16} className="mr-1" />
-                                        Staff
+                                        Dashboard
                                     </Link>
                                 )}
                                 <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-red-600">

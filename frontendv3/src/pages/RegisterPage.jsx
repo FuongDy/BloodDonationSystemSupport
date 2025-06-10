@@ -1,4 +1,4 @@
-// src/pages/RegisterPage.jsxAdd commentMore actions
+// src/pages/RegisterPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus as UserPlusIcon } from 'lucide-react';
@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
-import { useAuth } from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth'; // SỬA 1: Sửa thành default import
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';
 import bloodTypeService from '../services/bloodTypeService';
@@ -45,7 +45,6 @@ const RegisterPage = () => {
         }
     }, []);
 
-
     useEffect(() => {
         if (isAuthenticated) {
             navigate('/', { replace: true });
@@ -80,15 +79,19 @@ const RegisterPage = () => {
 
         const toastId = toast.loading("Đang đăng ký...");
         try {
-            await register( // Gọi hàm từ context
-                formData.fullName,
-                formData.email,
-                formData.password,
-                formData.phone,
-                formData.address,
-                formData.dateOfBirth,
-                formData.bloodTypeId ? parseInt(formData.bloodTypeId) : null
-            );
+            // SỬA 2: Gom tất cả dữ liệu vào một object để truyền đi
+            const registrationData = {
+                fullName: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                address: formData.address,
+                dateOfBirth: formData.dateOfBirth,
+                bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null
+            };
+
+            await register(registrationData); // Gọi hàm register với một object duy nhất
+
             toast.success("Đăng ký thành công! Vui lòng đăng nhập.", { duration: 4000 });
             navigate('/login');
         } catch (err) {
@@ -98,6 +101,7 @@ const RegisterPage = () => {
     };
 
     return (
+        // ... JSX không thay đổi, chỉ logic bên trên thay đổi ...
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
             <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
@@ -117,6 +121,7 @@ const RegisterPage = () => {
 
                     <div className="bg-white py-8 px-6 shadow-xl rounded-xl sm:px-10">
                         <form onSubmit={handleSubmit} className="space-y-5">
+                            {/* Input fields */}
                             <InputField
                                 label="Họ và tên đầy đủ"
                                 id="fullName"

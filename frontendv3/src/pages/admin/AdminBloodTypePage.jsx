@@ -151,8 +151,8 @@ const AdminBloodTypePage = () => {
                 <BloodTypeFormModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
-                    onSave={handleSave}
-                    bloodTypeData={selectedBloodType}
+                    onSaveSuccess={handleSave}  // SỬA: Đổi onSave thành onSaveSuccess
+                    bloodType={selectedBloodType} // SỬA: Đổi bloodTypeData thành bloodType
                 />
             )}
 

@@ -1,11 +1,11 @@
 // frontendv2/src/routes/ProtectedRoute.jsx
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth'; // Sử dụng useAuth hook
-import LoadingSpinner from '../components/common/LoadingSpinner'; // Component spinner
+import useAuth from '../hooks/useAuth'; // SỬA: Sửa lại thành default import
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
-const ProtectedRoute = ({ requiredRoles }) => { // Đổi prop thành requiredRoles (mảng)
-    const { user, isAuthenticated, loading } = useAuth(); // Lấy trạng thái từ AuthContext
+const ProtectedRoute = ({ requiredRoles }) => {
+    const { user, isAuthenticated, loading } = useAuth();
     const location = useLocation();
 
     if (loading) {
@@ -23,7 +23,7 @@ const ProtectedRoute = ({ requiredRoles }) => { // Đổi prop thành requiredRo
 
     // Kiểm tra role nếu requiredRoles được cung cấp
     // user?.role là một string, requiredRoles là một mảng string
-    if (requiredRoles && !requiredRoles.includes(user?.role)) { // Kiểm tra nếu vai trò của người dùng không nằm trong các vai trò được phép
+    if (requiredRoles && !requiredRoles.includes(user?.role)) {
         // Người dùng đã đăng nhập nhưng không có quyền truy cập
         return <Navigate to="/forbidden" replace />;
     }

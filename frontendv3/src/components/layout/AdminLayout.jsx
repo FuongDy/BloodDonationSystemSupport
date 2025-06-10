@@ -1,22 +1,20 @@
 // frontendv2/src/components/layout/AdminLayout.jsx
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Droplets, GitCompareArrows, Home, LogOut, MessageSquareWarning, History, Warehouse } from 'lucide-react'; // Thêm các icon mới
-import { useAuth } from '../../hooks/useAuth'; 
+import { LayoutDashboard, Users, Droplets, GitCompareArrows, Home, LogOut, Warehouse, ClipboardList } from 'lucide-react';
+import useAuth from '../../hooks/useAuth'; // SỬA: Sửa thành default import
 
 const AdminLayout = () => {
     const location = useLocation();
-    const { logout, user } = useAuth(); // Lấy thông tin user để kiểm tra vai trò
+    const { logout, user } = useAuth();
 
     const menuItems = [
-        { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin'] },
-    { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] },
-    { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin', 'Staff'] }, // Staff có thể xem
-    { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích", roles: ['Admin'] },
-    { path: "/admin/inventory", icon: Warehouse, label: "Quản lý kho máu", roles: ['Admin', 'Staff'] },
-    // Các route nghiệp vụ khác có thể thêm ở đây, ví dụ:
-    // { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Yêu cầu Khẩn cấp", roles: ['Admin', 'Staff'] }, 
-    // { path: "/admin/donation-history", icon: History, label: "Lịch sử hiến máu", roles: ['Admin', 'Staff'] }, 
+        { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin', 'Staff'] },
+        { path: "/admin/donation-process", icon: ClipboardList, label: "Quy trình hiến máu", roles: ['Admin', 'Staff'] },
+        { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] },
+        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin', 'Staff'] },
+        { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích", roles: ['Admin'] },
+        { path: "/admin/inventory", icon: Warehouse, label: "Quản lý kho máu", roles: ['Admin', 'Staff'] },
     ];
 
     const isActive = (path) => {
@@ -37,8 +35,8 @@ const AdminLayout = () => {
                     </Link>
                 </div>
                 <nav className="flex-1 px-2 py-4 space-y-1">
-                    {menuItems.map((item) => {                    
-                        if (user && item.roles.includes(user.role)) { 
+                    {menuItems.map((item) => {
+                        if (user && item.roles.includes(user.role)) {
                             return (
                                 <Link
                                     key={item.label}
@@ -57,7 +55,6 @@ const AdminLayout = () => {
                     })}
                 </nav>
                 <div className="px-2 py-4 border-t border-gray-700 space-y-1">
-                    {/* Mục quay về trang chủ */}
                     <Link
                         to="/"
                         className="w-full flex items-center px-2 py-2.5 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white"
