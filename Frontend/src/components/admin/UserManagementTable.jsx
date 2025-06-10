@@ -102,42 +102,48 @@ const UserManagementTable = ({ users, onRefresh, onSort, currentSortField, curre
                                 </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                                {user.emailVerified ? <CheckCircle size={18} className="text-green-500 inline" /> : <XCircle size={18} className="text-red-500 inline" />}
+                                {user.emailVerified ? <CheckCircle size={28} className="text-green-500 inline" /> : <XCircle size={28} className="text-red-500 inline" />}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : 'N/A'}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center space-x-1">
-                                <Link to={`/admin/users/view/${user.id}`} title="Xem chi tiết">
-                                    <Button variant="icon" className="text-blue-600 hover:text-blue-800">
-                                        <Eye size={18} />
-                                    </Button>
-                                </Link>
-                                <Link to={`/admin/users/edit/${user.id}`} title="Chỉnh sửa">
-                                    <Button variant="icon" className="text-indigo-600 hover:text-indigo-800">
-                                        <Edit3 size={18} />
-                                    </Button>
-                                </Link>
-                                {user.role !== 'Admin' && user.status === 'Active' && (
-                                    <Button
-                                        onClick={() => handleDeleteUser(user.id, user.fullName, user.role)}
-                                        variant="icon"
-                                        className="text-red-600 hover:text-red-800"
-                                        title="Vô hiệu hóa"
-                                    >
-                                        <Trash2 size={18} />
-                                    </Button>
-                                )}
-                                {user.role === 'Admin' && (
-                                    <Button
-                                        variant="icon"
-                                        className="text-gray-400 cursor-not-allowed"
-                                        title="Không thể vô hiệu hóa Admin"
-                                        disabled
-                                    >
-                                        <ShieldQuestion size={18} />
-                                    </Button>
-                                )}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                <div className="flex items-center justify-center space-x-1">
+                                    <Link to={`/admin/users/view/${user.id}`} title="Xem chi tiết">
+                                        <Button variant="icon" className="text-blue-600 hover:text-blue-800 w-9 h-9 flex items-center justify-center">
+                                            <Eye size={28} />
+                                        </Button>
+                                    </Link>
+                                    <Link to={`/admin/users/edit/${user.id}`} title="Chỉnh sửa">
+                                        <Button variant="icon" className="text-indigo-600 hover:text-indigo-800 w-9 h-9 flex items-center justify-center">
+                                            <Edit3 size={28} />
+                                        </Button>
+                                    </Link>
+                                    {user.role !== 'Admin' && user.status === 'Active' && (
+                                        <Button
+                                            onClick={() => handleDeleteUser(user.id, user.fullName, user.role)}
+                                            variant="icon"
+                                            className="text-red-600 hover:text-red-800 w-9 h-9 flex items-center justify-center"
+                                            title="Vô hiệu hóa"
+                                        >
+                                            <Trash2 size={28} />
+                                        </Button>
+                                    )}
+                                    {user.role === 'Admin' && (
+                                        <Button
+                                            variant="icon"
+                                            className="text-gray-400 cursor-not-allowed w-9 h-9 flex items-center justify-center"
+                                            title="Không thể vô hiệu hóa Admin"
+                                            disabled
+                                        >
+                                            <ShieldQuestion size={28} />
+                                        </Button>
+                                    )}
+                                    {/* Placeholder for consistent spacing if no delete/disable icon is shown for non-Admin active users */}
+                                    {!(user.role !== 'Admin' && user.status === 'Active') && user.role !== 'Admin' && (
+                                        <div className="w-9 h-9"></div>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     ))}
