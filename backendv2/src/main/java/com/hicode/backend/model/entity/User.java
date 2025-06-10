@@ -1,12 +1,14 @@
 package com.hicode.backend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -77,6 +79,10 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("user-donation")
+    private List<DonationProcess> donationProcesses;
 
     @PrePersist
     protected void onCreate() { this.createdAt = this.updatedAt = LocalDateTime.now(); }

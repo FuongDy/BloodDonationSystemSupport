@@ -1,10 +1,9 @@
 package com.hicode.backend.dto.admin;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDate; // <-- Thêm import này
 
 @Getter
 @Setter
@@ -29,6 +28,10 @@ public class AdminCreateUserRequest {
 
     @NotBlank
     private String roleName;
+
+    @NotNull(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
+    private LocalDate dateOfBirth;
 
     private Integer bloodTypeId;
     private String phone;
