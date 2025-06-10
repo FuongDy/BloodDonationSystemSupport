@@ -11,7 +11,7 @@ const Footer = () => {
                     <div className="space-y-4">
                         <div>
                         <img src="/logo.png" alt="Logo" className="w-14 h-14" />
-                        <span class="text-xl font-medium text-gray-900">BloodConnect</span>
+                        <span className="text-xl font-medium text-gray-900">BloodConnect</span>
                         </div>
                         <p className="text-gray-600 text-sm leading-relaxed">
                             Kết nối yêu thương, chia sẻ sự sống. Chúng tôi kết nối người hiến máu với những người cần máu, mang lại hy vọng và sự sống.

@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 /* Các custom CSS khác của bạn có thể ở đây */
+
+/* Force Chatbase elements to the front */
+#chatbase-bubble-button, #chatbase-chat-window, iframe[src*="chatbase.co"] {
+  z-index: 99999 !important;
+}
