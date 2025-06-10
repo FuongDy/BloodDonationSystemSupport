@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const register = async (fullName, email, password, bloodTypeId) => { // Thêm bloodTypeId
+    const register = async (fullName, email, password, phone, address, dateOfBirth, bloodTypeId) => {
         setLoading(true);
         try {
-            const response = await authService.register(fullName, email, password, bloodTypeId); // Truyền bloodTypeId
+            const response = await authService.register({ fullName, email, password, phone, address, dateOfBirth, bloodTypeId }); // Truyền object
             setLoading(false);
             return response;
         } catch (error) {

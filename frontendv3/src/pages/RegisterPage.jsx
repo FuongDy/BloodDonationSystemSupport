@@ -20,6 +20,8 @@ const RegisterPage = () => {
         password: '',
         confirmPassword: '',
         bloodTypeId: '',
+        address: '',
+        dateOfBirth: '',
         agreeTerms: false
     });
     const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +36,7 @@ const RegisterPage = () => {
         setIsFetchingBloodTypes(true);
         try {
             const data = await bloodTypeService.getAll();
-            setBloodTypesFromApi(data || []);
+            setBloodTypesFromApi(data.content || []);
         } catch (error) {
             toast.error("Lỗi khi tải danh sách nhóm máu: " + error.message);
             setBloodTypesFromApi([]);
@@ -78,17 +80,20 @@ const RegisterPage = () => {
 
         const toastId = toast.loading("Đang đăng ký...");
         try {
-            await register(
+            await register( // Gọi hàm từ context
                 formData.fullName,
                 formData.email,
                 formData.password,
-                formData.bloodTypeId ? parseInt(formData.bloodTypeId) : null // Gửi bloodTypeId
+                formData.phone,
+                formData.address,
+                formData.dateOfBirth,
+                formData.bloodTypeId ? parseInt(formData.bloodTypeId) : null
             );
-            toast.success("Đăng ký thành công! Vui lòng đăng nhập.", { id: toastId, duration: 4000 });
+            toast.success("Đăng ký thành công! Vui lòng đăng nhập.", { duration: 4000 });
             navigate('/login');
         } catch (err) {
             const errorMsg = err.response?.data?.message || err.response?.data || err.message || "Đăng ký thất bại. Vui lòng thử lại.";
-            toast.error(errorMsg, { id: toastId });
+            toast.error(errorMsg);
         }
     };
 
@@ -143,6 +148,30 @@ const RegisterPage = () => {
                                     value={formData.phone}
                                     onChange={handleInputChange}
                                     placeholder="09xxxxxxxx"
+                                    disabled={authLoading || isFetchingBloodTypes}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+                                <InputField
+                                    label="Địa chỉ"
+                                    id="address"
+                                    name="address"
+                                    type="text"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                    placeholder="Ví dụ: 123 Đường ABC, Quận 1, TP.HCM"
+                                    required
+                                    disabled={authLoading || isFetchingBloodTypes}
+                                />
+                                <InputField
+                                    label="Ngày sinh"
+                                    id="dateOfBirth"
+                                    name="dateOfBirth"
+                                    type="date"
+                                    value={formData.dateOfBirth}
+                                    onChange={handleInputChange}
+                                    required
                                     disabled={authLoading || isFetchingBloodTypes}
                                 />
                             </div>

@@ -93,14 +93,14 @@ const AdminUserListPage = () => {
                 <div className="flex justify-center items-center py-10"><LoadingSpinner size="12" /></div>
             ) : usersPage && usersPage.content ? (
                 <>
-                    <UserManagementTable
-                        users={usersPage.content}
-                        onRefresh={handleRefresh}
-                        onSort={handleSort}
-                        currentSortField={sort[0]}
-                        currentSortDirection={sort[1]}
-                        renderSortIcon={renderSortIcon}
-                    />
+                        <UserManagementTable
+                            users={usersPage.content}
+                            onUserDeleted={handleRefresh} // Đổi tên callback cho rõ ràng
+                            onSort={handleSort}
+                            currentSortField={sort[0]}
+                            currentSortDirection={sort[1]}
+                            renderSortIcon={renderSortIcon}
+                        />
                     {usersPage.totalPages > 1 && (
                         <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                             <div className="text-sm text-gray-700">

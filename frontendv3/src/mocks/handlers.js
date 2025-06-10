@@ -1,8 +1,11 @@
-import { adminHandlers } from './adminHandlers';
+// src/mocks/handlers.js
 import { authHandlers } from './authHandlers';
+import { adminHandlers } from './adminHandlers';
+import { bloodHandlers } from './bloodHandlers';
 
-// Gộp tất cả các handler từ các file riêng biệt vào một mảng duy nhất
 export const handlers = [
-    ...adminHandlers,
     ...authHandlers,
+    ...adminHandlers,
+    ...bloodHandlers,
+    // ...thêm các handlers khác ở đây
 ];

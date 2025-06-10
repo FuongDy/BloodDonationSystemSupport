@@ -9,13 +9,14 @@ const AdminLayout = () => {
     const { logout, user } = useAuth(); // Lấy thông tin user để kiểm tra vai trò
 
     const menuItems = [
-        { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin'] }, 
-        { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] }, 
-        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin'] }, 
-        { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích", roles: ['Admin'] }, 
-        { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu Khẩn cấp", roles: ['Admin', 'Staff'] }, 
-        { path: "/admin/donation-history", icon: History, label: "Quản lí lịch sử hiến máu", roles: ['Admin', 'Staff'] }, 
-        { path: "/admin/blood-inventory", icon: Warehouse, label: "Quản lý kho máu", roles: ['Admin', 'Staff'] }, 
+        { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin'] },
+    { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] },
+    { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin', 'Staff'] }, // Staff có thể xem
+    { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích", roles: ['Admin'] },
+    { path: "/admin/inventory", icon: Warehouse, label: "Quản lý kho máu", roles: ['Admin', 'Staff'] },
+    // Các route nghiệp vụ khác có thể thêm ở đây, ví dụ:
+    // { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Yêu cầu Khẩn cấp", roles: ['Admin', 'Staff'] }, 
+    // { path: "/admin/donation-history", icon: History, label: "Lịch sử hiến máu", roles: ['Admin', 'Staff'] }, 
     ];
 
     const isActive = (path) => {

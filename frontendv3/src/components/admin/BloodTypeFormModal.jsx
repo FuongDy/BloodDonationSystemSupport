@@ -1,131 +1,111 @@
-// src/components/admin/BloodTypeFormModal.jsx
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import Button from '../common/Button';
 import InputField from '../common/InputField';
+import Button from '../common/Button';
+import { toast } from 'react-hot-toast'; // SỬA: Thay đổi import từ react-toastify sang react-hot-toast
 import bloodTypeService from '../../services/bloodTypeService';
-import toast from 'react-hot-toast';
-import { useAuth } from '../../hooks/useAuth'; // Import useAuth hook
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../../hooks/useAuth';
 
+// THÊM: Định nghĩa các tùy chọn cho thành phần máu
 const componentTypeOptions = [
-    "Whole Blood",
-    "Plasma",
-    "Red Blood Cells",
-    "Platelets",
-    "White Blood Cells"
+    'Toàn phần',
+    'Hồng cầu',
+    'Tiểu cầu',
+    'Huyết tương',
 ];
 
 const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
-    const [formData, setFormData] = useState({
+    const initialFormData = {
         bloodGroup: '',
-        componentType: 'Whole Blood',
+        componentType: 'Toàn phần', // SỬA: Đồng bộ giá trị mặc định
         description: '',
-        shelfLifeDays: '',
-        storageTempMin: '',
-        storageTempMax: '',
-        volumeMl: ''
-    });
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const { user } = useAuth(); // Lấy user từ useAuth
+    const queryClient = useQueryClient();
+    const { user } = useAuth();
+
+    const isEditMode = !!bloodType;
+    const canManageAll = user?.role === 'Admin';
+    // Logic quyền: Admin được làm tất cả, Staff chỉ được sửa mô tả của loại máu đã có
+    const canUpdateDescription = user?.role === 'Admin' || (user?.role === 'Staff' && isEditMode);
 
     useEffect(() => {
-        if (bloodType) {
-            setFormData({
-                bloodGroup: bloodType.bloodGroup || '',
-                componentType: bloodType.componentType || 'Whole Blood',
-                description: bloodType.description || '',
-                shelfLifeDays: bloodType.shelfLifeDays || '',
-                storageTempMin: bloodType.storageTempMin !== null ? bloodType.storageTempMin : '',
-                storageTempMax: bloodType.storageTempMax !== null ? bloodType.storageTempMax : '',
-                volumeMl: bloodType.volumeMl !== null ? bloodType.volumeMl : '',
-            });
-        } else {
-            setFormData({
-                bloodGroup: '',
-                componentType: '',
-                description: '',
-                shelfLifeDays: '',
-                storageTempMin: '',
-                storageTempMax: '',
-                volumeMl: ''
-            });
+        if (isOpen) {
+            if (isEditMode && bloodType) {
+                setFormData({
+                    bloodGroup: bloodType.bloodGroup || '',
+                    componentType: bloodType.componentType || 'Toàn phần',
+                    description: bloodType.description || '',
+                });
+            } else {
+                setFormData(initialFormData);
+            }
+            setErrors({});
         }
-        setErrors({});
-    }, [bloodType, isOpen]);
+    }, [isOpen, bloodType, isEditMode]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.bloodGroup.trim()) newErrors.bloodGroup = "Nhóm máu không được trống.";
-        if (!formData.componentType) newErrors.componentType = "Thành phần máu không được trống.";
-        if (!formData.shelfLifeDays || isNaN(formData.shelfLifeDays) || parseInt(formData.shelfLifeDays) <= 0) {
-            newErrors.shelfLifeDays = "Hạn dùng phải là số dương.";
-        }
+        if (!formData.bloodGroup.trim()) newErrors.bloodGroup = "Nhóm máu không được để trống.";
+        if (!formData.componentType) newErrors.componentType = "Thành phần máu không được để trống.";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Kiểm tra quyền trước khi gửi form
-        if (user?.role !== 'Admin') { //
-            toast.error("Bạn không có quyền thực hiện thao tác này.");
+        if (!validateForm()) return;
+
+        // Kiểm tra quyền trước khi gửi request
+        if (!canManageAll && !isEditMode) {
+            toast.error("Bạn không có quyền tạo mới loại máu.");
             return;
         }
 
-        if (!validateForm()) {
-            toast.error("Vui lòng kiểm tra lại thông tin.");
-            return;
-        }
         setIsLoading(true);
-        const toastId = toast.loading(bloodType ? 'Đang cập nhật...' : 'Đang tạo...');
-
-        const dataToSend = {
-            ...formData,
-            description: formData.description.trim() === '' ? null : formData.description.trim(),
-            shelfLifeDays: parseInt(formData.shelfLifeDays),
-            storageTempMin: formData.storageTempMin !== '' ? parseFloat(formData.storageTempMin) : null,
-            storageTempMax: formData.storageTempMax !== '' ? parseFloat(formData.storageTempMax) : null,
-            volumeMl: formData.volumeMl !== '' ? parseInt(formData.volumeMl) : null,
-        };
-
         try {
-            if (bloodType?.id) {              
-                const updateRequestData = {
-                    description: dataToSend.description,
-                    shelfLifeDays: dataToSend.shelfLifeDays,
-                    storageTempMin: dataToSend.storageTempMin,
-                    storageTempMax: dataToSend.storageTempMax,
-                    volumeMl: dataToSend.volumeMl,
+            let response;
+            if (isEditMode) {
+                // Khi sửa, chỉ cho phép cập nhật mô tả theo logic quyền
+                const updatePayload = {
+                    description: formData.description,
                 };
-                await bloodTypeService.update(bloodType.id, updateRequestData);
+                response = await bloodTypeService.update(bloodType.id, updatePayload); 
+                toast.success('Cập nhật loại máu thành công!');
             } else {
-                await bloodTypeService.create(dataToSend);
+                // Khi tạo mới, chỉ Admin được phép
+                response = await bloodTypeService.create(formData); 
+                toast.success('Tạo mới loại máu thành công!');
             }
-            toast.success(bloodType ? 'Cập nhật thành công!' : 'Tạo thành công!', { id: toastId });
-            onSaveSuccess();
+            // Cập nhật lại danh sách loại máu trên UI
+            queryClient.invalidateQueries({ queryKey: ['bloodTypes'] });
+            if (onSaveSuccess) onSaveSuccess(response);
+            onClose(); // Đóng modal sau khi thành công
         } catch (error) {
-            toast.error(`Lỗi: ${error.message || 'Đã có lỗi xảy ra.'}`, { id: toastId });
+            const errorMsg = error.response?.data?.message || `Thao tác thất bại: ${error.message}`;
+            toast.error(errorMsg);
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Vô hiệu hóa các input và nút nếu người dùng không phải Admin
-    const isReadOnly = user?.role !== 'Admin'; //
-    const isEditMode = !!bloodType;
-
     const modalFooter = (
         <>
             <Button variant="secondary" onClick={onClose} disabled={isLoading}>Hủy</Button>
-            <Button variant="primary" type="submit" form="bloodTypeForm" disabled={isLoading || isReadOnly} isLoading={isLoading}>
-                {bloodType ? 'Lưu thay đổi' : 'Tạo mới'}
+            <Button variant="primary" type="submit" form="bloodTypeForm" disabled={isLoading || (isEditMode ? !canUpdateDescription : !canManageAll)} isLoading={isLoading}>
+                {isEditMode ? 'Lưu thay đổi' : 'Tạo mới'}
             </Button>
         </>
     );
@@ -135,15 +115,15 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
             <form id="bloodTypeForm" onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField
-                        label="Nhóm máu (A+, O-, ..)"
+                        label="Nhóm máu (VD: A+, O-)"
                         name="bloodGroup"
                         value={formData.bloodGroup}
                         onChange={handleChange}
                         required
-                        disabled={isLoading || isEditMode || isReadOnly} // Thêm isReadOnly
+                        // Chỉ Admin có thể nhập khi tạo mới, không thể sửa sau khi đã tạo
+                        disabled={isLoading || isEditMode || !canManageAll}
                         error={errors.bloodGroup}
                     />
-
                     <div>
                         <label htmlFor="componentType" className="block text-sm font-medium text-gray-700 mb-1">Thành phần máu</label>
                         <select
@@ -151,7 +131,8 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
                             name="componentType"
                             value={formData.componentType}
                             onChange={handleChange}
-                            disabled={isLoading || isEditMode || isReadOnly} // Thêm isReadOnly
+                            // Chỉ Admin có thể chọn khi tạo mới, không thể sửa sau khi đã tạo
+                            disabled={isLoading || isEditMode || !canManageAll}
                             className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm ${errors.componentType ? 'border-red-500' : 'border-gray-300'}`}
                         >
                             {componentTypeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -159,24 +140,15 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
                         {errors.componentType && <p className="mt-1 text-xs text-red-600">{errors.componentType}</p>}
                     </div>
                 </div>
-
                 <InputField
-                    label="Mô tả (Tùy chọn)"
+                    label="Mô tả"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    disabled={isLoading || isReadOnly} // Thêm isReadOnly
+                    // Admin hoặc Staff (khi sửa) có thể thay đổi mô tả
+                    disabled={isLoading || !canUpdateDescription}
                     error={errors.description}
                 />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField label="Hạn sử dụng (ngày)" name="shelfLifeDays" type="number" value={formData.shelfLifeDays} onChange={handleChange} required disabled={isLoading || isReadOnly} error={errors.shelfLifeDays} /> {/* Thêm isReadOnly */}
-                    <InputField label="Thể tích (ml)" name="volumeMl" type="number" value={formData.volumeMl} onChange={handleChange} disabled={isLoading || isReadOnly} error={errors.volumeMl} /> {/* Thêm isReadOnly */}
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField label="Nhiệt độ bảo quản Min (°C)" name="storageTempMin" type="number" step="0.1" value={formData.storageTempMin} onChange={handleChange} disabled={isLoading || isReadOnly} error={errors.storageTempMin} /> {/* Thêm isReadOnly */}
-                    <InputField label="Nhiệt độ bảo quản Max (°C)" name="storageTempMax" type="number" step="0.1" value={formData.storageTempMax} onChange={handleChange} disabled={isLoading || isReadOnly} error={errors.storageTempMax} /> {/* Thêm isReadOnly */}
-                </div>
             </form>
         </Modal>
     );

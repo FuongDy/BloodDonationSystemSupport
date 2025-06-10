@@ -1,113 +1,50 @@
-// src/services/userService.js
 import apiClient from './apiClient';
 
 class UserService {
-    // Admin User Service Methods
-    // Cập nhật hàm getAllUsers để nhận thêm tham số search
-    async getAllUsers(page = 0, size = 10, sort = ['id', 'asc'], search = '', filters = {}) {
-        try {
-            const sortParams = sort.join(',');
-            const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
-
-            // Xây dựng query string cho các bộ lọc
-            const filterParams = Object.entries(filters)
-                .filter(([, value]) => value) // Chỉ lấy các filter có giá trị
-                .map(([key, value]) => `&${key}=${encodeURIComponent(value)}`)
-                .join('');
-
-            const response = await apiClient.get(`/admin/users?page=${page}&size=${size}&sort=${sortParams}${searchParam}${filterParams}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching all users:", error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || "Failed to fetch users");
-        }
+    getAllUsers(page = 0, size = 10, sort = 'id,asc', search = '') {
+        const searchParam = search ? `&search=${search}` : '';
+        return apiClient.get(`/admin/users?page=${page}&size=${size}&sort=${sort}${searchParam}`);
     }
 
-    async createUserByAdmin(userData) {
-        try {
-            const response = await apiClient.post('/admin/users', userData); //
-            return response.data;
-        } catch (error) {
-            console.error("Error creating user:", error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to create user");
-        }
+    getUserById(id) {
+        return apiClient.get(`/admin/users/${id}`);
     }
 
-    async getUserByIdForAdmin(userId) {
-        try {
-            const response = await apiClient.get(`/admin/users/${userId}`); //
-            return response.data;
-        } catch (error) {
-            console.error(`Error fetching user by ID ${userId}:`, error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to fetch user details");
-        }
+    createUser(userData) {
+        return apiClient.post('/admin/users', userData);
+    }
+    
+    updateUser(id, userData) {
+        return apiClient.put(`/admin/users/${id}`, userData);
     }
 
-    async updateUserByAdmin(userId, userData) {
-        try {
-            const response = await apiClient.put(`/admin/users/${userId}`, userData); //
-            return response.data;
-        } catch (error) {
-            console.error(`Error updating user ${userId}:`, error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to update user");
-        }
-    }
-
-    async softDeleteUserByAdmin(userId) {
-        try {
-            const response = await apiClient.delete(`/admin/users/${userId}`); //
-            return response.data;
-        } catch (error) {
-            console.error(`Error soft deleting user ${userId}:`, error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to disable user");
-        }
-    }
-
-    // Common data fetching (roles, blood types)
-    async getRoles() {
-        try {
-            const response = await apiClient.get('/roles'); // Giả định endpoint là /api/roles
-            return response.data;
-        } catch (error) { //
-            console.error("Error fetching roles:", error.response?.data || error.message);
-            // Fallback data as in original AdminUserService.jsx
-            return [
-                { id: 1, name: "Guest", description: "Public users..." },
-                { id: 2, name: "Member", description: "Registered users..." },
-                { id: 3, name: "Staff", description: "Medical staff..." },
-                { id: 4, name: "Admin", description: "System admins..." },
-            ];
-        }
+    deleteUser(id) {
+        return apiClient.delete(`/admin/users/${id}`);
     }
 
     async getBloodTypes() {
         try {
-            const response = await apiClient.get('/blood-types'); //
-            return response.data;
-        } catch (error) { //
-            console.error("Error fetching blood types:", error.response?.data || error.message);
-            return []; // Fallback from original
+            const response = await apiClient.get('/blood-types?size=500'); 
+            return response.data.content; 
+        } catch (error) { 
+            console.error("Error fetching blood types in userService:", error.response?.data || error.message);
+            return [];
         }
     }
 
-    // General User Profile Methods
-    async getCurrentUserProfile() {
+    // SỬA: Hoàn thiện hàm getRoles để gọi API
+    async getRoles() {
         try {
-            const response = await apiClient.get('/users/me/profile'); //
+            const response = await apiClient.get('/roles');
             return response.data;
         } catch (error) {
-            console.error("Error fetching current user profile:", error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || "Failed to fetch user profile");
-        }
-    }
-
-    async updateUserProfile(updateData) {
-        try {
-            const response = await apiClient.put('/users/me/profile', updateData); //
-            return response.data;
-        } catch (error) {
-            console.error("Error updating user profile:", error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || "Failed to update profile");
+            console.error("Error fetching roles:", error.response?.data || error.message);
+            // Trả về dữ liệu mặc định nếu API lỗi để tránh crash ứng dụng
+            return [
+                { id: 1, name: 'Admin' },
+                { id: 2, name: 'Staff' },
+                { id: 3, name: 'Member' },
+            ];
         }
     }
 }

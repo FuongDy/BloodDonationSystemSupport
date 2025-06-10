@@ -2,16 +2,12 @@
 import apiClient from './apiClient';
 
 class AuthService {
-    async register(fullName, email, password) {
+    async register(userData) {
         try {
-            const response = await apiClient.post('/auth/register', { //
-                fullName,
-                email,
-                password,
-            });
+            const response = await apiClient.post('/auth/register', userData);
             return response.data;
         } catch (error) {
-            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Registration failed");
+            throw new Error(error.response?.data?.message || "Registration failed");
         }
     }
 

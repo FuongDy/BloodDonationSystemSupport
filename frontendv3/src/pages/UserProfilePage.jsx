@@ -1,251 +1,172 @@
-// src/pages/UserProfilePage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import userService from '../services/userService';
-import toast from 'react-hot-toast';
-import { UserCircle, Edit3, Save, CalendarDays, Droplet, Mail, Phone, MapPin, ShieldCheck, AlertTriangle } from 'lucide-react';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
-import InputField from '../components/common/InputField';
-import Button from '../components/common/Button';
+import { toast } from 'react-hot-toast';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { Link } from 'react-router-dom';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
-import CancelIcon from '@mui/icons-material/Cancel'; 
-const UserProfilePage = () => {
-    const { user: authUser, updateUserContext, loading: authLoading } = useAuth();
-    const [profileData, setProfileData] = useState(null);
-    const [formData, setFormData] = useState({
-        fullName: '',
-        phone: '',
-        dateOfBirth: '',
-        gender: '',
-        address: '',
-        emergencyContact: '',
-        bloodTypeId: '',
-        medicalConditions: '',
-        lastDonationDate: '',
-        isReadyToDonate: true,
-    });
-    const [bloodTypes, setBloodTypes] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState({});
+import Button from '../components/common/Button';
+import InputField from '../components/common/InputField';
+import { format, parseISO } from 'date-fns';
+import { useAuth } from '../hooks/useAuth';
+import authService from '../services/authService';
 
-    const fetchProfile = useCallback(async () => {
-        if (!authUser) return;
-        setIsLoading(true);
-        try {
-            const data = await userService.getCurrentUserProfile();
-            setProfileData(data);
-
-            setFormData({
-                fullName: data.fullName || '',
-                phone: data.phone || '',
-                // Format dates to YYYY-MM-DD for input type="date"
-                dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : '',
-                gender: data.gender || '',
-                address: data.address || '',
-                emergencyContact: data.emergencyContact || '',
-                bloodTypeId: '', // Will be updated after fetching blood types
-                medicalConditions: data.medicalConditions || '',
-                lastDonationDate: data.lastDonationDate ? new Date(data.lastDonationDate).toISOString().split('T')[0] : '',
-                isReadyToDonate: data.isReadyToDonate !== null ? data.isReadyToDonate : true,
-            });
-
-            const bloodTypesData = await userService.getBloodTypes();
-            setBloodTypes(bloodTypesData || []);
-
-            if (data.bloodTypeDescription && bloodTypesData) {
-                const matchedBloodType = bloodTypesData.find(bt =>
-                    bt.description === data.bloodTypeDescription ||
-                    (`${bt.bloodGroup} (${bt.componentType})` === data.bloodTypeDescription)
-                );
-                if (matchedBloodType) {
-                    setFormData(prev => ({ ...prev, bloodTypeId: matchedBloodType.id.toString() }));
-                }
-            }
-
-        } catch (error) {
-            toast.error("Lỗi khi tải thông tin cá nhân: " + (error.response?.data?.message || error.message || "Vui lòng thử lại."));
-        } finally {
-            setIsLoading(false);
-        }
-    }, [authUser]);
-
-    useEffect(() => {
-        fetchProfile();
-    }, [fetchProfile]);
-
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        const toastId = toast.loading("Đang cập nhật thông tin...");
-
-        // Prepare data for submission, explicitly setting empty strings to null for API
-        const updateData = {
-            ...formData,
-            bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
-            phone: formData.phone || null,
-            gender: formData.gender || null,
-            address: formData.address || null,
-            emergencyContact: formData.emergencyContact || null,
-            medicalConditions: formData.medicalConditions || null,
-            dateOfBirth: formData.dateOfBirth || null,
-            lastDonationDate: formData.lastDonationDate || null,
-        };
-
-        try {
-            const updatedUser = await userService.updateUserProfile(updateData);
-            setProfileData(updatedUser); // Update profileData displayed
-            updateUserContext(updatedUser); // Update AuthContext
-            toast.success("Cập nhật thông tin thành công!", { id: toastId });
-            setIsEditing(false);
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            toast.error("Lỗi khi cập nhật: " + (error.response?.data?.message || error.message || "Vui lòng thử lại."), { id: toastId });
-            if (error.response && error.response.data && typeof error.response.data === 'object') {
-                setErrors(error.response.data);
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    if (isLoading || authLoading) {
-        return (
-            <>
-                <Navbar />
-                <div className="pt-16 flex justify-center items-center min-h-[calc(100vh-4rem)]"><LoadingSpinner size="12" /></div>
-                <Footer />
-            </>
-        );
-    }
-
-    if (!authUser || !profileData) {
-        return (
-            <>
-                <Navbar />
-                <div className="pt-16 text-center py-20">
-                    <p className="text-xl">Vui lòng đăng nhập để xem thông tin cá nhân.</p>
-                    <Link to="/login"><Button variant="primary" className="mt-4">Đăng nhập</Button></Link>
-                </div>
-                <Footer />
-            </>
-        );
-    }
-
-    const displayBloodType = profileData.bloodTypeDescription || "Chưa cập nhật";
-
-    return (
-        <div className="min-h-screen bg-gray-100">
-            <Navbar />
-            <main className="pt-20 pb-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white shadow-xl rounded-lg p-6 md:p-8">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                        <div className="flex items-center mb-4 sm:mb-0">
-                            <UserCircle size={48} className="text-red-600 mr-4" />
-                            <div>
-                                <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{profileData.fullName}</h1>
-                                <p className="text-gray-600">{profileData.email}</p>
-                            </div>
-                        </div>
-                        {!isEditing && (
-                            <Button onClick={() => setIsEditing(true)} variant="outline">
-                                <Edit3 size={16} className="mr-2" /> Chỉnh sửa hồ sơ
-                            </Button>
-                        )}
-                    </div>
-
-                    {isEditing ? (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <InputField label="Họ và tên đầy đủ" name="fullName" value={formData.fullName} onChange={handleInputChange} required disabled={isSubmitting} error={errors.fullName} />
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputField label="Số điện thoại" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} disabled={isSubmitting} error={errors.phone} />
-                                <InputField label="Ngày sinh" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleInputChange} disabled={isSubmitting} error={errors.dateOfBirth} />
-                            </div>
-                            <div>
-                                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Giới tính</label>
-                                <select name="gender" value={formData.gender} onChange={handleInputChange} disabled={isSubmitting} className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm ${errors.gender ? 'border-red-500' : 'border-gray-300'}`}>
-                                    <option value="">-- Chọn giới tính --</option>
-                                    <option value="Male">Nam</option>
-                                    <option value="Female">Nữ</option>
-                                    <option value="Other">Khác</option>
-                                </select>
-                                {errors.gender && <p className="mt-1 text-xs text-red-600">{errors.gender}</p>}
-                            </div>
-                            <InputField label="Địa chỉ" name="address" type="textarea" value={formData.address} onChange={handleInputChange} disabled={isSubmitting} error={errors.address} rows={2} />
-                            <InputField label="Liên hệ khẩn cấp" name="emergencyContact" value={formData.emergencyContact} onChange={handleInputChange} disabled={isSubmitting} error={errors.emergencyContact} />
-
-                            <div>
-                                <label htmlFor="bloodTypeId" className="block text-sm font-medium text-gray-700 mb-1">Nhóm máu</label>
-                                <select name="bloodTypeId" value={formData.bloodTypeId} onChange={handleInputChange} disabled={isSubmitting || bloodTypes.length === 0} className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm ${errors.bloodTypeId ? 'border-red-500' : 'border-gray-300'}`}>
-                                    <option value="">-- Chọn nhóm máu --</option>
-                                    {bloodTypes.map(bt => <option key={bt.id} value={bt.id}>{`${bt.bloodGroup} (${bt.componentType})`}</option>)}
-                                </select>
-                                {errors.bloodTypeId && <p className="mt-1 text-xs text-red-600">{errors.bloodTypeId}</p>}
-                            </div>
-                            <InputField label="Tình trạng bệnh lý (nếu có)" name="medicalConditions" type="textarea" value={formData.medicalConditions} onChange={handleInputChange} disabled={isSubmitting} error={errors.medicalConditions} rows={2} />
-                            <InputField label="Ngày hiến máu gần nhất" name="lastDonationDate" type="date" value={formData.lastDonationDate} onChange={handleInputChange} disabled={isSubmitting} error={errors.lastDonationDate} />
-                            <div className="flex items-center">
-                                <input name="isReadyToDonate" type="checkbox" checked={formData.isReadyToDonate} onChange={handleInputChange} disabled={isSubmitting} className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" />
-                                <label htmlFor="isReadyToDonate" className="ml-2 block text-sm text-gray-900">Tôi sẵn sàng hiến máu</label>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 pt-4">
-                                <Button type="button" variant="secondary" onClick={() => { setIsEditing(false); fetchProfile(); /* Reset form by refetching */ }} disabled={isSubmitting}>
-                                    Hủy
-                                </Button>
-                                <Button type="submit" variant="primary" disabled={isSubmitting}>
-                                    {isSubmitting ? <LoadingSpinner size="5" color="white" className="mr-2" /> : <Save size={18} className="mr-2" />}
-                                    Lưu thay đổi
-                                </Button>
-                            </div>
-                        </form>
-                    ) : (
-                        <dl className="divide-y divide-gray-200">
-                            <ProfileDetailItem icon={Mail} label="Email" value={profileData.email} />
-                            <ProfileDetailItem icon={Phone} label="Điện thoại" value={profileData.phone} />
-                            {/* Format dates for display only if they exist */}
-                            <ProfileDetailItem icon={CalendarDays} label="Ngày sinh" value={profileData.dateOfBirth ? new Date(profileData.dateOfBirth).toLocaleDateString('vi-VN') : null} />
-                            <ProfileDetailItem icon={UserCircle} label="Giới tính" value={profileData.gender} />
-                            <ProfileDetailItem icon={MapPin} label="Địa chỉ" value={profileData.address} />
-                            <ProfileDetailItem icon={AlertTriangle} label="Liên hệ khẩn cấp" value={profileData.emergencyContact} />
-                            <ProfileDetailItem icon={Droplet} label="Nhóm máu" value={displayBloodType} highlight={displayBloodType !== "Chưa cập nhật"} />
-                            <ProfileDetailItem icon={ShieldCheck} label="Bệnh lý" value={profileData.medicalConditions} />
-                            <ProfileDetailItem icon={CalendarDays} label="Hiến máu lần cuối" value={profileData.lastDonationDate ? new Date(profileData.lastDonationDate).toLocaleDateString('vi-VN') : null} />
-                            <ProfileDetailItem
-                                icon={profileData.isReadyToDonate ? CheckCircleIcon : CancelIcon} // <--- CORRECTED: Icon usage
-                                label="Sẵn sàng hiến máu"
-                                value={profileData.isReadyToDonate ? "Có" : "Không"}
-                                highlight={profileData.isReadyToDonate === true}
-                            />
-                        </dl>
-                    )}
-                </div>
-            </main>
-            <Footer />
-        </div>
-    );
-};
+// Material-UI Icons
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CakeIcon from '@mui/icons-material/Cake';
+import BloodtypeIcon from '@mui/icons-material/Bloodtype';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 
 const ProfileDetailItem = ({ icon: Icon, label, value, highlight }) => (
     <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
         <dt className="text-sm font-medium text-gray-500 flex items-center">
-            <Icon size={18} className="mr-2 text-red-500 flex-shrink-0" />
+            {Icon && <Icon sx={{ fontSize: 18, marginRight: '8px', color: highlight ? '#16a34a' : 'inherit' }} />}
             {label}
         </dt>
-        <dd className={`mt-1 text-sm sm:mt-0 sm:col-span-2 ${highlight ? 'font-semibold text-red-600' : 'text-gray-800'}`}>
+        <dd className={`mt-1 text-sm sm:mt-0 sm:col-span-2 ${highlight ? 'font-semibold text-green-700' : 'text-gray-800'}`}>
             {value || <span className="italic text-gray-400">Chưa cập nhật</span>}
         </dd>
     </div>
 );
+
+
+const UserProfilePage = () => {
+    const { user, setUser } = useAuth();
+    const queryClient = useQueryClient();
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [formData, setFormData] = useState({});
+
+    const onSubmit = async (data) => {
+        try {
+            const response = await authService.updateProfile(data);
+            setUser(response.data); // Cập nhật lại thông tin user trong context
+            toast.success('Cập nhật thông tin thành công!'); // Giữ nguyên, đã tương thích
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra.'); // Giữ nguyên, đã tương thích
+        }
+    };
+
+    const { data: profileData, isLoading, isError, error } = useQuery({
+        queryKey: ['userProfile', user?.id],
+        queryFn: () => userService.getCurrentUserProfile(),
+        enabled: !!user,
+        onSuccess: (data) => {
+            setFormData({
+                ...data,
+                dateOfBirth: data.dateOfBirth ? format(parseISO(data.dateOfBirth), 'yyyy-MM-dd') : '',
+            });
+        }
+    });
+
+    const { mutate: updateUser, isLoading: isUpdating } = useMutation({
+        mutationFn: (updateData) => userService.updateUserProfile(updateData),
+        onSuccess: (updatedUser) => {
+            toast.success('Cập nhật hồ sơ thành công!');
+            queryClient.setQueryData(['userProfile', user.id], updatedUser);
+            // Cập nhật lại thông tin user trong context nếu cần
+            setUser({ ...user, fullName: updatedUser.fullName });
+            setIsEditMode(false);
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || 'Lỗi khi cập nhật hồ sơ.');
+        }
+    });
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const { fullName, phone, address, dateOfBirth, isReadyToDonate, medicalConditions } = formData;
+        updateUser({ fullName, phone, address, dateOfBirth, isReadyToDonate, medicalConditions });
+    };
+
+    if (isLoading) return <div className="flex justify-center items-center h-screen"><LoadingSpinner /></div>;
+    if (isError) return <div className="text-red-500 text-center mt-10">Lỗi khi tải thông tin: {error.message}</div>;
+
+    return (
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="px-4 py-5 sm:px-6 flex justify-between items-center bg-gray-50 border-b">
+                    <div>
+                        <h3 className="text-2xl leading-6 font-bold text-gray-900">
+                            Hồ Sơ Cá Nhân
+                        </h3>
+                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            Thông tin chi tiết về tài khoản của bạn.
+                        </p>
+                    </div>
+                    <div>
+                        {!isEditMode ? (
+                            <Button onClick={() => setIsEditMode(true)} startIcon={<EditIcon />}>
+                                Chỉnh sửa
+                            </Button>
+                        ) : (
+                            <div className="flex gap-2">
+                                <Button onClick={() => setIsEditMode(false)} variant="secondary" startIcon={<CancelIcon />}>
+                                    Hủy
+                                </Button>
+                                <Button onClick={handleSubmit} isLoading={isUpdating} startIcon={<SaveIcon />}>
+                                    Lưu
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                    {!isEditMode ? (
+                        <dl className="sm:divide-y sm:divide-gray-200">
+                            <ProfileDetailItem icon={PersonIcon} label="Họ và tên" value={profileData.fullName} />
+                            <ProfileDetailItem icon={EmailIcon} label="Email" value={profileData.email} />
+                            <ProfileDetailItem icon={PhoneIcon} label="Số điện thoại" value={profileData.phone} />
+                            <ProfileDetailItem icon={LocationOnIcon} label="Địa chỉ" value={profileData.address} />
+                            <ProfileDetailItem icon={CakeIcon} label="Ngày sinh" value={profileData.dateOfBirth ? format(parseISO(profileData.dateOfBirth), 'dd/MM/yyyy') : ''} />
+                            <ProfileDetailItem icon={BloodtypeIcon} label="Nhóm máu" value={profileData.bloodTypeDescription} />
+                            <ProfileDetailItem icon={MedicalInformationIcon} label="Tình trạng bệnh lý" value={profileData.medicalConditions} />
+                            <ProfileDetailItem
+                                icon={profileData.isReadyToDonate ? CheckCircleIcon : CancelIcon}
+                                label="Sẵn sàng hiến máu"
+                                value={profileData.isReadyToDonate ? "Có" : "Không"}
+                                highlight={profileData.isReadyToDonate}
+                            />
+                        </dl>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                            <InputField label="Họ và tên" name="fullName" value={formData.fullName || ''} onChange={handleChange} />
+                            <InputField label="Email" name="email" value={formData.email || ''} onChange={handleChange} disabled />
+                            <InputField label="Số điện thoại" name="phone" value={formData.phone || ''} onChange={handleChange} />
+                            <InputField label="Địa chỉ" name="address" value={formData.address || ''} onChange={handleChange} />
+                            <InputField label="Ngày sinh" name="dateOfBirth" type="date" value={formData.dateOfBirth || ''} onChange={handleChange} InputLabelProps={{ shrink: true }} />
+                            <InputField label="Nhóm máu" name="bloodTypeDescription" value={formData.bloodTypeDescription || ''} onChange={handleChange} disabled />
+                            <InputField label="Tình trạng bệnh lý (nếu có)" name="medicalConditions" value={formData.medicalConditions || ''} onChange={handleChange} />
+                            <div className="flex items-center">
+                                <input
+                                    id="isReadyToDonate"
+                                    name="isReadyToDonate"
+                                    type="checkbox"
+                                    checked={formData.isReadyToDonate || false}
+                                    onChange={handleChange}
+                                    className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="isReadyToDonate" className="ml-2 block text-sm text-gray-900">
+                                    Tôi sẵn sàng nhận thông báo và tham gia hiến máu
+                                </label>
+                            </div>
+                        </form>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default UserProfilePage;
