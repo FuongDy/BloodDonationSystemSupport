@@ -110,12 +110,12 @@ const UserManagementTable = ({ users, onRefresh, onSort, currentSortField, curre
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                                 <div className="flex items-center justify-center space-x-1">
                                     <Link to={`/admin/users/view/${user.id}`} title="Xem chi tiết">
-                                        <Button variant="icon" className="text-blue-600 hover:text-blue-800 w-9 h-9 flex items-center justify-center">
+                                        <Button variant="icon" className="text-blue-600 hover:text-blue-800 w-12 h-12 flex items-center justify-center">
                                             <Eye size={28} />
                                         </Button>
                                     </Link>
                                     <Link to={`/admin/users/edit/${user.id}`} title="Chỉnh sửa">
-                                        <Button variant="icon" className="text-indigo-600 hover:text-indigo-800 w-9 h-9 flex items-center justify-center">
+                                        <Button variant="icon" className="text-indigo-600 hover:text-indigo-800 w-12 h-12 flex items-center justify-center">
                                             <Edit3 size={28} />
                                         </Button>
                                     </Link>
@@ -123,7 +123,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, currentSortField, curre
                                         <Button
                                             onClick={() => handleDeleteUser(user.id, user.fullName, user.role)}
                                             variant="icon"
-                                            className="text-red-600 hover:text-red-800 w-9 h-9 flex items-center justify-center"
+                                            className="text-red-600 hover:text-red-800 w-12 h-12 flex items-center justify-center"
                                             title="Vô hiệu hóa"
                                         >
                                             <Trash2 size={28} />
@@ -132,7 +132,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, currentSortField, curre
                                     {user.role === 'Admin' && (
                                         <Button
                                             variant="icon"
-                                            className="text-gray-400 cursor-not-allowed w-9 h-9 flex items-center justify-center"
+                                            className="text-gray-400 cursor-not-allowed w-12 h-12 flex items-center justify-center"
                                             title="Không thể vô hiệu hóa Admin"
                                             disabled
                                         >
@@ -141,7 +141,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, currentSortField, curre
                                     )}
                                     {/* Placeholder for consistent spacing if no delete/disable icon is shown for non-Admin active users */}
                                     {!(user.role !== 'Admin' && user.status === 'Active') && user.role !== 'Admin' && (
-                                        <div className="w-9 h-9"></div>
+                                        <div className="w-12 h-12"></div>
                                     )}
                                 </div>
                             </td>
