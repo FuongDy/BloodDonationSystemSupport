@@ -75,22 +75,23 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
     };
 
     const modalFooter = (
-        <>
+        <div className="flex justify-end space-x-3 pt-4"> {/* Added padding top and ensured flex end for alignment */}
             <Button variant="secondary" onClick={onClose} disabled={isLoading}>Hủy</Button>
             <Button variant="primary" type="submit" form="bloodTypeForm" disabled={isLoading} isLoading={isLoading}>
                 {bloodType ? 'Lưu thay đổi' : 'Tạo mới'}
             </Button>
-        </>
+        </div>
     );
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={bloodType ? "Chỉnh sửa loại máu" : "Thêm loại máu mới"} footerContent={modalFooter}>
-            <form id="bloodTypeForm" onSubmit={handleSubmit} className="space-y-4">
+            <form id="bloodTypeForm" onSubmit={handleSubmit} className="space-y-5 py-2"> {/* Increased spacing and added vertical padding */}
                 <InputField
                     label="Nhóm máu (A, B, AB, O)"
                     name="bloodGroup"
                     value={formData.bloodGroup}
                     onChange={handleChange}
+                    placeholder="Ví dụ: A"
                     required
                     disabled={isLoading || !!bloodType} // Không cho sửa bloodGroup và rhFactor khi edit
                     error={errors.bloodGroup}
@@ -100,15 +101,17 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
                     name="rhFactor"
                     value={formData.rhFactor}
                     onChange={handleChange}
+                    placeholder="Ví dụ: +"
                     required
                     disabled={isLoading || !!bloodType} // Không cho sửa bloodGroup và rhFactor khi edit
                     error={errors.rhFactor}
                 />
                 <InputField
-                    label="Mô tả"
+                    label="Mô tả chi tiết"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
+                    placeholder="Ví dụ: A Dương (Nhóm máu A, Rh+)"
                     required
                     disabled={isLoading}
                     error={errors.description}

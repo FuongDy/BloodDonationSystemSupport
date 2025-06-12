@@ -64,61 +64,65 @@ const AdminBloodTypePage = () => {
 
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Quản lý Loại máu</h1>
-                <div className="flex items-center space-x-2">
-                    <Button onClick={fetchBloodTypes} variant="secondary" className="p-2" title="Làm mới" disabled={isLoading}>
-                        <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
-                    </Button>
-                    <Button onClick={() => handleOpenModal()} variant="primary" disabled={isLoading}>
-                        <PlusCircle size={20} className="mr-2" /> Thêm loại máu
-                    </Button>
+        <div className="p-6 bg-slate-50 min-h-screen"> {/* Added bg-slate-50 and min-h-screen */}
+            <div className="bg-white p-6 rounded-lg shadow-xl"> {/* Added container for card effect */}
+                <div className="flex justify-between items-center pb-4 mb-6 border-b border-gray-200"> {/* Added border and spacing */}
+                    <h1 className="text-3xl font-bold text-slate-700">Quản lý Loại máu</h1> {/* Adjusted title style */}
+                    <div className="flex items-center space-x-2">
+                        <Button onClick={fetchBloodTypes} variant="secondary" className="p-2" title="Làm mới" disabled={isLoading}>
+                            <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
+                        </Button>
+                        <Button onClick={() => handleOpenModal()} variant="primary" disabled={isLoading}>
+                            <PlusCircle size={20} className="mr-2" /> Thêm loại máu
+                        </Button>
+                    </div>
                 </div>
-            </div>
 
-            {isLoading ? (
-                <div className="flex justify-center items-center py-10">
-                    <LoadingSpinner size="12" />
-                </div>
-            ) : bloodTypes.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">Chưa có loại máu nào được định nghĩa.</p>
-            ) : (
-                <div className="bg-white shadow-md rounded-lg overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                {['ID', 'Nhóm', 'Rh', 'Mô tả', 'Ngày tạo', 'Hành động'].map(header => (
-                                    <th key={header} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {header}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {bloodTypes.map((bt) => ( //
-                                <tr key={bt.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{bt.id}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{bt.bloodGroup}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{bt.rhFactor}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{bt.description}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(bt.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                        <Button onClick={() => handleOpenModal(bt)} variant="icon" className="text-indigo-600 hover:text-indigo-800" title="Chỉnh sửa">
-                                            <Edit3 size={18} />
-                                        </Button>
-                                        <Button onClick={() => handleDelete(bt.id, bt.description)} variant="icon" className="text-red-600 hover:text-red-800" title="Xóa">
-                                            <Trash2 size={18} />
-                                        </Button>
-                                    </td>
+                {isLoading ? (
+                    <div className="flex justify-center items-center py-10">
+                        <LoadingSpinner size="12" />
+                    </div>
+                ) : bloodTypes.length === 0 ? (
+                    <p className="text-center text-slate-500 py-10 text-lg"> {/* Adjusted no data message */}
+                        Chưa có loại máu nào được định nghĩa.
+                    </p>
+                ) : (
+                    <div className="overflow-x-auto"> {/* Removed bg-white shadow-md rounded-lg as it's on parent now */}
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-slate-100"> {/* Adjusted thead background */}
+                                <tr>
+                                    {['ID', 'Nhóm', 'Rh', 'Mô tả', 'Ngày tạo', 'Hành động'].map(header => (
+                                        <th key={header} scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider"> {/* Adjusted th style */}
+                                            {header}
+                                        </th>
+                                    ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {bloodTypes.map((bt, index) => (
+                                    <tr key={bt.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}> {/* Added zebra striping */}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{bt.id}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{bt.bloodGroup}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{bt.rhFactor}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 max-w-xs truncate" title={bt.description}>{bt.description}</td> {/* Added truncate and title */}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {new Date(bt.createdAt).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                            <Button onClick={() => handleOpenModal(bt)} variant="icon" className="text-sky-600 hover:text-sky-800" title="Chỉnh sửa"> {/* Adjusted icon color */}
+                                                <Edit3 size={18} />
+                                            </Button>
+                                            <Button onClick={() => handleDelete(bt.id, bt.description)} variant="icon" className="text-red-600 hover:text-red-800" title="Xóa">
+                                                <Trash2 size={18} />
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div> {/* Closing tag for the card container */}
             {isModalOpen && (
                 <BloodTypeFormModal
                     isOpen={isModalOpen}
