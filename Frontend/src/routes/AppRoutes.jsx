@@ -15,6 +15,7 @@ import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminUserListPage from "../pages/admin/AdminUserListPage";
 import AdminUserCreatePage from "../pages/admin/AdminUserCreatePage";
 import AdminUserEditPage from "../pages/admin/AdminUserEditPage";
+import AdminBloodTypePage from "../pages/admin/AdminBloodTypePage"; // Import AdminBloodTypePage
 
 
 
@@ -42,6 +43,7 @@ const AppRoutes = () => (
                 <Route path="users" element={<AdminUserListPage />} /> {/* */}
                 <Route path="users/new" element={<AdminUserCreatePage />} /> {/* */}
                 <Route path="users/edit/:userId" element={<AdminUserEditPage />} /> {/* */}
+                <Route path="blood-types" element={<AdminBloodTypePage />} /> {/* Add route for blood types */}
                
             </Route>
         </Route>

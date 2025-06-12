@@ -86,6 +86,10 @@ let mockBloodTypes = [
     { id: 2, bloodGroup: "O", rhFactor: "-", description: "O Negative (MSW)", createdAt: new Date().toISOString() },
     { id: 3, bloodGroup: "B", rhFactor: "+", description: "B Positive (MSW)", createdAt: new Date().toISOString() },
     { id: 4, bloodGroup: "AB", rhFactor: "+", description: "AB Positive (MSW)", createdAt: new Date().toISOString() },
+    { id: 5, bloodGroup: "A", rhFactor: "-", description: "A Negative (MSW)", createdAt: new Date().toISOString() },
+    { id: 6, bloodGroup: "B", rhFactor: "-", description: "B Negative (MSW)", createdAt: new Date().toISOString() },
+    { id: 7, bloodGroup: "AB", rhFactor: "-", description: "AB Negative (MSW)", createdAt: new Date().toISOString() },
+    { id: 8, bloodGroup: "O", rhFactor: "+", description: "O Positive (MSW)", createdAt: new Date().toISOString() },
 ];
 
 let mockBloodComponents = [
