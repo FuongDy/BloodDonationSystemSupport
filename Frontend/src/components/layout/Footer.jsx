@@ -71,7 +71,7 @@ const Footer = () => {
 
                 <div className="border-t border-gray-200 pt-6">
                     <p className="text-center text-gray-500 text-sm">
-                        © {new Date().getFullYear()} BloodConnect. Tất cả quyền được bảo lưu.
+                        © BloodConnect. Tất cả quyền được bảo lưu.
                     </p>
                 </div>
             </div>
