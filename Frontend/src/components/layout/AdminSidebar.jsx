@@ -20,7 +20,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
     const menuItems = [
         { path: "/admin", icon: LayoutDashboard, label: "Dashboard" },
         { path: "/admin/users", icon: Users, label: "Quản lí người dùng" },
-        { path: "/admin/blood-types", icon: Droplets, label: "Loại máu" },
+        { path: "/admin/blood-types", icon: Droplets, label: "Quản lí loại máu" }, // Changed label
         { path: "/admin/blood-components", icon: ShieldAlert, label: "Thành phần máu" },
         { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Tương thích máu" },
     ];

@@ -32,7 +32,7 @@ const Footer = () => {
                         <h3 className="font-semibold text-gray-900 mb-4">LIÊN KẾT</h3>
                         <ul className="space-y-2">
                             <li><a href="/" className="text-gray-600 hover:text-red-600 transition-colors">Trang chủ</a></li> {/* Original: hover:text-blood-600 */}
-                            <li><a href="/blood-information" className="text-gray-600 hover:text-red-600 transition-colors">Loại máu</a></li> {/* Example link */}
+                            <li><a href="/admin/blood-types" className="text-gray-600 hover:text-red-600 transition-colors">Quản lí loại máu</a></li> {/* Example link, changed text and href */}
                             <li><a href="/donate-info" className="text-gray-600 hover:text-red-600 transition-colors">Đăng ký hiến máu</a></li> {/* Example link */}
                             <li><a href="/emergency-request" className="text-gray-600 hover:text-red-600 transition-colors">Đăng ký khẩn cấp</a></li> {/* Example link */}
                             <li><a href="/blog" className="text-gray-600 hover:text-red-600 transition-colors">Blog</a></li> {/* Example link */}
