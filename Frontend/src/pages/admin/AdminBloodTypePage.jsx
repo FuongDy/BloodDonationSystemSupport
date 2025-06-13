@@ -151,9 +151,7 @@ const AdminBloodTypePage = () => {
                                 </div>
                                 <p className="text-sm text-slate-600">Nhóm: <span className="font-medium text-slate-700">{bt.bloodGroup}</span></p>
                                 <p className="text-sm text-slate-600">Yếu tố Rh: <span className="font-medium text-slate-700">{bt.rhFactor}</span></p>
-                                <p className="text-xs text-slate-400 mt-3">
-                                    Ngày tạo: {new Date(bt.createdAt).toLocaleDateString()}
-                                </p>
+                                {/* Removed Created At Date */}
                             </div>
                         ))}
                     </div>
