@@ -1,88 +1,108 @@
 // src/components/layout/Navbar.jsx
 import React from 'react';
-import { Heart, Home, Search, BookOpen, User, LogOut, UserCircle, LogIn, UserPlus } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth'; //
+import { Heart, Home, CalendarPlus, ShieldAlert, UserCog, LogOut, UserCircle, LogIn, UserPlus } from 'lucide-react'; // Updated icons
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
-    const { user, isAuthenticated, logout, loading } = useAuth(); //
+    const { user, isAuthenticated, logout, loading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
-        logout(); //
+        logout();
         toast.success('Đã đăng xuất!');
         navigate('/');
     };
 
+    // Updated navLinks based on the image
     const navLinks = [
         { to: "/", label: "Trang chủ", icon: Home },
-        { to: "/donate", label: "Hiến máu", icon: Heart }, // Cần tạo trang /donate
-        { to: "/search", label: "Tìm kiếm", icon: Search }, // Cần tạo trang /search
-        { to: "/blog", label: "Blog", icon: BookOpen },     // Cần tạo trang /blog
-        { to: "/contact", label: "Liên hệ", icon: User },   // Cần tạo trang /contact
+        { to: "/urgent-requests", label: "Cần máu gấp", icon: ShieldAlert }, // New page
+        { to: "/schedule-donation", label: "Đặt lịch hiến máu", icon: CalendarPlus }, // New page
     ];
 
+    const isActive = (path) => location.pathname === path;
+
     return (
-        <header className="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50 h-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="bg-white shadow-md border-b border-gray-200 fixed w-full top-0 z-50 h-16">
+            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"> {/* Changed to max-w-screen-xl */}
                 <div className="flex justify-between items-center h-16">
                     <Link to="/" className="flex items-center space-x-2">
-                        <img src="/logo.png" alt="Logo" className="w-14 h-14" />
-                        <span className="text-xl font-bold text-gray-900">BloodConnect</span>
+                        <img src="/logo.png" alt="Logo BloodConnect" className="w-10 h-10 sm:w-12 sm:h-12" /> {/* Adjusted logo size */}
+                        <span className="text-lg sm:text-xl font-bold text-red-600">BloodConnect</span> {/* Red color for brand */}
                     </Link>
 
-                    <nav className="hidden md:flex items-center space-x-6">
+                    <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
                         {navLinks.map(link => (
                             <Link
                                 key={link.label}
                                 to={link.to}
-                                className="flex items-center space-x-1 text-gray-700 hover:text-red-600 transition-colors"
+                                className={`flex items-center space-x-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                    ${isActive(link.to)
+                                        ? 'bg-red-50 text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    }`}
                             >
-                                <link.icon className="w-4 h-4" />
+                                <link.icon className={`w-4 h-4 ${isActive(link.to) ? 'text-red-600' : 'text-gray-500'}`} />
                                 <span>{link.label}</span>
                             </Link>
                         ))}
+                        {isAuthenticated && user?.role === 'Admin' && (
+                             <Link
+                                to="/admin"
+                                className={`flex items-center space-x-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                    ${isActive('/admin') || location.pathname.startsWith('/admin/')
+                                        ? 'bg-red-50 text-red-700'
+                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    }`}
+                            >
+                                <UserCog className={`w-4 h-4 ${isActive('/admin') || location.pathname.startsWith('/admin/') ? 'text-red-600' : 'text-gray-500'}`} />
+                                <span>Quản trị</span>
+                            </Link>
+                        )}
                     </nav>
 
                     <div className="flex items-center space-x-3">
                         {loading ? (
-                            <span className="text-sm text-gray-500">Đang tải...</span>
+                            <span className="text-sm text-gray-500 px-3 py-1.5">Đang tải...</span>
                         ) : isAuthenticated && user ? (
                             <>
-                                <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-red-600">
-                                    <UserCircle className="w-5 h-5" />
+                                <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-red-600 transition-colors">
+                                    <UserCircle className="w-6 h-6" /> {/* Slightly larger icon */}
                                     <span className="text-sm font-medium hidden sm:block">{user.fullName || user.email}</span>
                                 </Link>
-                                {user.role === 'Admin' && ( //
+                                {user.role === 'Admin' && (
                                     <Link
-                                        to="/admin"
-                                        className="text-sm font-medium text-purple-600 hover:text-purple-800 px-3 py-1.5 rounded-md bg-purple-100 hover:bg-purple-200 transition-colors"
+                                        to="/admin/mock" // Example link for Mock Admin
+                                        className="text-sm font-medium text-purple-600 hover:text-purple-800 px-3 py-1.5 rounded-md bg-purple-100 hover:bg-purple-200 transition-colors hidden lg:block"
                                     >
-                                        Admin
+                                        Mock Admin
                                     </Link>
                                 )}
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center space-x-1 text-gray-700 hover:text-red-600 transition-colors"
+                                    className="flex items-center space-x-1.5 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm px-4 py-2 rounded-md" // Primary button style
                                     title="Đăng xuất"
                                 >
-                                    <LogOut className="w-5 h-5" />
-                                    <span className="text-sm font-medium hidden sm:block">Đăng xuất</span>
+                                    <LogOut className="w-4 h-4" />
+                                    <span className="hidden sm:block">Đăng xuất</span>
+                                    <span className="sm:hidden">Thoát</span>
                                 </button>
                             </>
                         ) : (
                             <>
                                 <Link
                                     to="/login"
-                                    className="flex items-center space-x-1 text-gray-700 hover:text-red-600 font-medium transition-colors text-sm"
+                                    className="flex items-center space-x-1 text-gray-700 hover:text-red-600 font-medium transition-colors text-sm px-3 py-1.5 rounded-md hover:bg-gray-100"
                                 >
                                     <LogIn className="w-4 h-4" />
                                     <span>Đăng nhập</span>
                                 </Link>
                                 <Link
                                     to="/register"
-                                    className="flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm px-3 py-1.5 rounded-md"
+                                    className="flex items-center space-x-1 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm px-4 py-2 rounded-md" // Primary button style
                                 >
                                     <UserPlus className="w-4 h-4" />
                                     <span>Đăng ký</span>
