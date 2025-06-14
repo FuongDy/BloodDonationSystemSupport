@@ -103,6 +103,22 @@ let mockCompatibilityRules = [
     { id: 2, donorBloodType: mockBloodTypes[1], recipientBloodType: mockBloodTypes[0], bloodComponent: mockBloodComponents[1], isCompatible: true, isEmergencyCompatible: true, compatibilityScore: 80, notes: "O- to A+ (RBC) is emergency compatible.", createdAt: new Date().toISOString() },
 ];
 
+const mockBloodInventorySummary = [
+    { id: '1', bloodType: 'A+', availableUnits: 120, capacity: 200, status: 'Normal' },
+    { id: '2', bloodType: 'A-', availableUnits: 35, capacity: 100, status: 'Low' },
+    { id: '3', bloodType: 'B+', availableUnits: 78, capacity: 200, status: 'Normal' },
+    { id: '4', bloodType: 'B-', availableUnits: 22, capacity: 100, status: 'Critical' },
+    { id: '5', bloodType: 'AB+', availableUnits: 28, capacity: 100, status: 'Low' },
+    { id: '6', bloodType: 'AB-', availableUnits: 15, capacity: 50, status: 'Low' },
+    { id: '7', bloodType: 'O+', availableUnits: 142, capacity: 300, status: 'Normal' },
+    { id: '8', bloodType: 'O-', availableUnits: 31, capacity: 150, status: 'Critical' },
+].map(item => ({ ...item, fillRate: Math.round((item.availableUnits / item.capacity) * 100) }));
+
+const mockBloodUnits = [
+    // Add more detailed mock blood units if needed for the "Blood Units" tab later
+    { id: 'unit1', bloodType: 'A+', collectionDate: '2024-05-01', expiryDate: '2024-06-15', status: 'Available', volume: 450, donorId: 'D001' },
+    { id: 'unit2', bloodType: 'O-', collectionDate: '2024-05-10', expiryDate: '2024-06-20', status: 'Available', volume: 420, donorId: 'D002' },
+];
 
 export const handlers = [
     // AuthService
@@ -393,4 +409,63 @@ export const handlers = [
         }
         return HttpResponse.json({ message: "Not Found" }, { status: 404 });
     }),
+
+    // Blood Inventory Handlers
+    http.get(`${API_URL}/inventory/summary`, () => {
+        console.log('MSW: GET /inventory/summary');
+        return HttpResponse.json(mockBloodInventorySummary);
+    }),
+
+    http.get(`${API_URL}/inventory`, ({ request }) => {
+        // Potentially add pagination/filtering later if needed for the blood units tab
+        console.log('MSW: GET /inventory (blood units list)');
+        return HttpResponse.json(mockBloodUnits);
+    }),
+
+    http.get(`${API_URL}/inventory/statistics`, () => {
+        console.log('MSW: GET /inventory/statistics');
+        // Return mock chart data, e.g., count per blood type
+        const stats = mockBloodInventorySummary.reduce((acc, curr) => {
+            acc[curr.bloodType] = (acc[curr.bloodType] || 0) + curr.availableUnits;
+            return acc;
+        }, {});
+        return HttpResponse.json({ byBloodType: stats, overallFillRate: 65 /* mock */ });
+    }),
+
+    http.post(`${API_URL}/inventory`, async ({ request }) => {
+        const newUnit = await request.json();
+        console.log('MSW: POST /inventory', newUnit);
+        const createdUnit = { ...newUnit, id: `unit${Date.now()}`, createdAt: new Date().toISOString() };
+        mockBloodUnits.push(createdUnit);
+        // Also update summary if relevant (simplified here)
+        const summaryItem = mockBloodInventorySummary.find(s => s.bloodType === newUnit.bloodType);
+        if (summaryItem) summaryItem.availableUnits += (newUnit.volume / 100); // Simplistic update
+        return HttpResponse.json(createdUnit, { status: 201 });
+    }),
+
+    http.patch(`${API_URL}/inventory/:unitId`, async ({ params, request }) => {
+        const { unitId } = params;
+        const updates = await request.json();
+        console.log(`MSW: PATCH /inventory/${unitId}`, updates);
+        const unitIndex = mockBloodUnits.findIndex(u => u.id === unitId);
+        if (unitIndex > -1) {
+            mockBloodUnits[unitIndex] = { ...mockBloodUnits[unitIndex], ...updates };
+            return HttpResponse.json(mockBloodUnits[unitIndex]);
+        }
+        return HttpResponse.json({ message: 'Unit not found' }, { status: 404 });
+    }),
+
+    http.patch(`${API_URL}/inventory/:unitId/status`, async ({ params, request }) => {
+        const { unitId } = params;
+        const { status } = await request.json();
+        console.log(`MSW: PATCH /inventory/${unitId}/status to ${status}`);
+        const unitIndex = mockBloodUnits.findIndex(u => u.id === unitId);
+        if (unitIndex > -1) {
+            mockBloodUnits[unitIndex].status = status;
+            // Potentially update summary counts based on status change (e.g., if DISCARDED)
+            return HttpResponse.json(mockBloodUnits[unitIndex]);
+        }
+        return HttpResponse.json({ message: 'Unit not found' }, { status: 404 });
+    }),
+
 ];

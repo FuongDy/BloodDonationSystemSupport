@@ -73,14 +73,6 @@ const Navbar = () => {
                                     <UserCircle className="w-6 h-6" /> {/* Slightly larger icon */}
                                     <span className="text-sm font-medium hidden sm:block">{user.fullName || user.email}</span>
                                 </Link>
-                                {user.role === 'Admin' && (
-                                    <Link
-                                        to="/admin/mock" // Example link for Mock Admin
-                                        className="text-sm font-medium text-purple-600 hover:text-purple-800 px-3 py-1.5 rounded-md bg-purple-100 hover:bg-purple-200 transition-colors hidden lg:block"
-                                    >
-                                        Mock Admin
-                                    </Link>
-                                )}
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center space-x-1.5 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm px-4 py-2 rounded-md" // Primary button style
