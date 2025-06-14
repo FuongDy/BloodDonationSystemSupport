@@ -33,7 +33,7 @@ const AppRoutes = () => (
 
         {/* Authenticated User Routes */}
         <Route element={<ProtectedRoute />}> {/* Không yêu cầu role cụ thể, chỉ cần đăng nhập */}
-            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/profile/*" element={<UserProfilePage />} />
             {/* Thêm các route khác cho member ở đây */}
         </Route>
 

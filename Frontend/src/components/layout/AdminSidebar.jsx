@@ -23,11 +23,10 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
         { path: "/admin", icon: LayoutDashboard, label: "Dashboard" },
         { path: "/admin/users", icon: Users, label: "Quản lý người dùng" },
         { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu" },
-        { path: "/admin/blood-inventory", icon: Archive, label: "Quản lý kho máu" }, // Changed path to /admin/blood-inventory
         { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích" },
         { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu Khẩn cấp" },
         { path: "/admin/donation-history", icon: History, label: "Quản lí lịch sử hiến máu" },
-        
+        { path: "/admin/blood-stock", icon: Archive, label: "Quản lý kho máu" },
     ];
 
     return (
