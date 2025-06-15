@@ -5,11 +5,13 @@ import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotfoundPage'
 import { Avatar, AvatarImage, AvatarFallback } from './components/ui/Avatar'
 import { Badge } from './components/ui/Badge'
-import Footer from './components/layouts/Footer' // Thêm import cho Footer
+import Footer from './components/layouts/Footer'
+import Navbar from './components/layouts/Navbar' // Thêm import cho Navbar
 
 export default function App() {
   return (
     <>
+      <Navbar /> {/* Thêm Navbar vào đầu trang */}
       <Avatar>
         <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
         <AvatarFallback>U</AvatarFallback>
