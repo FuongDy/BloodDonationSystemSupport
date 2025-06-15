@@ -1,6 +1,21 @@
-import React from 'react'
+import React from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
-export const Button = ({
+// /**
+//  * Component Button đa dụng và có thể tùy chỉnh cao.
+//  * @param {object} props
+//  * @param {React.ReactNode} props.children - Nội dung bên trong Button.
+//  * @param {() => void} [props.onClick] - Hàm xử lý sự kiện click.
+//  * @param {'button' | 'submit' | 'reset'} [props.type='button'] - Loại của button.
+//  * @param {'primary' | 'secondary' | 'danger' | 'outline' | 'icon' | 'link'} [props.variant='primary'] - Kiểu hiển thị của button.
+//  * @param {'sm' | 'md' | 'lg'} [props.size='md'] - Kích thước của button.
+//  * @param {string} [props.className=''] - Class CSS tùy chỉnh thêm.
+//  * @param {boolean} [props.disabled=false] - Trạng thái vô hiệu hóa.
+//  * @param {boolean} [props.isLoading=false] - Trạng thái loading, sẽ hiển thị spinner.
+//  * @param {React.ReactNode} [props.iconLeft] - Icon hiển thị bên trái nội dung.
+//  * @param {React.ReactNode} [props.iconRight] - Icon hiển thị bên phải nội dung.
+//  */
+const Button = ({
     children,
     onClick,
     type = 'button',
@@ -8,6 +23,7 @@ export const Button = ({
     size = 'md',
     className = '',
     disabled = false,
+    isLoading = false,
     iconLeft,
     iconRight,
     ...props
@@ -30,16 +46,22 @@ export const Button = ({
         link: 'text-red-600 hover:text-red-800 focus:ring-red-500 underline disabled:text-gray-400 disabled:no-underline',
     };
 
+    const disabledStyle = 'opacity-60 cursor-not-allowed';
+
     return (
-        <>
-            <button
-                type={type}
-                onClick={onClick}
-                disabled={disabled}
-                className={`${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
-                {...props}
-            >
-            </button>
-        </>
-    )
-}
+        <button
+            type={type}
+            onClick={onClick}
+            disabled={disabled || isLoading}
+            className={`${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${disabled || isLoading ? disabledStyle : ''} ${className}`}
+            {...props}
+        >
+            {isLoading && <LoadingSpinner />}
+            {!isLoading && iconLeft && <span className="mr-2">{iconLeft}</span>}
+            {children}
+            {!isLoading && iconRight && <span className="ml-2">{iconRight}</span>}
+        </button>
+    );
+};
+
+export default Button;
