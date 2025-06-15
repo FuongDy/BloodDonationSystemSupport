@@ -4,7 +4,8 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotfoundPage'
 import { Avatar, AvatarImage, AvatarFallback } from './components/ui/Avatar'
-import { Badge } from './components/ui/Badge' // Thêm import cho Badge
+import { Badge } from './components/ui/Badge'
+import Footer from './components/layouts/Footer' // Thêm import cho Footer
 
 export default function App() {
   return (
@@ -25,8 +26,7 @@ export default function App() {
         <Badge variant="outline">Outline</Badge>
       </div>
       
-      {/* Bạn có thể thêm NotFoundPage hoặc các component khác ở đây nếu cần */}
-      {/* <NotFoundPage /> */}
+      <Footer /> {/* Thêm Footer vào cuối trang */}
     </>
   )
 }
