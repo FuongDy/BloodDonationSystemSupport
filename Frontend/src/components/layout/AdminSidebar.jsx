@@ -26,7 +26,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
         { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích" },
         { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu Khẩn cấp" },
         { path: "/admin/donation-history", icon: History, label: "Quản lí lịch sử hiến máu" },
-        { path: "/admin/blood-stock", icon: Archive, label: "Quản lý kho máu" },
+        { path: "/admin/blood-inventory", icon: Archive, label: "Quản lý kho máu" },
     ];
 
     return (

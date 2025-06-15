@@ -10,7 +10,7 @@ import InputField from '../components/common/InputField';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ProfileSidebar from '../components/profile/ProfileSidebar';
-import { Link, Routes, Route } from 'react-router-dom'; // Removed Outlet, ensure Routes and Route are here
+import { Link, Routes, Route } from 'react-router-dom';
 
 // Placeholder components for sidebar routes
 const ProfileSecurityPage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Bảo mật & Đăng nhập</h2><p>Nội dung trang bảo mật...</p></div>;
@@ -103,7 +103,8 @@ const UserProfileInfo = ({ profileData, formData, handleInputChange, handleSubmi
 
 
 const UserProfilePage = () => {
-    const { user } = useAuth();
+    // console.log("UserProfilePage rendering or re-rendering"); // For debugging
+    const { user, loading: authLoading, isAuthenticated, logout } = useAuth(); // Added logout
     const [profileData, setProfileData] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
@@ -120,42 +121,50 @@ const UserProfilePage = () => {
     });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Page's own data loading state
     const [error, setError] = useState(null);
     const [bloodTypes, setBloodTypes] = useState([]);
 
     const fetchProfile = useCallback(async () => {
-        if (!user?.userId) {
-            setError("Không tìm thấy thông tin người dùng.");
+        // Ensure user and userId are valid before proceeding
+        if (!user || !user.userId) {
+            setError("Thông tin xác thực người dùng không hợp lệ để tải hồ sơ.");
             setLoading(false);
+            setProfileData(null);
             return;
         }
         setLoading(true);
         setError(null);
         try {
             const data = await userService.getProfile(user.userId);
-            setProfileData(data);
-            setFormData({
-                fullName: data.fullName || '',
-                phone: data.phone || '',
-                dateOfBirth: data.dateOfBirth ? data.dateOfBirth.split('T')[0] : '',
-                gender: data.gender || '',
-                address: data.address || '',
-                emergencyContact: data.emergencyContact || '',
-                bloodTypeId: data.bloodTypeId || '',
-                medicalConditions: data.medicalConditions || '',
-                lastDonationDate: data.lastDonationDate ? data.lastDonationDate.split('T')[0] : '',
-                isReadyToDonate: data.isReadyToDonate || false,
-            });
-            setErrors({}); // Clear previous errors
+            if (data) {
+                setProfileData(data);
+                setFormData({
+                    fullName: data.fullName || '',
+                    phone: data.phone || '',
+                    dateOfBirth: data.dateOfBirth ? data.dateOfBirth.split('T')[0] : '',
+                    gender: data.gender || '',
+                    address: data.address || '',
+                    emergencyContact: data.emergencyContact || '',
+                    bloodTypeId: data.bloodTypeId || '',
+                    medicalConditions: data.medicalConditions || '',
+                    lastDonationDate: data.lastDonationDate ? data.lastDonationDate.split('T')[0] : '',
+                    isReadyToDonate: data.isReadyToDonate || false,
+                });
+            } else {
+                setProfileData(null);
+                setError('Không tìm thấy dữ liệu hồ sơ người dùng.');
+            }
+            setErrors({});
         } catch (err) {
             console.error("Failed to fetch profile:", err);
             setError(err.message || 'Không thể tải thông tin hồ sơ. Vui lòng thử lại.');
+            setProfileData(null);
             toast.error(err.message || 'Không thể tải thông tin hồ sơ.');
         } finally {
             setLoading(false);
         }
-    }, [user?.userId]);
+    }, [user]); // Dependency on user object
 
     const fetchBloodTypes = useCallback(async () => {
         try {
@@ -175,14 +184,29 @@ const UserProfilePage = () => {
 
 
     useEffect(() => {
-        if (user?.userId) {
+        if (authLoading) {
+            // If auth is loading, page should also reflect a loading state or wait.
+            // Setting page loading to true ensures a consistent loading indicator.
+            setLoading(true);
+            return; // Wait for auth to complete
+        }
+
+        // Auth is complete (authLoading is false)
+        if (isAuthenticated && user && user.userId) {
             fetchProfile();
             fetchBloodTypes();
-        } else if (!user && !authLoading) { // Assuming useAuth provides authLoading state
-             setError("Vui lòng đăng nhập để xem trang này.");
-             setLoading(false);
+        } else if (isAuthenticated && (!user || !user.userId)) {
+            // Authenticated according to context, but user object is invalid/incomplete
+            setError("Đã xác thực nhưng thông tin người dùng không đầy đủ hoặc bị lỗi. Vui lòng thử đăng nhập lại.");
+            setLoading(false);
+            setProfileData(null);
+        } else {
+            // Not authenticated
+            setError("Vui lòng đăng nhập để xem hồ sơ của bạn.");
+            setLoading(false);
+            setProfileData(null);
         }
-    }, [user, fetchProfile, fetchBloodTypes, authLoading]); // Added authLoading
+    }, [isAuthenticated, user, authLoading, fetchProfile, fetchBloodTypes]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -223,10 +247,20 @@ const UserProfilePage = () => {
         }
     };
     
-    // Access authLoading from useAuth, assuming it exists
-    const { loading: authLoading } = useAuth(); 
+    // Render logic:
+    if (authLoading) {
+        return (
+            <div className="flex flex-col min-h-screen bg-gray-50">
+                <Navbar />
+                <main className="flex-grow container mx-auto px-4 py-8 flex justify-center items-center">
+                    <LoadingSpinner size="lg" />
+                </main>
+                <Footer />
+            </div>
+        );
+    }
 
-    if (loading || authLoading) {
+    if (loading) { // Page specific data loading (auth is done)
         return (
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
@@ -243,16 +277,82 @@ const UserProfilePage = () => {
         );
     }
 
-    if (error && !profileData) { // Show error if profileData couldn't be fetched
+    if (error) {
         return (
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
                 <main className="flex-grow container mx-auto px-4 py-8">
                     <div className="flex flex-col md:flex-row gap-8">
                         <ProfileSidebar />
-                        <div className="flex-1 text-center py-10">
-                            <p className="text-red-600 text-lg">{error}</p>
-                            {user?.userId && <Button onClick={fetchProfile} className="mt-4">Thử lại</Button>}
+                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes for vertical centering and full height feel */}
+                            <div className="text-center"> {/* Inner wrapper for text content */}
+                                <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+                                <h2 className="text-xl font-semibold text-red-700 mb-2">Đã xảy ra lỗi</h2>
+                                <p className="text-gray-600 mb-4">{error}</p>
+                                {isAuthenticated && user?.userId && !error.includes("thông tin người dùng không đầy đủ") && (
+                                    <Button onClick={fetchProfile} variant="primary">
+                                        Thử lại
+                                    </Button>
+                                )}
+                                {isAuthenticated && (!user || !user.userId) && (
+                                    <Link to="/login" onClick={() => { if(logout) logout(); }}>
+                                        <Button variant="primary">
+                                            Đăng nhập lại
+                                        </Button>
+                                    </Link>
+                                )}
+                                {!isAuthenticated && !error.includes("thông tin người dùng không đầy đủ") && (
+                                    <Link to="/login">
+                                        <Button variant="primary">Đăng nhập</Button>
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (!profileData && !isAuthenticated) { // Case where user is not logged in and no specific error was set for that
+         return (
+            <div className="flex flex-col min-h-screen bg-gray-50">
+                <Navbar />
+                <main className="flex-grow container mx-auto px-4 py-8">
+                    <div className="flex flex-col md:flex-row gap-8">
+                        <ProfileSidebar />
+                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes */}
+                            <div className="text-center"> {/* Inner wrapper */}
+                                <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
+                                <h2 className="text-xl font-semibold text-gray-700 mb-2">Yêu cầu đăng nhập</h2>
+                                <p className="text-gray-600 mb-4">Bạn cần đăng nhập để xem thông tin hồ sơ.</p>
+                                <Link to="/login">
+                                    <Button variant="primary">Đến trang đăng nhập</Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+    
+    if (!profileData && isAuthenticated) { // Logged in, but no profile data (and no error reported by fetch)
+        return (
+            <div className="flex flex-col min-h-screen bg-gray-50">
+                <Navbar />
+                <main className="flex-grow container mx-auto px-4 py-8">
+                    <div className="flex flex-col md:flex-row gap-8">
+                        <ProfileSidebar />
+                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes */}
+                            <div className="text-center"> {/* Inner wrapper */}
+                                <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
+                                <h2 className="text-xl font-semibold text-gray-700 mb-2">Không có dữ liệu hồ sơ</h2>
+                                <p className="text-gray-600">Không tìm thấy thông tin hồ sơ cho tài khoản này.</p>
+                                {/* Optionally, a button to create a profile if applicable */}
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -273,24 +373,18 @@ const UserProfilePage = () => {
                             <Route 
                                 index 
                                 element={
-                                    profileData ? (
-                                        <UserProfileInfo
-                                            profileData={profileData}
-                                            formData={formData}
-                                            handleInputChange={handleInputChange}
-                                            handleSubmit={handleSubmit}
-                                            isEditing={isEditing}
-                                            setIsEditing={setIsEditing}
-                                            isSubmitting={isSubmitting}
-                                            errors={errors}
-                                            bloodTypes={bloodTypes}
-                                            fetchProfile={fetchProfile}
-                                        />
-                                    ) : (
-                                        <div className="bg-white shadow-xl rounded-lg p-6 md:p-8 text-center">
-                                            <p>Không thể tải thông tin hồ sơ hoặc người dùng không tồn tại.</p>
-                                        </div>
-                                    )
+                                    <UserProfileInfo
+                                        profileData={profileData}
+                                        formData={formData}
+                                        handleInputChange={handleInputChange}
+                                        handleSubmit={handleSubmit}
+                                        isEditing={isEditing}
+                                        setIsEditing={setIsEditing}
+                                        isSubmitting={isSubmitting}
+                                        errors={errors}
+                                        bloodTypes={bloodTypes}
+                                        fetchProfile={fetchProfile}
+                                    />
                                 } 
                             />
                             <Route path="security" element={<ProfileSecurityPage />} />
