@@ -1,6 +1,7 @@
 import React from 'react'
 import { Heart, Users, MapPin, Shield, ArrowRight, Droplet, Calendar, Phone, Star } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/Card';
+import PageContainer from '../components/layouts/PageContainer';
 
 export default function HomePage() {
     const features = [
@@ -30,36 +31,41 @@ export default function HomePage() {
         }
     ];
 
+
+
     return (
         <>
             <div className="min-h-screen bg-white">
                 <main className="pt-16">
-                                      
+
                     {/* Features Section */}
                     <section className="section-padding bg-gray-50">
-                        <div className="text-center mb-16 animate-fade-in-up">
-                            <h2 className="heading-2 mb-4">
-                                Tại sao chọn BloodConnect?
-                            </h2>
-                            <p className="text-body-large max-w-2xl mx-auto">
-                                Chúng tôi cung cấp một nền tảng an toàn, minh bạch và tiện lợi để kết nối cộng đồng hiến máu.
-                            </p>
-                        </div>
+                        <PageContainer>
+                            <div className="text-center mb-16 animate-fade-in-up">
+                                <h2 className="heading-2 mb-4">
+                                    Tại sao chọn BloodConnect?
+                                </h2>
+                                <p className="text-body-large max-w-2xl mx-auto">
+                                    Chúng tôi cung cấp một nền tảng an toàn, minh bạch và tiện lợi để kết nối cộng đồng hiến máu.
+                                </p>
+                            </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {features.map((feature, index) => (
-                                <Card key={feature.title} hover className="text-center group animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                                    <CardContent className="p-6">
-                                        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-50 group-hover:bg-red-50 transition-colors ${feature.color}`}>
-                                            <feature.icon className="w-8 h-8" />
-                                        </div>
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                                        <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                {features.map((feature, index) => (
+                                    <Card key={feature.title} hover className="text-center group animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                                        <CardContent className="p-6">
+                                            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-50 group-hover:bg-red-50 transition-colors ${feature.color}`}>
+                                                <feature.icon className="w-8 h-8" />
+                                            </div>
+                                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                                            <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </PageContainer>
                     </section>
+
                 </main>
             </div>
         </>
