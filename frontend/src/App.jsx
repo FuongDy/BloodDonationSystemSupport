@@ -1,37 +1,21 @@
 import React from 'react'
-import Button from './components/common/Button'
-import LoadingSpinner from './components/common/LoadingSpinner'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotfoundPage'
-import { Avatar, AvatarImage, AvatarFallback } from './components/ui/Avatar'
-import { Badge } from './components/ui/Badge'
 import Footer from './components/layouts/Footer'
 import Navbar from './components/layouts/Navbar'
-import ForbiddenPage from './pages/ForbiddenPage' // Import ForbiddenPage
+import ForbiddenPage from './pages/ForbiddenPage'
 
 export default function App() {
   return (
-    <>
-      {/* <Navbar /> */}
-      {/* <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="User Avatar" />
-        <AvatarFallback>U</AvatarFallback>
-      </Avatar> */}
-
-      {/* Thêm các Badge để hiển thị */}
-      {/* <div className="flex space-x-2 p-4">
-        <Badge>Default</Badge>
-        <Badge variant="success">Success</Badge>
-        <Badge variant="warning">Warning</Badge>
-        <Badge variant="error">Error</Badge>
-        <Badge variant="info">Info</Badge>
-        <Badge variant="primary">Primary</Badge>
-        <Badge variant="outline">Outline</Badge>
-      </div> */}
-      
-      <ForbiddenPage /> {/* Hiển thị ForbiddenPage */}
-
-      {/* <Footer /> */}
-    </>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/forbidden" element={<ForbiddenPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+      <Footer />
+    </Router>
   )
 }
