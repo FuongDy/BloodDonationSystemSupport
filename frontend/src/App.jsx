@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotfoundPage'
 import Footer from './components/layouts/Footer'
@@ -8,7 +8,7 @@ import ForbiddenPage from './pages/ForbiddenPage'
 
 export default function App() {
   return (
-    <Router>
+    <>
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -16,6 +16,6 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Footer />
-    </Router>
+    </>
   )
 }
