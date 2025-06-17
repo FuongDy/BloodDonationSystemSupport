@@ -1,6 +1,7 @@
 package com.hicode.backend.controller;
 
-import com.hicode.backend.model.entity.BloodUnit;
+import com.hicode.backend.dto.admin.BloodUnitResponse;
+import com.hicode.backend.dto.admin.InventorySummary;
 import com.hicode.backend.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,19 @@ public class InventoryController {
     private InventoryService inventoryService;
 
     @GetMapping
-    public ResponseEntity<List<BloodUnit>> viewInventory() {
+    public ResponseEntity<List<BloodUnitResponse>> viewInventory() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
+    }
+
+    // --- CÁC ENDPOINT MỚI ---
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<InventorySummary>> getSummary() {
+        return ResponseEntity.ok(inventoryService.getInventorySummary());
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<BloodUnitResponse>> getRecentAdditions() {
+        return ResponseEntity.ok(inventoryService.getRecentAdditions());
     }
 }

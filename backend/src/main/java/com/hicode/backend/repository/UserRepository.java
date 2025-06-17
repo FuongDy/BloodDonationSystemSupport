@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("radius") double radius,
             @Param("bloodTypeId") Integer bloodTypeId
     );
+
+    List<User> findByIsReadyToDonateFalseAndLastDonationDateIsNotNull();
 }
