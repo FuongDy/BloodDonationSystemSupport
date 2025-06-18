@@ -1,15 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import Button from '../components/common/Button';
 
 const NotFoundPage = () => {
-    useEffect(() => {
-        // Ghi lại lỗi 404 vào console để debug nếu cần
-        console.error(
-            `404 Error: User attempted to access a non-existent route.`
-        );
-    }, []);
 
     return (
         <div className="min-h-screen flex flex-col">
