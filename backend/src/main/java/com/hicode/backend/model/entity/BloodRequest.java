@@ -1,5 +1,6 @@
 package com.hicode.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hicode.backend.model.entity.User;
 import com.hicode.backend.model.enums.RequestStatus;
 import com.hicode.backend.model.enums.UrgencyLevel;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "blood_requests")
@@ -48,6 +50,10 @@ public class BloodRequest {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "bloodRequest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("request-pledge")
+    private List<DonationPledge> pledges;
 
     @PrePersist
     protected void onCreate() {

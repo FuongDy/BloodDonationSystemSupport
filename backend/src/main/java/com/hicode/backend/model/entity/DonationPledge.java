@@ -1,7 +1,6 @@
-package com.hicode.backend.entity;
+package com.hicode.backend.model.entity;
 
-import com.hicode.backend.model.entity.BloodRequest;
-import com.hicode.backend.model.entity.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +20,16 @@ public class DonationPledge {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donor_id", nullable = false)
+    @JsonBackReference("user-pledge")
     private User donor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blood_request_id", nullable = false)
+    @JsonBackReference("request-pledge")
     private BloodRequest bloodRequest;
+
+    @Column(length = 50)
+    private String status;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

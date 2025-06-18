@@ -87,6 +87,7 @@ public class User {
     private List<DonationProcess> donationProcesses;
 
     @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("user-pledge")
     private List<DonationPledge> pledges;
 
     @Column(updatable = false)
