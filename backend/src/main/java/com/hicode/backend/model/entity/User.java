@@ -72,6 +72,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("user-blogpost")
+    private List<BlogPost> blogPosts;
 
     @Column(columnDefinition = "BIT DEFAULT 0")
     private Boolean emailVerified = false;
