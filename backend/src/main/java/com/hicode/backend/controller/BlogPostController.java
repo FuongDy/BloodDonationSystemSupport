@@ -63,4 +63,19 @@ public class BlogPostController {
         blogPostService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<Page<BlogPostResponse>> getPendingPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        return ResponseEntity.ok(blogPostService.getPendingPosts(pageable));
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<BlogPostResponse> approvePost(@PathVariable Long id) {
+        return ResponseEntity.ok(blogPostService.approvePost(id));
+    }
 }

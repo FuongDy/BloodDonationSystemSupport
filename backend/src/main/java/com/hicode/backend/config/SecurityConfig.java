@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +26,6 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -43,18 +43,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // --- CÁC API CÔNG KHAI ---
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-types", "/api/blood-types/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-compatibility/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/blog-posts", "/api/blog-posts/**").permitAll() // <-- DÒNG MỚI
+                        .requestMatchers("/api/inventory/**").hasAnyRole("STAFF", "ADMIN")
                         .requestMatchers("/error").permitAll()
-
-                        // --- CÁC API CẦN XÁC THỰC ---
                         .anyRequest().authenticated()
                 );
 

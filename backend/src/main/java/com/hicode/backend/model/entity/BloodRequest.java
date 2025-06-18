@@ -1,5 +1,6 @@
 package com.hicode.backend.model.entity;
 
+import com.hicode.backend.model.entity.User;
 import com.hicode.backend.model.enums.RequestStatus;
 import com.hicode.backend.model.enums.UrgencyLevel;
 import jakarta.persistence.*;
@@ -20,17 +21,17 @@ public class BloodRequest {
     private Long id;
 
     @Column(columnDefinition = "NVARCHAR(255)")
-    private String patientName; // Tên bệnh nhân
+    private String patientName;
 
     @Column(columnDefinition = "NVARCHAR(255)")
-    private String hospital; // Bệnh viện yêu cầu
+    private String hospital;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blood_type_id", nullable = false)
     private BloodType bloodType;
 
     @Column(nullable = false)
-    private Integer quantityInUnits; // Số lượng đơn vị máu cần
+    private Integer quantityInUnits;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
@@ -42,7 +43,7 @@ public class BloodRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_staff_id", nullable = false)
-    private User createdBy; // Nhân viên tạo yêu cầu
+    private User createdBy;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

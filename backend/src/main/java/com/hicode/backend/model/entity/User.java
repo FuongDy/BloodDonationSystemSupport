@@ -86,6 +86,9 @@ public class User {
     @JsonManagedReference("user-donation")
     private List<DonationProcess> donationProcesses;
 
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DonationPledge> pledges;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

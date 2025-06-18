@@ -12,17 +12,13 @@ import lombok.Setter;
 public class CreateBloodRequestRequest {
     @NotBlank
     private String patientName;
-
     @NotBlank
     private String hospital;
-
     @NotNull
     private Integer bloodTypeId;
-
     @NotNull
     @Positive
     private Integer quantityInUnits;
-
     @NotNull
     private UrgencyLevel urgency;
 }

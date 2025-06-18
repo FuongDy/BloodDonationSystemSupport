@@ -2,6 +2,6 @@ package com.hicode.backend.model.enums;
 
 public enum BlogPostStatus {
     PUBLISHED,
-    DRAFT
-
+    DRAFT,
+    PENDING_APPROVAL
 }
