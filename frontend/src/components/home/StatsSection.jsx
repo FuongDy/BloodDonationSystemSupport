@@ -1,31 +1,59 @@
 // components/home/StatsSection.jsx
-import { Users, Droplet, Heart } from 'lucide-react';
-import PageContainer from '../layouts/PageContainer';
+import { 
+    Container, 
+    SimpleGrid, 
+    Box, 
+    Text, 
+    Title, 
+    ThemeIcon,
+    Stack
+} from '@mantine/core';
+import { 
+    IconUsers, 
+    IconDroplet, 
+    IconHeart 
+} from '@tabler/icons-react';
 
 export default function StatsSection() {
     const stats = [
-        { number: "10,000+", label: "Người hiến máu", icon: Users },
-        { number: "5,000+", label: "Lượt hiến máu thành công", icon: Droplet },
-        { number: "50+", label: "Bệnh viện & Đối tác", icon: Heart }
+        { number: "10,000+", label: "Người hiến máu", icon: IconUsers },
+        { number: "5,000+", label: "Lượt hiến máu thành công", icon: IconDroplet },
+        { number: "50+", label: "Bệnh viện & Đối tác", icon: IconHeart }
     ];
+
     return (
-        <>
-            <section className="section-padding bg-red-600 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-700/20 to-pink-600/20"></div>
-                <PageContainer className="relative">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        {stats.map((s, i) => (
-                            <div key={s.label} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.2}s` }}>
-                                <div className="mb-4">
-                                    <s.icon className="w-12 h-12 mx-auto mb-2 text-red-200" />
-                                </div>
-                                <div className="text-4xl lg:text-5xl font-bold mb-2 animate-pulse-soft">{s.number}</div>
-                                <div className="text-red-100 text-lg">{s.label}</div>
-                            </div>
-                        ))}
-                    </div>
-                </PageContainer>
-            </section>
-        </>
-    )
+        <Box 
+            bg="red.6" 
+            py={80}
+            style={{
+                background: 'linear-gradient(135deg, #e03131 0%, #d6336c 100%)',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
+            <Container size="xl" style={{ position: 'relative', zIndex: 1 }}>
+                <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl">
+                    {stats.map((stat, index) => (
+                        <Stack key={stat.label} align="center" gap="md">
+                            <ThemeIcon 
+                                size={60} 
+                                radius="xl" 
+                                variant="light" 
+                                color="rgba(255, 255, 255, 0.2)"
+                                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                            >
+                                <stat.icon size={32} color="white" />
+                            </ThemeIcon>
+                            <Title order={2} c="white" ta="center" size="3rem">
+                                {stat.number}
+                            </Title>
+                            <Text c="red.1" ta="center" size="lg" fw={500}>
+                                {stat.label}
+                            </Text>
+                        </Stack>
+                    ))}
+                </SimpleGrid>
+            </Container>
+        </Box>
+    );
 }

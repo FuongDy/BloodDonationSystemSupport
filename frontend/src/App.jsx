@@ -1,5 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { AppShell } from '@mantine/core'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotfoundPage'
 import Footer from './components/layouts/Footer'
