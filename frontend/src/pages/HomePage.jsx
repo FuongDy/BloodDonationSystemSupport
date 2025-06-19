@@ -7,9 +7,11 @@ import StatsSection from '../components/home/StatsSection';
 const HomePage = () => {
     return (
         <Box mih="100vh" bg="white">
-            <HeroSection />
-            <FeaturesSection />
-            <StatsSection />
+            <Box pt={64}>
+                <HeroSection />
+                <FeaturesSection />
+                <StatsSection />
+            </Box>
         </Box>
     );
 };

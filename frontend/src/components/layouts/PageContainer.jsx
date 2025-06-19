@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '@mantine/core';
 
-//PageContainer using Container component
+// Mantine version of PageContainer using Container component
 const PageContainer = ({
     children,
     size = "xl",

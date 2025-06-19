@@ -24,7 +24,7 @@ import {
   IconBook,
   IconCalendarPlus,
   IconShield,
-  IconExclamationTriangle,
+  IconAlertTriangle,
   IconChevronDown
 } from '@tabler/icons-react';
 
@@ -39,17 +39,25 @@ const Navbar = () => {
         navigate('/login');
     };
 
-    const isAdmin = user?.role === 'Admin';    const navLinks = [
+    const isAdmin = user?.role === 'Admin';
+
+    const navLinks = [
         { to: '/', label: 'Trang chủ', icon: IconHome },
         { to: '/blood-compatibility', label: 'Cẩm nang', icon: IconBook },
-        { to: '/blood-requests', label: 'Cần máu gấp', icon: IconExclamationTriangle },
+        { to: '/blood-requests', label: 'Cần máu gấp', icon: IconAlertTriangle },
         ...(isAuthenticated ? [{ to: '/request-donation', label: 'Đặt lịch hiến máu', icon: IconCalendarPlus }] : []),
         ...(isAdmin ? [{ to: '/admin', label: 'Quản trị', icon: IconShield, isAdmin: true }] : [])
-    ];return (
+    ];
+
+    return (
         <Box
             component="nav"
             style={{
-                height: '100%',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1000,
                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
                 backdropFilter: 'blur(10px)',
                 borderBottom: '1px solid #e9ecef'

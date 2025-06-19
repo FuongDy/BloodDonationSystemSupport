@@ -1,4 +1,4 @@
-/* Custom Mantine styles */
+@import "tailwindcss";
 
 /* Custom Mantine hover effects */
 .hover-card {
