@@ -1,27 +1,56 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldAlert } from 'lucide-react';
-import Button from '../components/common/Button';
+import { 
+    Container, 
+    Title, 
+    Text, 
+    Button, 
+    Group, 
+    Box,
+    Stack,
+    ThemeIcon
+} from '@mantine/core';
+import { IconShield, IconHome, IconArrowLeft } from '@tabler/icons-react';
 
 const ForbiddenPage = () => {
     return (
-        <main className="flex-grow flex flex-col items-center justify-center text-center px-4 pt-16 min-h-screen">
-            <ShieldAlert size={64} className="text-red-500 mb-6" />
-            <h1 className="text-4xl font-bold text-gray-800 mb-3">403 - Truy cập bị từ chối</h1>
-            <p className="text-lg text-gray-600 mb-8 max-w-md">
-                Rất tiếc, bạn không có quyền truy cập vào trang này.
-            </p>
-            <div className="space-x-4">
-                <Link to="/">
-                    <Button variant="primary">
-                        Về trang chủ
-                    </Button>
-                </Link>
-                <Button variant="secondary" onClick={() => window.history.back()}>
-                    Quay lại trang trước
-                </Button>
-            </div>
-        </main>
+        <Box mih="100vh" bg="gray.0" style={{ display: 'flex', alignItems: 'center' }}>
+            <Container size="sm">
+                <Stack align="center" gap="xl" ta="center">                    <ThemeIcon size={80} radius="xl" variant="light" color="red">
+                        <IconShield size={48} />
+                    </ThemeIcon>
+                    
+                    <Title order={1} size="3rem" fw={700} c="dark.7">
+                        403 - Truy cập bị từ chối
+                    </Title>
+                    
+                    <Text size="lg" c="dimmed" maw={400}>
+                        Rất tiếc, bạn không có quyền truy cập vào trang này.
+                    </Text>
+                    
+                    <Group gap="md" justify="center">
+                        <Button
+                            component={Link}
+                            to="/"
+                            size="lg"
+                            leftSection={<IconHome size={20} />}
+                            radius="md"
+                        >
+                            Về trang chủ
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            leftSection={<IconArrowLeft size={20} />}
+                            onClick={() => window.history.back()}
+                            radius="md"
+                        >
+                            Quay lại trang trước
+                        </Button>
+                    </Group>
+                </Stack>
+            </Container>
+        </Box>
     );
 };
 
