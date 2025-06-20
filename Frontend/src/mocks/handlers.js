@@ -120,7 +120,88 @@ const mockBloodUnits = [
     { id: 'unit2', bloodType: 'O-', collectionDate: '2024-05-10', expiryDate: '2024-06-20', status: 'Available', volume: 420, donorId: 'D002' },
 ];
 
+const mockUrgentRequests = [
+    {
+        id: 1,
+        bloodType: "A+",
+        bloodRh: "(Dương)",
+        hospital: "Bệnh viện Chợ Rẫy",
+        patientName: "Nguyễn Văn A",
+        patientGender: "Nam",
+        patientAge: 45,
+        unitsNeeded: 3,
+        location: "Q5, TP.HCM",
+        reason: "Bệnh nhân đang cần máu gấp do tai nạn giao thông nghiêm trọng.",
+        urgency: "Rất khẩn cấp",
+        requestDate: "2025-06-20T10:00:00Z",
+    },
+    {
+        id: 2,
+        bloodType: "O+",
+        bloodRh: "(Dương)",
+        hospital: "Bệnh viện Quận 7",
+        patientName: "Trần Thị C",
+        patientGender: "Nữ",
+        patientAge: 32,
+        unitsNeeded: 2,
+        location: "Q7, TP.HCM",
+        reason: "Ca mổ khẩn cấp, cần máu cùng nhóm trong vòng 24 giờ.",
+        urgency: "Rất khẩn cấp",
+        requestDate: "2025-06-21T08:30:00Z",
+    },
+    {
+        id: 3,
+        bloodType: "B-",
+        bloodRh: "(Âm)",
+        hospital: "Bệnh viện Đa khoa Thủ Đức",
+        patientName: "Lê Văn E",
+        patientGender: "Nam",
+        patientAge: 28,
+        unitsNeeded: 1,
+        location: "TP. Thủ Đức, TP.HCM",
+        reason: "Bệnh nhân cần máu hiếm B âm cho ca ghép tủy.",
+        urgency: "Khẩn cấp",
+        requestDate: "2025-06-21T11:00:00Z",
+    },
+    {
+        id: 4,
+        bloodType: "A+",
+        bloodRh: "(Dương)",
+        hospital: "Bệnh viện Nhân dân 115",
+        patientName: "Phạm Thị G",
+        patientGender: "Nữ",
+        patientAge: 56,
+        unitsNeeded: 2,
+        location: "Q10, TP.HCM",
+        reason: "Bệnh nhân đang điều trị ung thư máu, cần truyền máu định kỳ.",
+        urgency: "Khẩn cấp",
+        requestDate: "2025-06-19T15:00:00Z",
+    },
+    {
+        id: 5,
+        bloodType: "AB+",
+        bloodRh: "(AB dương)",
+        hospital: "Bệnh viện Nhi đồng 2",
+        patientName: "Hoàng Văn I",
+        patientGender: "Nam",
+        patientAge: 17,
+        unitsNeeded: 1,
+        location: "Q1, TP.HCM",
+        reason: "Trẻ vị thành niên cần truyền máu cho ca phẫu thuật đã lên lịch.",
+        urgency: "Cần thiết",
+        requestDate: "2025-06-18T09:00:00Z",
+    },
+];
+
 export const handlers = [
+    // Urgent Blood Requests
+    http.get(`${API_URL}/urgent-requests`, ({ request }) => {
+        console.log("MSW: Fetching urgent blood requests...");
+        // In a real scenario, you would filter based on query params
+        // For now, we return all mock requests
+        return HttpResponse.json(mockUrgentRequests);
+    }),
+
     // AuthService
     http.post(`${API_URL}/auth/register`, async ({ request }) => {
         const reqBody = await request.json();
