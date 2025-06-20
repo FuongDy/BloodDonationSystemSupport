@@ -468,4 +468,33 @@ export const handlers = [
         return HttpResponse.json({ message: 'Unit not found' }, { status: 404 });
     }),
 
+    // User Profile API Handlers
+    http.get(`${API_URL}/users/me/profile`, () => {
+        console.log('MSW: GET /users/me/profile');
+        return HttpResponse.json(mockUser);
+    }),
+
+    http.put(`${API_URL}/users/me/profile`, async ({ request }) => {
+        const updates = await request.json();
+        console.log('MSW: PUT /users/me/profile', updates);
+        // Update mock user data
+        mockUser = { ...mockUser, ...updates };
+        return HttpResponse.json(mockUser);
+    }),
+
+    // Blood Types API Handler
+    http.get(`${API_URL}/blood-types`, () => {
+        console.log('MSW: GET /blood-types');
+        const mockBloodTypes = [
+            { id: 1, bloodGroup: 'A', rhFactor: '+', description: 'A dương' },
+            { id: 2, bloodGroup: 'A', rhFactor: '-', description: 'A âm' },
+            { id: 3, bloodGroup: 'B', rhFactor: '+', description: 'B dương' },
+            { id: 4, bloodGroup: 'B', rhFactor: '-', description: 'B âm' },
+            { id: 5, bloodGroup: 'AB', rhFactor: '+', description: 'AB dương' },
+            { id: 6, bloodGroup: 'AB', rhFactor: '-', description: 'AB âm' },
+            { id: 7, bloodGroup: 'O', rhFactor: '+', description: 'O dương' },
+            { id: 8, bloodGroup: 'O', rhFactor: '-', description: 'O âm' }
+        ];
+        return HttpResponse.json(mockBloodTypes);
+    }),
 ];

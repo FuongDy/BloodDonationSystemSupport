@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import userService from '../services/userService';
 import toast from 'react-hot-toast';
-import { UserCircle, Edit3, Save, CalendarDays, Droplet, Mail, Phone, MapPin, ShieldCheck, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { UserCircle, Edit3, Save, CalendarDays, Droplet, Mail, Phone, MapPin, ShieldCheck, AlertTriangle, CheckCircle, XCircle, User } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import InputField from '../components/common/InputField';
@@ -126,8 +126,8 @@ const UserProfilePage = () => {
     const [bloodTypes, setBloodTypes] = useState([]);
 
     const fetchProfile = useCallback(async () => {
-        // Ensure user and userId are valid before proceeding
-        if (!user || !user.userId) {
+        // Ensure user is valid before proceeding
+        if (!user) {
             setError("Thông tin xác thực người dùng không hợp lệ để tải hồ sơ.");
             setLoading(false);
             setProfileData(null);
@@ -136,7 +136,7 @@ const UserProfilePage = () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await userService.getProfile(user.userId);
+            const data = await userService.getCurrentUserProfile();
             if (data) {
                 setProfileData(data);
                 setFormData({
@@ -168,17 +168,22 @@ const UserProfilePage = () => {
 
     const fetchBloodTypes = useCallback(async () => {
         try {
-            // Assuming you have a service to fetch blood types
-            // For now, using a placeholder or ensuring it's handled if bloodTypeService exists
-            // const types = await bloodTypeService.getAllBloodTypes();
-            // setBloodTypes(types);
-            // Placeholder if service not fully implemented yet:
-            // Simulating fetch from a config or mock if bloodTypeService is not ready
-            // This part needs to be connected to your actual blood type fetching logic
-            // For the purpose of fixing the UI, we'll assume bloodTypes might be populated elsewhere or can be empty
+            const types = await userService.getBloodTypes();
+            setBloodTypes(types);
         } catch (err) {
             console.error("Failed to fetch blood types:", err);
             toast.error("Không thể tải danh sách nhóm máu.");
+            // Set fallback blood types
+            setBloodTypes([
+                { id: 1, bloodGroup: 'A', rhFactor: '+', description: 'A dương' },
+                { id: 2, bloodGroup: 'A', rhFactor: '-', description: 'A âm' },
+                { id: 3, bloodGroup: 'B', rhFactor: '+', description: 'B dương' },
+                { id: 4, bloodGroup: 'B', rhFactor: '-', description: 'B âm' },
+                { id: 5, bloodGroup: 'AB', rhFactor: '+', description: 'AB dương' },
+                { id: 6, bloodGroup: 'AB', rhFactor: '-', description: 'AB âm' },
+                { id: 7, bloodGroup: 'O', rhFactor: '+', description: 'O dương' },
+                { id: 8, bloodGroup: 'O', rhFactor: '-', description: 'O âm' }
+            ]);
         }
     }, []);
 
@@ -192,10 +197,10 @@ const UserProfilePage = () => {
         }
 
         // Auth is complete (authLoading is false)
-        if (isAuthenticated && user && user.userId) {
+        if (isAuthenticated && user) {
             fetchProfile();
             fetchBloodTypes();
-        } else if (isAuthenticated && (!user || !user.userId)) {
+        } else if (isAuthenticated && !user) {
             // Authenticated according to context, but user object is invalid/incomplete
             setError("Đã xác thực nhưng thông tin người dùng không đầy đủ hoặc bị lỗi. Vui lòng thử đăng nhập lại.");
             setLoading(false);
@@ -232,7 +237,7 @@ const UserProfilePage = () => {
         }
         setIsSubmitting(true);
         try {
-            await userService.updateProfile(user.userId, formData);
+            await userService.updateUserProfile(formData);
             toast.success('Cập nhật hồ sơ thành công!');
             setIsEditing(false);
             fetchProfile(); // Refresh profile data
@@ -252,7 +257,7 @@ const UserProfilePage = () => {
         return (
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
-                <main className="flex-grow container mx-auto px-4 py-8 flex justify-center items-center">
+                <main className="flex-grow container mx-auto px-4 py-8 pt-24 flex justify-center items-center">
                     <LoadingSpinner size="lg" />
                 </main>
                 <Footer />
@@ -264,10 +269,12 @@ const UserProfilePage = () => {
         return (
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
-                <main className="flex-grow container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <ProfileSidebar />
-                        <div className="flex-1 flex justify-center items-center">
+                <main className="flex-grow container mx-auto px-4 py-8 pt-24">
+                    <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+                        <div className="lg:w-80 flex-shrink-0 order-2 lg:order-1">
+                            <ProfileSidebar />
+                        </div>
+                        <div className="flex-1 min-w-0 order-1 lg:order-2">
                             <LoadingSpinner size="lg" />
                         </div>
                     </div>
@@ -281,31 +288,35 @@ const UserProfilePage = () => {
         return (
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
-                <main className="flex-grow container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <ProfileSidebar />
-                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes for vertical centering and full height feel */}
-                            <div className="text-center"> {/* Inner wrapper for text content */}
-                                <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
-                                <h2 className="text-xl font-semibold text-red-700 mb-2">Đã xảy ra lỗi</h2>
-                                <p className="text-gray-600 mb-4">{error}</p>
-                                {isAuthenticated && user?.userId && !error.includes("thông tin người dùng không đầy đủ") && (
-                                    <Button onClick={fetchProfile} variant="primary">
-                                        Thử lại
-                                    </Button>
-                                )}
-                                {isAuthenticated && (!user || !user.userId) && (
-                                    <Link to="/login" onClick={() => { if(logout) logout(); }}>
-                                        <Button variant="primary">
-                                            Đăng nhập lại
+                <main className="flex-grow container mx-auto px-4 py-8 pt-24">
+                    <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+                        <div className="lg:w-80 flex-shrink-0 order-2 lg:order-1">
+                            <ProfileSidebar />
+                        </div>
+                        <div className="flex-1 min-w-0 order-1 lg:order-2">
+                            <div className="bg-white shadow-xl rounded-lg p-6 md:p-8 flex flex-col justify-center items-center min-h-96">
+                                <div className="text-center">
+                                    <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+                                    <h2 className="text-xl font-semibold text-red-700 mb-2">Đã xảy ra lỗi</h2>
+                                    <p className="text-gray-600 mb-4">{error}</p>
+                                    {isAuthenticated && user && !error.includes("thông tin người dùng không đầy đủ") && (
+                                        <Button onClick={fetchProfile} variant="primary">
+                                            Thử lại
                                         </Button>
-                                    </Link>
-                                )}
-                                {!isAuthenticated && !error.includes("thông tin người dùng không đầy đủ") && (
-                                    <Link to="/login">
-                                        <Button variant="primary">Đăng nhập</Button>
-                                    </Link>
-                                )}
+                                    )}
+                                    {isAuthenticated && !user && (
+                                        <Link to="/login" onClick={() => { if(logout) logout(); }}>
+                                            <Button variant="primary">
+                                                Đăng nhập lại
+                                            </Button>
+                                        </Link>
+                                    )}
+                                    {!isAuthenticated && !error.includes("thông tin người dùng không đầy đủ") && (
+                                        <Link to="/login">
+                                            <Button variant="primary">Đăng nhập</Button>
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -320,16 +331,20 @@ const UserProfilePage = () => {
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
                 <main className="flex-grow container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <ProfileSidebar />
-                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes */}
-                            <div className="text-center"> {/* Inner wrapper */}
-                                <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
-                                <h2 className="text-xl font-semibold text-gray-700 mb-2">Yêu cầu đăng nhập</h2>
-                                <p className="text-gray-600 mb-4">Bạn cần đăng nhập để xem thông tin hồ sơ.</p>
-                                <Link to="/login">
-                                    <Button variant="primary">Đến trang đăng nhập</Button>
-                                </Link>
+                    <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+                        <div className="lg:w-80 flex-shrink-0 order-2 lg:order-1">
+                            <ProfileSidebar />
+                        </div>
+                        <div className="flex-1 min-w-0 order-1 lg:order-2">
+                            <div className="bg-white shadow-xl rounded-lg p-6 md:p-8 flex flex-col justify-center items-center min-h-96">
+                                <div className="text-center">
+                                    <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
+                                    <h2 className="text-xl font-semibold text-gray-700 mb-2">Yêu cầu đăng nhập</h2>
+                                    <p className="text-gray-600 mb-4">Bạn cần đăng nhập để xem thông tin hồ sơ.</p>
+                                    <Link to="/login">
+                                        <Button variant="primary">Đến trang đăng nhập</Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -344,14 +359,18 @@ const UserProfilePage = () => {
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <Navbar />
                 <main className="flex-grow container mx-auto px-4 py-8">
-                    <div className="flex flex-col md:flex-row gap-8">
-                        <ProfileSidebar />
-                        <div className="flex-1 flex flex-col justify-center items-center bg-white shadow-xl rounded-lg p-6 md:p-8"> {/* Changed classes */}
-                            <div className="text-center"> {/* Inner wrapper */}
-                                <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
-                                <h2 className="text-xl font-semibold text-gray-700 mb-2">Không có dữ liệu hồ sơ</h2>
-                                <p className="text-gray-600">Không tìm thấy thông tin hồ sơ cho tài khoản này.</p>
-                                {/* Optionally, a button to create a profile if applicable */}
+                    <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+                        <div className="lg:w-80 flex-shrink-0 order-2 lg:order-1">
+                            <ProfileSidebar />
+                        </div>
+                        <div className="flex-1 min-w-0 order-1 lg:order-2">
+                            <div className="bg-white shadow-xl rounded-lg p-6 md:p-8 flex flex-col justify-center items-center min-h-96">
+                                <div className="text-center">
+                                    <UserCircle size={48} className="text-gray-400 mx-auto mb-4" />
+                                    <h2 className="text-xl font-semibold text-gray-700 mb-2">Không có dữ liệu hồ sơ</h2>
+                                    <p className="text-gray-600">Không tìm thấy thông tin hồ sơ cho tài khoản này.</p>
+                                    {/* Optionally, a button to create a profile if applicable */}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -365,10 +384,12 @@ const UserProfilePage = () => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Navbar />
-            <main className="flex-grow container mx-auto px-4 py-8">
-                <div className="flex flex-col md:flex-row gap-8">
-                    <ProfileSidebar />
-                    <div className="flex-1">
+            <main className="flex-grow container mx-auto px-4 py-8 pt-24">
+                <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+                    <div className="lg:w-80 flex-shrink-0 order-2 lg:order-1">
+                        <ProfileSidebar />
+                    </div>
+                    <div className="flex-1 min-w-0 order-1 lg:order-2">
                         <Routes>
                             <Route 
                                 index 

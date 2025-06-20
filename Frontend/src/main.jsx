@@ -32,8 +32,11 @@ async function enableMocking() {
         if (request.url.includes('/@vite') || request.url.includes('/@react-refresh')) {
           return;
         }
-        // Các request khác không được mock sẽ bị bypass (hoặc bạn có thể chọn warning/error)
-        // print.warning() // Bỏ comment nếu muốn cảnh báo
+        // Log warning để giúp debug các request chưa được mock
+        print.warning();
+      },
+      serviceWorker: {
+        url: '/mockServiceWorker.js'
       }
     });
   }
