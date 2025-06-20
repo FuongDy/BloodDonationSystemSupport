@@ -1,14 +1,13 @@
 // src/pages/LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, LogIn as LogInIcon } from 'lucide-react'; // Đổi tên LogIn để tránh trùng
+import { Eye, EyeOff, LogIn as LogInIcon, Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import Navbar from '../components/layout/Navbar'; // Đã refactor
-import Footer from '../components/layout/Footer'; // Đã refactor
-import { useAuth } from '../hooks/useAuth'; // Hook xác thực
-import Button from '../components/common/Button'; // Component Button chung
-import InputField from '../components/common/InputField'; // Component InputField chung
+import { useAuth } from '../hooks/useAuth';
+import Button from '../components/common/Button';
+import InputField from '../components/common/InputField';
+import logo from '/logo.png';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -51,25 +50,29 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Navbar />
-            <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24"> {/* Thêm padding top để không bị Navbar che */}
-                <div className="max-w-md w-full space-y-8">
-                    <div className="text-center">
-                        <LogInIcon className="mx-auto h-12 w-auto text-red-600" />
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                            Đăng nhập tài khoản
+        <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
+            <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-md space-y-8">
+                    <div>
+                        <Link to="/">
+                            <img
+                                className="mx-auto h-16 w-auto"
+                                src={logo}
+                                alt="BloodConnect Logo"
+                            />
+                        </Link>
+                        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+                            Chào mừng trở lại
                         </h2>
-                        <p className="mt-2 text-sm text-gray-600">
-                            Hoặc{' '}
+                        <p className="mt-2 text-center text-sm text-gray-600">
+                            Chưa có tài khoản?{' '}
                             <Link to="/register" className="font-medium text-red-600 hover:text-red-500">
-                                tạo tài khoản mới
+                                Đăng ký ngay
                             </Link>
                         </p>
                     </div>
 
-                    {/* Form section */}
-                    <div className="bg-white py-8 px-6 shadow-xl rounded-xl sm:px-10">
+                    <div className="bg-white py-8 px-6 shadow-2xl rounded-2xl sm:px-10">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <InputField
                                 label="Địa chỉ Email"
@@ -97,7 +100,6 @@ const LoginPage = () => {
                                 hasIcon={true}
                                 icon={showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 onIconClick={() => setShowPassword(!showPassword)}
-                            // error={error.password} // Nếu có validation lỗi cụ thể cho password
                             />
 
                             <div className="flex items-center justify-between">
@@ -108,8 +110,7 @@ const LoginPage = () => {
                                         type="checkbox"
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
-                                        className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                                        disabled={authLoading}
+                                        className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
                                     />
                                     <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                                         Ghi nhớ tôi
@@ -117,38 +118,56 @@ const LoginPage = () => {
                                 </div>
 
                                 <div className="text-sm">
-                                    <Link to="/forgot-password" className="font-medium text-red-600 hover:text-red-500">
+                                    <a href="#" className="font-medium text-red-600 hover:text-red-500">
                                         Quên mật khẩu?
-                                    </Link>
+                                    </a>
                                 </div>
                             </div>
 
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={authLoading}
-                                isLoading={authLoading} // Truyền prop isLoading vào Button
-                                variant="primary"
-                                size="lg"
-                            >
-                                Đăng nhập
-                            </Button>
+                            <div>
+                                <Button type="submit" className="w-full" disabled={authLoading}>
+                                    <LogInIcon className="mr-2 h-5 w-5" />
+                                    {authLoading ? 'Đang xử lý...' : 'Đăng nhập'}
+                                </Button>
+                            </div>
                         </form>
                     </div>
-                    <p className="mt-8 text-center text-sm text-gray-500">
+                     <p className="mt-6 text-center text-xs text-gray-500">
                         Bằng việc tiếp tục, bạn đồng ý với{' '}
-                        <Link to="/terms" className="font-medium text-gray-700 hover:text-gray-900">
-                            Điều khoản dịch vụ
-                        </Link>{' '}
-                        và{' '}
-                        <Link to="/privacy" className="font-medium text-gray-700 hover:text-gray-900">
-                            Chính sách bảo mật
-                        </Link>
-                        {' '}của chúng tôi.
+                        <Link to="/terms" className="underline hover:text-gray-700">Điều khoản dịch vụ</Link> và{' '}
+                        <Link to="/privacy" className="underline hover:text-gray-700">Chính sách bảo mật</Link> của chúng tôi.
                     </p>
                 </div>
-            </main>
-            <Footer />
+            </div>
+            <div className="hidden lg:flex items-center justify-center bg-gradient-to-br from-red-600 to-rose-700 p-12 text-white relative overflow-hidden">
+                {/* Animated background shapes */}
+                <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob-spin"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-rose-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob-spin animation-delay-2000"></div>
+                <div className="absolute top-1/2 right-1/3 w-80 h-80 bg-red-500 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob-spin animation-delay-4000"></div>
+
+                 <div className="relative z-10 text-center space-y-8">
+                    <div className="relative w-48 h-48 mx-auto animate-float">
+                        <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl"></div>
+                        <Heart size={80} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white animate-pulse"/>
+                    </div>
+
+                    <h1 className="text-4xl font-bold leading-tight tracking-wide text-shadow-lg">
+                        Mỗi giọt máu cho đi,
+                        <br />
+                        Một cuộc đời ở lại.
+                    </h1>
+                    <div className="max-w-md mx-auto">
+                        <p className="text-lg text-red-100 mb-6">
+                            Cảm ơn bạn đã tham gia cộng đồng BloodConnect và góp phần mang lại hy vọng cho những người cần giúp đỡ.
+                        </p>
+                        <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl border border-white/30">
+                            <p className="font-semibold text-white">
+                                "Hành động nhỏ, ý nghĩa lớn. Hiến máu cứu người - một nghĩa cử cao đẹp."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
