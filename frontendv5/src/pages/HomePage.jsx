@@ -323,7 +323,7 @@ const HomePage = () => {
               <Link to='/register'>
                 <Button
                   size='lg'
-                  className='bg-white text-red-600 hover:bg-gray-100 font-semibold group'
+                  className='bg-red-600 text-red-600 hover:bg-gray-100 font-semibold group'
                 >
                   Đăng ký hiến máu
                   <ArrowRight className='ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform' />
