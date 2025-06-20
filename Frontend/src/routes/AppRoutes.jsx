@@ -9,6 +9,9 @@ import NotFoundPage from "../pages/NotFoundPage.jsx";
 import UserProfilePage from "../pages/UserProfilePage"; // Giả sử bạn sẽ tạo trang này
 import ForbiddenPage from "../pages/ForbiddenPage"; // Giả sử bạn sẽ tạo trang này
 import UrgentRequestsPage from "../pages/UrgentRequestsPage"; // Import the new page
+import ScheduleDonationPage from "../pages/ScheduleDonationPage"; // Import the new page
+import AboutPage from "../pages/AboutPage"; // Import AboutPage
+import NewsPage from "../pages/NewsPage"; // Import NewsPage
 
 import AdminLayout from "../components/layout/AdminLayout";
 
@@ -31,6 +34,9 @@ const AppRoutes = () => (
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/urgent-requests" element={<UrgentRequestsPage />} /> {/* Add the new route */}
+        <Route path="/schedule-donation" element={<ScheduleDonationPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/news" element={<NewsPage />} />
         <Route path="/forbidden" element={<ForbiddenPage />} /> {/* Trang cấm truy cập */}
 
         {/* Authenticated User Routes */}

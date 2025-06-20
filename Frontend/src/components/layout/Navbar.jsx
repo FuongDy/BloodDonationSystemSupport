@@ -1,6 +1,6 @@
 // src/components/layout/Navbar.jsx
 import React from 'react';
-import { Heart, Home, CalendarPlus, ShieldAlert, UserCog, LogOut, UserCircle, LogIn, UserPlus } from 'lucide-react'; // Updated icons
+import { Heart, Home, CalendarPlus, ShieldAlert, UserCog, LogOut, UserCircle, LogIn, UserPlus, Info, Newspaper } from 'lucide-react'; // Updated icons
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -19,8 +19,10 @@ const Navbar = () => {
     // Updated navLinks based on the image
     const navLinks = [
         { to: "/", label: "Trang chủ", icon: Home },
-        { to: "/urgent-requests", label: "Cần máu gấp", icon: ShieldAlert }, // New page
-        { to: "/schedule-donation", label: "Đặt lịch hiến máu", icon: CalendarPlus }, // New page
+        { to: "/about", label: "Về chúng tôi", icon: Info },
+        { to: "/urgent-requests", label: "Cần máu gấp", icon: ShieldAlert },
+        { to: "/schedule-donation", label: "Đặt lịch hiến máu", icon: CalendarPlus },
+        { to: "/news", label: "Tin tức", icon: Newspaper },
     ];
 
     const isActive = (path) => location.pathname === path;
