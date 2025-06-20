@@ -1,13 +1,16 @@
 package com.hicode.backend.service;
 
+import com.hicode.backend.dto.admin.BloodRequestResponse;
+import com.hicode.backend.dto.admin.BloodTypeResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
 import com.hicode.backend.model.entity.*;
-import com.hicode.backend.model.enums.RequestStatus;
+import com.hicode.backend.model.enums.*;
 import com.hicode.backend.repository.BloodRequestRepository;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.DonationPledgeRepository;
 import com.hicode.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,28 +18,20 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BloodRequestService {
 
-    @Autowired
-    private BloodRequestRepository bloodRequestRepository;
-    @Autowired
-    private BloodTypeRepository bloodTypeRepository;
-    @Autowired
-    private DonationPledgeRepository pledgeRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private EmailService emailService;
+    @Autowired private BloodRequestRepository bloodRequestRepository;
+    @Autowired private BloodTypeRepository bloodTypeRepository;
+    @Autowired private DonationPledgeRepository pledgeRepository;
+    @Autowired private UserService userService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private EmailService emailService;
 
-    /**
-     * Tạo một yêu cầu cần máu mới (do Staff/Admin thực hiện).
-     */
     @Transactional
-    public BloodRequest createRequest(CreateBloodRequestRequest request) {
+    public BloodRequestResponse createRequest(CreateBloodRequestRequest request) {
         User currentStaff = userService.getCurrentUser();
         BloodType bloodType = bloodTypeRepository.findById(request.getBloodTypeId())
                 .orElseThrow(() -> new EntityNotFoundException("BloodType not found with id: " + request.getBloodTypeId()));
@@ -48,40 +43,39 @@ public class BloodRequestService {
         newRequest.setQuantityInUnits(request.getQuantityInUnits());
         newRequest.setUrgency(request.getUrgency());
         newRequest.setCreatedBy(currentStaff);
-        newRequest.setStatus(RequestStatus.PENDING);
 
         BloodRequest savedRequest = bloodRequestRepository.save(newRequest);
-
-        // Gửi thông báo đến các người hiến máu phù hợp
         sendNotificationToAvailableDonors(savedRequest);
 
-        return savedRequest;
+        return mapToResponse(savedRequest);
     }
 
-    /**
-     * Lấy danh sách các yêu cầu đang hoạt động (PENDING) cho Member xem.
-     */
-    public List<BloodRequest> searchActiveRequests() {
-        return bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
+    public List<BloodRequestResponse> searchActiveRequests() {
+        List<BloodRequest> requests = bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
+        return requests.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    /**
-     * Lấy chi tiết một yêu cầu máu theo ID.
-     */
-    public BloodRequest getRequestById(Long id) {
-        return bloodRequestRepository.findById(id)
+    public BloodRequestResponse getRequestById(Long id) {
+        BloodRequest request = bloodRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + id));
+        return mapToResponse(request);
     }
 
-    /**
-     * Cho phép một Member đăng ký hiến tặng cho một yêu cầu cụ thể.
-     */
+    public Page<BloodRequestResponse> getAllRequests(Pageable pageable) {
+        Page<BloodRequest> requestPage = bloodRequestRepository.findAll(pageable);
+        return requestPage.map(this::mapToResponse);
+    }
+
     @Transactional
     public DonationPledge pledgeForRequest(Long requestId) {
         User currentUser = userService.getCurrentUser();
-        BloodRequest bloodRequest = getRequestById(requestId);
+        BloodRequest bloodRequest = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Blood request not found"));
 
-        // Kiểm tra xem user đã đăng ký cho yêu cầu này chưa
+        if(bloodRequest.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("This blood request is no longer active.");
+        }
+
         boolean alreadyPledged = bloodRequest.getPledges().stream()
                 .anyMatch(p -> p.getDonor().getId().equals(currentUser.getId()));
         if (alreadyPledged) {
@@ -93,54 +87,44 @@ public class BloodRequestService {
         pledge.setBloodRequest(bloodRequest);
 
         DonationPledge savedPledge = pledgeRepository.save(pledge);
-
-        // Kiểm tra và cập nhật trạng thái của yêu cầu máu nếu đã đủ số lượng
         checkAndUpdateRequestStatus(bloodRequest);
-
         return savedPledge;
     }
 
-    /**
-     * Hàm nội bộ để kiểm tra và cập nhật trạng thái yêu cầu máu.
-     */
     private void checkAndUpdateRequestStatus(BloodRequest bloodRequest) {
-        // Tải lại đối tượng để có danh sách pledges mới nhất
-        BloodRequest updatedRequest = bloodRequestRepository.findById(bloodRequest.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Blood request not found during status check."));
-
+        BloodRequest updatedRequest = bloodRequestRepository.findById(bloodRequest.getId()).get();
         int requiredQuantity = updatedRequest.getQuantityInUnits();
         int currentPledges = updatedRequest.getPledges().size();
-
-        System.out.println("Checking status for request ID " + updatedRequest.getId() + ": " + currentPledges + "/" + requiredQuantity + " pledges.");
-
         if (currentPledges >= requiredQuantity) {
             updatedRequest.setStatus(RequestStatus.FULFILLED);
             bloodRequestRepository.save(updatedRequest);
-            System.out.println("Request ID " + updatedRequest.getId() + " is now FULFILLED.");
         }
     }
 
-    /**
-     * Gửi email thông báo bất đồng bộ đến các người hiến máu phù hợp.
-     */
     @Async
     public void sendNotificationToAvailableDonors(BloodRequest bloodRequest) {
-        List<User> availableDonors = userRepository.findByIsReadyToDonateFalseAndLastDonationDateIsNotNull();
+        // ...
+    }
 
-        String subject = "[Khẩn cấp] Kêu gọi hiến máu nhóm " + bloodRequest.getBloodType().getBloodGroup();
-        String text = String.format(
-                "Chào bạn,\n\nHệ thống hiến máu đang có một trường hợp khẩn cấp cần máu nhóm %s tại %s cho bệnh nhân %s.\n" +
-                        "Số lượng cần: %d đơn vị.\n\n" +
-                        "Vui lòng truy cập ứng dụng để xem chi tiết và đăng ký hỗ trợ nếu bạn đủ điều kiện.\n\n" +
-                        "Trân trọng.",
-                bloodRequest.getBloodType().getBloodGroup(),
-                bloodRequest.getHospital(),
-                bloodRequest.getPatientName(),
-                bloodRequest.getQuantityInUnits()
-        );
+    private BloodRequestResponse mapToResponse(BloodRequest entity) {
+        BloodRequestResponse response = new BloodRequestResponse();
+        BeanUtils.copyProperties(entity, response, "bloodType", "createdBy", "pledges");
 
-        for (User donor : availableDonors) {
-            emailService.sendEmail(donor.getEmail(), subject, text);
+        if (entity.getBloodType() != null) {
+            BloodTypeResponse btResponse = new BloodTypeResponse();
+            BeanUtils.copyProperties(entity.getBloodType(), btResponse);
+            response.setBloodType(btResponse);
         }
+
+        if (entity.getCreatedBy() != null) {
+            response.setCreatedBy(userService.mapToUserResponse(entity.getCreatedBy()));
+        }
+
+        if (entity.getPledges() != null) {
+            response.setPledgeCount(entity.getPledges().size());
+        } else {
+            response.setPledgeCount(0);
+        }
+        return response;
     }
 }

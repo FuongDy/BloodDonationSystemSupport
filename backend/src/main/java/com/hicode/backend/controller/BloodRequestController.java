@@ -1,11 +1,15 @@
 package com.hicode.backend.controller;
 
+import com.hicode.backend.dto.admin.BloodRequestResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
-import com.hicode.backend.model.entity.BloodRequest;
 import com.hicode.backend.model.entity.DonationPledge;
 import com.hicode.backend.service.BloodRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,31 +23,33 @@ public class BloodRequestController {
     @Autowired
     private BloodRequestService bloodRequestService;
 
-    // Staff/Admin tạo yêu cầu
     @PostMapping
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
-    public ResponseEntity<BloodRequest> createRequest(@Valid @RequestBody CreateBloodRequestRequest request) {
-        BloodRequest newRequest = bloodRequestService.createRequest(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newRequest);
+    public ResponseEntity<BloodRequestResponse> createRequest(@Valid @RequestBody CreateBloodRequestRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bloodRequestService.createRequest(request));
     }
 
-    // --- CÁC ENDPOINT MỚI ---
+    @GetMapping
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<Page<BloodRequestResponse>> getAllRequests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(bloodRequestService.getAllRequests(pageable));
+    }
 
-    // Member tìm kiếm các yêu cầu đang hoạt động
     @GetMapping("/search/active")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<BloodRequest>> searchActiveRequests() {
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<BloodRequestResponse>> searchActiveRequests() {
         return ResponseEntity.ok(bloodRequestService.searchActiveRequests());
     }
 
-    // Member/Staff/Admin xem chi tiết một yêu cầu
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<BloodRequest> getRequestDetails(@PathVariable Long id) {
+    public ResponseEntity<BloodRequestResponse> getRequestDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bloodRequestService.getRequestById(id));
     }
 
-    // Member đăng ký hiến cho một yêu cầu
     @PostMapping("/{requestId}/pledge")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<DonationPledge> pledgeToDonate(@PathVariable Long requestId) {
