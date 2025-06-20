@@ -47,8 +47,20 @@ public class AdminUserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUserByAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateUserRequest request) {
-        return ResponseEntity.ok(userService.updateUserByAdmin(id, request));
+    public ResponseEntity<?> updateUserByAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateUserRequest request) {
+        try {
+            UserResponse updatedUser = userService.updateUserByAdmin(id, request);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Admin Update User Error for ID " + id + ": " + e.getMessage());
+            e.printStackTrace();
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not update user: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

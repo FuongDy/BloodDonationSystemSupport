@@ -2,7 +2,7 @@ package com.hicode.backend.controller;
 
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
 import com.hicode.backend.model.entity.BloodRequest;
-import com.hicode.backend.entity.DonationPledge;
+import com.hicode.backend.model.entity.DonationPledge;
 import com.hicode.backend.service.BloodRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
