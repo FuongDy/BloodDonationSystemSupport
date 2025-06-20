@@ -202,6 +202,23 @@ export const handlers = [
         return HttpResponse.json(mockUrgentRequests);
     }),
 
+    http.post(`${API_URL}/urgent-requests/:id/volunteer`, async ({ params }) => {
+        console.log(`MSW: Received volunteer request for ID: ${params.id}`);
+        // Simulate network delay
+        await new Promise(res => setTimeout(res, 500)); 
+        
+        const requestExists = mockUrgentRequests.some(req => req.id.toString() === params.id);
+
+        if (!requestExists) {
+            return new HttpResponse(null, { status: 404, statusText: 'Request Not Found' });
+        }
+
+        return HttpResponse.json(
+            { message: `Successfully volunteered for request ${params.id}` },
+            { status: 200 }
+        );
+    }),
+
     // AuthService
     http.post(`${API_URL}/auth/register`, async ({ request }) => {
         const reqBody = await request.json();

@@ -1,5 +1,9 @@
 import React from 'react';
-import { Hospital, User, Droplet, MapPin, Clock, ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Hospital, User, Droplet, MapPin, Clock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth'; // Corrected: Use named import
+import apiClient from '../../services/apiClient';
 
 const urgencyColorSchemes = {
     "Rất khẩn cấp": {
@@ -9,6 +13,7 @@ const urgencyColorSchemes = {
         pill: "bg-red-100 text-red-700 border-red-300",
         button: "bg-red-600 hover:bg-red-700",
         infoIcon: "text-red-500",
+        detailsButton: "text-red-600 border border-red-200 hover:bg-red-50",
     },
     "Khẩn cấp": {
         border: "border-yellow-500",
@@ -17,6 +22,7 @@ const urgencyColorSchemes = {
         pill: "bg-yellow-100 text-yellow-700 border-yellow-300",
         button: "bg-yellow-500 hover:bg-yellow-600",
         infoIcon: "text-yellow-500",
+        detailsButton: "text-yellow-600 border border-yellow-200 hover:bg-yellow-50",
     },
     "Cần thiết": {
         border: "border-blue-500",
@@ -25,6 +31,7 @@ const urgencyColorSchemes = {
         pill: "bg-blue-100 text-blue-700 border-blue-300",
         button: "bg-blue-500 hover:bg-blue-600",
         infoIcon: "text-blue-500",
+        detailsButton: "text-blue-600 border border-blue-200 hover:bg-blue-50",
     },
     "default": {
         border: "border-gray-400",
@@ -33,6 +40,7 @@ const urgencyColorSchemes = {
         pill: "bg-gray-100 text-gray-700 border-gray-300",
         button: "bg-gray-500 hover:bg-gray-600",
         infoIcon: "text-gray-500",
+        detailsButton: "text-gray-600 border border-gray-200 hover:bg-gray-50",
     }
 };
 
@@ -64,10 +72,37 @@ const UrgentRequestCard = ({ request, onViewDetails }) => {
         day: '2-digit', month: '2-digit', year: 'numeric'
     });
 
-    const handleVolunteerClick = (e) => {
-        e.stopPropagation(); // Ngăn không cho modal mở ra khi bấm nút này
-        // Thêm logic xử lý tình nguyện ở đây
-        console.log(`Đăng ký tình nguyện cho: ${request.patientName}`);
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    const handleVolunteerClick = async (e) => {
+        e.stopPropagation(); // Prevent card's onClick from firing
+
+        if (!isAuthenticated) {
+            toast.error('Vui lòng đăng nhập để thực hiện chức năng này.');
+            navigate('/login');
+            return;
+        }
+
+        const isConfirmed = window.confirm(
+            `Bạn có chắc chắn muốn đăng ký hiến máu cho bệnh nhân ${patientName} không?`
+        );
+
+        if (isConfirmed) {
+            const toastId = toast.loading('Đang xử lý yêu cầu của bạn...');
+            try {
+                // Mock API call
+                await apiClient.post(`/urgent-requests/${request.id}/volunteer`);
+                
+                toast.success(
+                    `Đăng ký thành công! Cảm ơn lòng tốt của bạn. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.`,
+                    { id: toastId, duration: 6000 }
+                );
+            } catch (error) {
+                toast.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.', { id: toastId });
+                console.error("Volunteer registration failed:", error);
+            }
+        }
     };
 
     return (
@@ -104,12 +139,20 @@ const UrgentRequestCard = ({ request, onViewDetails }) => {
                         <Clock size={14} className="mr-1.5" />
                         <span>Yêu cầu: {formattedDate}</span>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex items-center space-x-2">
+                         <button 
+                            onClick={onViewDetails} // Changed this to use the passed onViewDetails prop
+                            className={`flex items-center space-x-1.5 font-semibold py-2 px-3 rounded-lg transition-colors text-xs ${colorScheme.detailsButton}`}
+                        >
+                            <span>Chi tiết</span>
+                            <ArrowRight size={14} />
+                        </button>
                         <button 
                             onClick={handleVolunteerClick}
-                            className={`text-white font-bold py-2 px-4 rounded-lg ${colorScheme.button} transition-colors shadow-md`}
+                            className={`flex items-center text-white font-bold py-2 px-4 rounded-lg ${colorScheme.button} transition-colors shadow-md`}
                         >
-                            <ShieldAlert size={14} className="inline-block mr-1.5 mb-0.5"/> Tình nguyện
+                            <ShieldAlert size={14} className="inline-block mr-1.5 mb-0.5"/> 
+                            <span>Tình nguyện</span>
                         </button>
                     </div>
                 </div>
