@@ -277,10 +277,38 @@ export const handlers = [
         return HttpResponse.json(mockUser);
     }),
 
+    http.post(`${API_URL}/profile/change-password`, async ({ request }) => {
+        const { currentPassword, newPassword } = await request.json();
+        console.log('MSW Change Password attempt');
+
+        // Simple mock logic: if current password is 'password123', it's correct.
+        // You can make this more complex if needed.
+        if (currentPassword !== 'password') { // Assuming the mock user's current password is 'password'
+            return HttpResponse.json(
+                { message: "Mật khẩu hiện tại không đúng (MSW)." },
+                { status: 400 }
+            );
+        }
+
+        if (!newPassword || newPassword.length < 6) {
+             return HttpResponse.json(
+                { message: "Mật khẩu mới phải có ít nhất 6 ký tự (MSW)." },
+                { status: 400 }
+            );
+        }
+
+        console.log('MSW: Password changed successfully.');
+        // In a real app, the backend would handle changing the password.
+        // Here, we just return a success message.
+        return HttpResponse.json(
+            { message: "Đổi mật khẩu thành công (MSW)!" },
+            { status: 200 }
+        );
+    }),
 
     // BloodTypeService
     http.get(`${API_URL}/blood-types`, () => {
-        console.log('MSW GET /blood-types');
+        console.log("MSW: Fetching all blood types...");
         return HttpResponse.json(mockBloodTypes);
     }),
     http.get(`${API_URL}/blood-types/:id`, ({ params }) => {

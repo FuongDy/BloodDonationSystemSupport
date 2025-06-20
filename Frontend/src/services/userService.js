@@ -101,6 +101,69 @@ class UserService {
             throw new Error(error.response?.data?.message || "Failed to update profile");
         }
     }
+
+    async changePassword(passwordData) {
+        try {
+            // passwordData should be an object like { currentPassword, newPassword }
+            const response = await apiClient.post('/profile/change-password', passwordData);
+            return response.data;
+        } catch (error) {
+            console.error("Error changing password:", error.response?.data || error.message);
+            // Rethrow a more specific error message if available from the server
+            throw new Error(error.response?.data?.message || "Failed to change password");
+        }
+    }
+
+    // Blood Type Service Methods (could be in its own service file)
+    async getAllBloodTypes() {
+        try {
+            const response = await apiClient.get('/admin/blood-types'); //
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all blood types:", error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to fetch blood types");
+        }
+    }
+
+    async createBloodType(bloodTypeData) {
+        try {
+            const response = await apiClient.post('/admin/blood-types', bloodTypeData); //
+            return response.data;
+        } catch (error) {
+            console.error("Error creating blood type:", error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to create blood type");
+        }
+    }
+
+    async getBloodTypeById(bloodTypeId) {
+        try {
+            const response = await apiClient.get(`/admin/blood-types/${bloodTypeId}`); //
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching blood type by ID ${bloodTypeId}:`, error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to fetch blood type details");
+        }
+    }
+
+    async updateBloodType(bloodTypeId, bloodTypeData) {
+        try {
+            const response = await apiClient.put(`/admin/blood-types/${bloodTypeId}`, bloodTypeData); //
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating blood type ${bloodTypeId}:`, error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to update blood type");
+        }
+    }
+
+    async deleteBloodType(bloodTypeId) {
+        try {
+            const response = await apiClient.delete(`/admin/blood-types/${bloodTypeId}`); //
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting blood type ${bloodTypeId}:`, error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || error.response?.data || error.message || "Failed to delete blood type");
+        }
+    }
 }
 
 export default new UserService();

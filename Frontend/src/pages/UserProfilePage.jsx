@@ -11,9 +11,10 @@ import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ProfileSidebar from '../components/profile/ProfileSidebar';
 import { Link, Routes, Route } from 'react-router-dom';
+import SecuritySettingsPage from './profile/SecuritySettingsPage';
 
 // Placeholder components for sidebar routes
-const ProfileSecurityPage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Bảo mật & Đăng nhập</h2><p>Nội dung trang bảo mật...</p></div>;
+// const ProfileSecurityPage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Bảo mật & Đăng nhập</h2><p>Nội dung trang bảo mật...</p></div>;
 const ProfileDonationSchedulePage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Lịch hiến máu</h2><p>Nội dung trang lịch hiến máu...</p></div>;
 const ProfileDonationHistoryPage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Lịch sử hiến máu</h2><p>Nội dung trang lịch sử hiến máu...</p></div>;
 const ProfileNotificationsPage = () => <div className="bg-white shadow-xl rounded-lg p-6 md:p-8"><h2>Cài đặt thông báo</h2><p>Nội dung trang cài đặt thông báo...</p></div>;
@@ -408,7 +409,7 @@ const UserProfilePage = () => {
                                     />
                                 } 
                             />
-                            <Route path="security" element={<ProfileSecurityPage />} />
+                            <Route path="security" element={<SecuritySettingsPage />} />
                             <Route path="donation-schedule" element={<ProfileDonationSchedulePage />} />
                             <Route path="donation-history" element={<ProfileDonationHistoryPage />} />
                             <Route path="notifications" element={<ProfileNotificationsPage />} />
