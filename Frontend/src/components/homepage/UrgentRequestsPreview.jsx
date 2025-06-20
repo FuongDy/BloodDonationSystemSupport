@@ -29,21 +29,21 @@ const UrgentRequestsPreview = ({ onSelectRequest }) => {
   }, []);
 
   return (
-    <section className="py-16">
+    <section className="py-16 lg:py-24 bg-slate-50">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-            <div className='text-left'>
+        <div className="text-center mb-12">
+            <div className="relative flex justify-center items-center mb-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Trường hợp cần giúp đỡ</h2>
-                <p className="text-lg text-gray-600 mt-2">
-                    Những trường hợp đang cần máu khẩn cấp gần đây. Hãy tham gia hiến máu nếu bạn có thể giúp đỡ.
-                </p>
+                <Link 
+                    to="/urgent-requests"
+                    className="absolute right-0 flex items-center text-red-600 font-semibold hover:text-red-700 transition-colors"
+                >
+                    Xem tất cả <ArrowRight size={20} className="ml-1" />
+                </Link>
             </div>
-            <Link 
-                to="/urgent-requests"
-                className="flex items-center text-red-600 font-semibold hover:text-red-700 transition-colors"
-            >
-                Xem tất cả <ArrowRight size={20} className="ml-1" />
-            </Link>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Những trường hợp đang cần máu khẩn cấp gần đây. Hãy tham gia hiến máu nếu bạn có thể giúp đỡ.
+            </p>
         </div>
 
         {isLoading ? (
