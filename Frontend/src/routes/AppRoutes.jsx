@@ -6,12 +6,12 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
-import UserProfilePage from "../pages/UserProfilePage"; // Giả sử bạn sẽ tạo trang này
-import ForbiddenPage from "../pages/ForbiddenPage"; // Giả sử bạn sẽ tạo trang này
-import UrgentRequestsPage from "../pages/UrgentRequestsPage"; // Import the new page
-import ScheduleDonationPage from "../pages/ScheduleDonationPage"; // Import the new page
-import AboutPage from "../pages/AboutPage"; // Import AboutPage
-import NewsPage from "../pages/NewsPage"; // Import NewsPage
+import UserProfilePage from "../pages/UserProfilePage";
+import ForbiddenPage from "../pages/ForbiddenPage";
+import UrgentRequestsPage from "../pages/UrgentRequestsPage";
+import ScheduleDonationPage from "../pages/ScheduleDonationPage";
+import HandbookPage from "../pages/HandbookPage"; // Import HandbookPage
+import BlogPage from "../pages/BlogPage"; // Import BlogPage
 
 import AdminLayout from "../components/layout/AdminLayout";
 
@@ -33,14 +33,14 @@ const AppRoutes = () => (
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/urgent-requests" element={<UrgentRequestsPage />} /> {/* Add the new route */}
+        <Route path="/urgent-requests" element={<UrgentRequestsPage />} />
         <Route path="/schedule-donation" element={<ScheduleDonationPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/forbidden" element={<ForbiddenPage />} /> {/* Trang cấm truy cập */}
+        <Route path="/handbook" element={<HandbookPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/forbidden" element={<ForbiddenPage />} />
 
         {/* Authenticated User Routes */}
-        <Route element={<ProtectedRoute />}> {/* Không yêu cầu role cụ thể, chỉ cần đăng nhập */}
+        <Route element={<ProtectedRoute />}>
             <Route path="/profile/*" element={<UserProfilePage />} />
             {/* Thêm các route khác cho member ở đây */}
         </Route>
