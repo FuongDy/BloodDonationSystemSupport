@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useForm } from '../../hooks/useForm';
+import useForm from '../../hooks/useForm';
 import InputField from '../common/InputField';
 import Button from '../common/Button';
-import { userService } from '../../services/userService';
+import userService from '../../services/userService';
 import { toast } from 'react-hot-toast';
 
 const ChangePasswordForm = () => {

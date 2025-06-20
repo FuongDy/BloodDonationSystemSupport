@@ -8,6 +8,7 @@ import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import UserProfilePage from "../pages/UserProfilePage"; // Giả sử bạn sẽ tạo trang này
 import ForbiddenPage from "../pages/ForbiddenPage"; // Giả sử bạn sẽ tạo trang này
+import UrgentRequestsPage from "../pages/UrgentRequestsPage"; // Import the new page
 
 import AdminLayout from "../components/layout/AdminLayout";
 
@@ -29,6 +30,7 @@ const AppRoutes = () => (
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/urgent-requests" element={<UrgentRequestsPage />} /> {/* Add the new route */}
         <Route path="/forbidden" element={<ForbiddenPage />} /> {/* Trang cấm truy cập */}
 
         {/* Authenticated User Routes */}
