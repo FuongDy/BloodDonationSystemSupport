@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { 
@@ -14,7 +14,10 @@ import {
 } from 'lucide-react';
 import InputField from '../components/common/InputField';
 import Button from '../components/common/Button';
+import DateTimePicker from '../components/common/DateTimePicker';
 import donationService from '../services/donationService';
+import { useAuth } from '../hooks/useAuth';
+import useAuthRedirect from '../hooks/useAuthRedirect';
 
 const RequestDonationPage = () => {
   const [formData, setFormData] = useState({
@@ -24,14 +27,21 @@ const RequestDonationPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthRedirect();
 
-  const handleChange = e => {
+  const handleChange = useCallback(e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
   const handleSubmit = async e => {
     e.preventDefault();
+    
+    // Check authentication before processing
+    const canProceed = requireAuth(null, 'Vui lòng đăng nhập để đặt lịch hẹn hiến máu.');
+    if (!canProceed) return;
+    
     if (!formData.appointmentDate || !formData.location) {
       toast.error('Vui lòng chọn ngày hẹn và địa điểm.');
       return;
@@ -178,6 +188,23 @@ const RequestDonationPage = () => {
                   </p>
                 </div>
 
+                {/* Auth Notice for Guests */}
+                {!isAuthenticated && (
+                  <div className='mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg'>
+                    <div className='flex items-start'>
+                      <Info className='h-5 w-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0' />
+                      <div>
+                        <h3 className='text-sm font-medium text-yellow-800'>
+                          Cần đăng nhập để đặt lịch
+                        </h3>
+                        <p className='text-sm text-yellow-700 mt-1'>
+                          Bạn có thể xem thông tin và quy trình hiến máu. Để đặt lịch hẹn, vui lòng đăng nhập hoặc đăng ký tài khoản.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className='space-y-6'>
                   {/* Date and Time Selection */}
                   <div className='bg-gray-50 rounded-xl p-6'>
@@ -185,20 +212,16 @@ const RequestDonationPage = () => {
                       <Calendar className='h-5 w-5 text-red-600 mr-2' />
                       Chọn thời gian
                     </h3>
-                    <InputField
+                    <DateTimePicker
                       label='Ngày và giờ hẹn'
-                      id='appointmentDate'
                       name='appointmentDate'
-                      type='datetime-local'
                       value={formData.appointmentDate}
                       onChange={handleChange}
                       required
                       disabled={loading}
+                      minDate={new Date().toISOString().split('T')[0]} // Không cho chọn ngày quá khứ
                       className='bg-white'
                     />
-                    <p className='mt-2 text-xs text-gray-500'>
-                      * Thời gian làm việc: 7:30 - 16:30 (Thứ 2 - Chủ nhật)
-                    </p>
                   </div>
 
                   {/* Location Selection */}

@@ -34,6 +34,23 @@ export const USER_ROLES = {
   ADMIN: 'Admin',
 };
 
+// Blog permissions helper
+export const BLOG_PERMISSIONS = {
+  canCreateBlog: (userRole) => {
+    return userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.STAFF;
+  },
+  canEditBlog: (userRole, blogAuthorId, userId) => {
+    // Admin can edit any blog, Staff can edit their own blogs
+    return userRole === USER_ROLES.ADMIN || 
+           (userRole === USER_ROLES.STAFF && blogAuthorId === userId);
+  },
+  canDeleteBlog: (userRole, blogAuthorId, userId) => {
+    // Admin can delete any blog, Staff can delete their own blogs
+    return userRole === USER_ROLES.ADMIN || 
+           (userRole === USER_ROLES.STAFF && blogAuthorId === userId);
+  }
+};
+
 // User Status
 export const USER_STATUSES = {
   ACTIVE: 'Active',

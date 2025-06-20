@@ -14,8 +14,22 @@ const EmergencyBloodRequest = () => {
     setLoading(true);
     try {
       const response = await bloodRequestService.searchActiveRequests();
-      setRequests(response.data || []);
-    } catch {
+      console.log('API response:', response); // Debug log
+      
+      // Handle different response formats
+      let requestsData = [];
+      if (response.data && Array.isArray(response.data)) {
+        requestsData = response.data;
+      } else if (Array.isArray(response)) {
+        requestsData = response;
+      } else {
+        console.warn('Unexpected response format:', response);
+        requestsData = [];
+      }
+      
+      setRequests(requestsData);
+    } catch (error) {
+      console.error('Error fetching requests:', error);
       toast.error('Không thể tải danh sách yêu cầu máu.');
       setRequests([]);
     } finally {
@@ -63,7 +77,7 @@ const EmergencyBloodRequest = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-            {requests.length > 0 ? (
+            {Array.isArray(requests) && requests.length > 0 ? (
               requests.map(req => (
                 <BloodRequestCard
                   key={req.id}

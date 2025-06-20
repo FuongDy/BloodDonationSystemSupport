@@ -143,6 +143,22 @@ const AppRoutes = () => (
             </LazyRoute>
           }
         />
+        <Route
+          path='/blood-requests'
+          element={
+            <LazyRoute source='blood-requests-page'>
+              <EmergencyBloodRequest />
+            </LazyRoute>
+          }
+        />
+        <Route
+          path='/request-donation'
+          element={
+            <LazyRoute source='request-donation-page'>
+              <RequestDonationPage />
+            </LazyRoute>
+          }
+        />
       </Route>
 
       {/* Authenticated User Routes */}
@@ -157,21 +173,19 @@ const AppRoutes = () => (
             }
           />
           <Route
-            path='/request-donation'
+            path='/my-pledges'
             element={
-              <LazyRoute source='request-donation-page'>
-                <RequestDonationPage />
+              <LazyRoute source='my-pledges-page'>
+                <MyPledgesPage />
               </LazyRoute>
             }
           />
-          <Route
-            path='/blood-requests'
-            element={
-              <LazyRoute source='blood-requests-page'>
-                <EmergencyBloodRequest />
-              </LazyRoute>
-            }
-          />
+        </Route>
+      </Route>
+
+      {/* Staff and Admin Routes for Blog Management */}
+      <Route element={<MainLayout />}>
+        <Route element={<ProtectedRoute requiredRoles={['Staff', 'Admin']} />}>
           <Route
             path='/blog/create'
             element={
@@ -181,10 +195,10 @@ const AppRoutes = () => (
             }
           />
           <Route
-            path='/my-pledges'
+            path='/blog/:id/edit'
             element={
-              <LazyRoute source='my-pledges-page'>
-                <MyPledgesPage />
+              <LazyRoute source='blog-edit-page'>
+                <BlogCreateEditPage />
               </LazyRoute>
             }
           />
@@ -219,7 +233,7 @@ const AppRoutes = () => (
             }
           />
           <Route
-            path='users/edit/:userId'
+            path='users/:userId/edit'
             element={
               <LazyRoute source='admin-user-edit-page'>
                 <AdminUserEditPage />
@@ -227,7 +241,7 @@ const AppRoutes = () => (
             }
           />
           <Route
-            path='users/view/:userId'
+            path='users/:userId'
             element={
               <LazyRoute source='admin-user-detail-page'>
                 <AdminUserDetailPage />

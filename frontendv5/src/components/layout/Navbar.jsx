@@ -52,31 +52,29 @@ const Navbar = () => {
         <AlertTriangle className='w-4 h-4 mr-1.5' />
         Cần máu gấp
       </Link>
+      <Link
+        to='/request-donation'
+        className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
+      >
+        <CalendarPlus className='w-4 h-4 mr-1.5' />
+        Đặt lịch hiến máu
+      </Link>
+      <Link
+        to='/blog'
+        className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
+      >
+        <BookOpen className='w-4 h-4 mr-1.5' />
+        Blog
+      </Link>
 
       {isAuthenticated && (
-        <>
-          <Link
-            to='/request-donation'
-            className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
-          >
-            <CalendarPlus className='w-4 h-4 mr-1.5' />
-            Đặt lịch hiến máu
-          </Link>
-          <Link
-            to='/my-pledges'
-            className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
-          >
-            <Heart className='w-4 h-4 mr-1.5' />
-            Đăng ký của tôi
-          </Link>
-          <Link
-            to='/blog'
-            className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
-          >
-            <BookOpen className='w-4 h-4 mr-1.5' />
-            Blog
-          </Link>
-        </>
+        <Link
+          to='/my-pledges'
+          className='flex items-center text-gray-600 hover:text-red-500 transition-colors px-3 py-2 rounded-md text-sm font-medium'
+        >
+          <Heart className='w-4 h-4 mr-1.5' />
+          Đăng ký của tôi
+        </Link>
       )}
       {isAdmin && (
         <Link

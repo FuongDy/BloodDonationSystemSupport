@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 
 import blogPostService from '../services/blogPostService';
 import { useAuth } from '../hooks/useAuth';
+import { BLOG_PERMISSIONS } from '../utils/constants';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
 
@@ -62,7 +63,8 @@ const BlogDetailPage = () => {
     });
   };
 
-  const canEdit = user && (user.id === post?.authorId || user.role === 'Admin');
+  const canEdit = user && BLOG_PERMISSIONS.canEditBlog(user.role, post?.authorId, user.id);
+  const canDelete = user && BLOG_PERMISSIONS.canDeleteBlog(user.role, post?.authorId, user.id);
 
   if (isLoading) {
     return (
@@ -130,24 +132,28 @@ const BlogDetailPage = () => {
             </div>
 
             {/* Action Buttons */}
-            {canEdit && (
+            {(canEdit || canDelete) && (
               <div className='flex items-center space-x-3'>
-                <Link to={`/blog/${id}/edit`}>
-                  <Button variant='outline' size='sm'>
-                    <Edit className='w-4 h-4 mr-2' />
-                    Chỉnh sửa
+                {canEdit && (
+                  <Link to={`/blog/${id}/edit`}>
+                    <Button variant='outline' size='sm'>
+                      <Edit className='w-4 h-4 mr-2' />
+                      Chỉnh sửa
+                    </Button>
+                  </Link>
+                )}
+                {canDelete && (
+                  <Button
+                    variant='danger-outline'
+                    size='sm'
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    isLoading={isDeleting}
+                  >
+                    <Trash2 className='w-4 h-4 mr-2' />
+                    Xóa
                   </Button>
-                </Link>
-                <Button
-                  variant='danger-outline'
-                  size='sm'
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  isLoading={isDeleting}
-                >
-                  <Trash2 className='w-4 h-4 mr-2' />
-                  Xóa
-                </Button>
+                )}
               </div>
             )}
           </div>

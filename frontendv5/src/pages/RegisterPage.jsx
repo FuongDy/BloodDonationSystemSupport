@@ -22,6 +22,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useAppStore } from '../store/appStore';
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';
+import DatePicker from '../components/common/DatePicker';
 import bloodTypeService from '../services/bloodTypeService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { userRegistrationSchema } from '../utils/validationSchemas';
@@ -103,31 +104,37 @@ const RegisterPage = () => {
    * Xử lý thay đổi input với real-time validation
    * @param {Event} e - Input change event
    */
-  const handleInputChange = async e => {
+  const handleInputChange = useCallback(async e => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
 
-    setFormData(prev => ({
-      ...prev,
-      [name]: newValue,
-    }));
+    setFormData(prev => {
+      const updatedData = {
+        ...prev,
+        [name]: newValue,
+      };
+
+      // Real-time validation cho field hiện tại (async)
+      setTimeout(async () => {
+        try {
+          await userRegistrationSchema.validateAt(name, updatedData);
+          setValidationErrors(prev => ({ ...prev, [name]: '' }));
+        } catch (validationError) {
+          setValidationErrors(prev => ({
+            ...prev,
+            [name]: validationError.message,
+          }));
+        }
+      }, 0);
+
+      return updatedData;
+    });
 
     // Clear validation error cho field hiện tại
     if (validationErrors[name]) {
       setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }        // Real-time validation cho field hiện tại
-        try {
-            await userRegistrationSchema.validateAt(name, {
-        ...formData,
-        [name]: newValue,
-      });
-    } catch (validationError) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [name]: validationError.message,
-      }));
     }
-  };
+  }, [validationErrors]);
 
   /**
    * Xử lý submit form với comprehensive validation
@@ -151,6 +158,10 @@ const RegisterPage = () => {
       // Remove fields không cần thiết cho API
       delete registrationData.confirmPassword;
       delete registrationData.agreeTerms;
+
+      console.log('=== REGISTER REQUEST ===');
+      console.log('Registration Data:', registrationData);
+      console.log('=======================');
 
       await requestRegistration(registrationData);
 
@@ -341,23 +352,20 @@ const RegisterPage = () => {
                   {/* Date of Birth and Blood Type */}
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium text-gray-700 flex items-center'>
-                        <Calendar className='w-4 h-4 mr-1 text-gray-500' />
-                        Ngày sinh *
-                      </label>
-                      <input
-                        id='dateOfBirth'
+                      <DatePicker
+                        label={
+                          <div className="flex items-center text-sm font-medium text-gray-700">
+                            <Calendar className='w-4 h-4 mr-1 text-gray-500' />
+                            Ngày sinh *
+                          </div>
+                        }
                         name='dateOfBirth'
-                        type='date'
                         value={formData.dateOfBirth}
                         onChange={handleInputChange}
                         required
+                        maxDate={new Date().toISOString().split('T')[0]} // Không cho chọn ngày tương lai
+                        placeholder='Chọn ngày sinh'
                         disabled={authLoading || isFetchingBloodTypes}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors ${
-                          validationErrors.dateOfBirth 
-                            ? 'border-red-300 bg-red-50' 
-                            : 'border-gray-300 bg-white'
-                        }`}
                       />
                       {validationErrors.dateOfBirth && (
                         <p className='text-xs text-red-600'>{validationErrors.dateOfBirth}</p>

@@ -6,10 +6,12 @@ import toast from 'react-hot-toast';
 import bloodRequestService from '../../services/bloodRequestService';
 import Button from '../common/Button';
 import { useAuth } from '../../hooks/useAuth';
+import useAuthRedirect from '../../hooks/useAuthRedirect';
 
 const PledgeButton = ({ request, onPledgeSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const { requireAuth } = useAuthRedirect();
 
   // Check if user has already pledged
   const hasUserPledged = request.pledges?.some(
@@ -17,10 +19,9 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
   );
 
   const handlePledge = async () => {
-    if (!isAuthenticated) {
-      toast.error('Vui lòng đăng nhập để đăng ký hiến máu.');
-      return;
-    }
+    // Use requireAuth to handle authentication check and redirect
+    const canProceed = requireAuth(null, 'Vui lòng đăng nhập để đăng ký hiến máu.');
+    if (!canProceed) return;
 
     if (hasUserPledged) {
       toast.error('Bạn đã đăng ký hiến máu cho yêu cầu này rồi.');

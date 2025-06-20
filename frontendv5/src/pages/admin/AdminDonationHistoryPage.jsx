@@ -37,7 +37,7 @@ const AdminDonationHistoryPage = () => {
       const response = await donationService.getAllDonationRequests();
       setDonations(response.data);
     } catch (error) {
-      toast.error('Lỗi khi tải lịch sử hiến máu');
+      toast.error('Lỗi khi tải đơn yêu cầu hiến máu');
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ const AdminDonationHistoryPage = () => {
   return (
     <PageContainer>
       <PageHeader
-        title='Quản lý Lịch sử Hiến máu'
+        title='Quản lý đơn yêu cầu hiến máu'
         subtitle='Theo dõi và quản lý tất cả các quy trình hiến máu'
       />
 
@@ -148,7 +148,7 @@ const AdminDonationHistoryPage = () => {
           {selectedDonation ? (
             <Card>
               <CardHeader>
-                <CardTitle>Chi tiết Hiến máu</CardTitle>
+                <CardTitle>Chi tiết hiến máu</CardTitle>
               </CardHeader>
               <CardContent className='space-y-4'>
                 <div>

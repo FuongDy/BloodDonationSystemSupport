@@ -40,19 +40,19 @@ const AdminLayout = () => {
     {
       path: '/admin/blood-compatibility',
       icon: GitCompareArrows,
-      label: 'Quản lý tương thích',
+      label: 'Quản lý tương thích máu',
       roles: ['Admin'],
     },
     {
       path: '/admin/emergency-requests',
       icon: MessageSquareWarning,
-      label: 'Yêu cầu khẩn cấp',
+      label: 'Quản lý yêu cầu máu khẩn cấp',
       roles: ['Admin', 'Staff'],
     },
     {
       path: '/admin/donation-history',
       icon: History,
-      label: 'Lịch sử hiến máu',
+      label: 'Quản lý đơn yêu cầu hiến máu',
       roles: ['Admin', 'Staff'],
     },
     {

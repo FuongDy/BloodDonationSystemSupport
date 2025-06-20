@@ -161,7 +161,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
                   : 'N/A'}
               </td>
               <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-center space-x-1'>
-                <Link to={`/admin/users/view/${user.id}`} title='Xem chi tiết'>
+                <Link to={`/admin/users/${user.id}`} title='Xem chi tiết'>
                   <Button
                     variant='icon'
                     className='text-blue-600 hover:text-blue-800'
@@ -172,7 +172,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
                 {/* Chỉ Admin mới được chỉnh sửa user khác và không thể tự chỉnh sửa */}
                 {currentUser?.role === 'Admin' &&
                 currentUser?.id !== user.id ? ( //
-                  <Link to={`/admin/users/edit/${user.id}`} title='Chỉnh sửa'>
+                  <Link to={`/admin/users/${user.id}/edit`} title='Chỉnh sửa'>
                     <Button
                       variant='icon'
                       className='text-indigo-600 hover:text-indigo-800'

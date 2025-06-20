@@ -122,6 +122,11 @@ class UserService {
     }
   }
 
+  // Alias for getCurrentUserProfile for consistency with UserProfileForm
+  async getProfile(forceRefresh = false) {
+    return this.getCurrentUserProfile();
+  }
+
   async updateUserProfile(updateData) {
     try {
       const response = await apiClient.put('/users/me/profile', updateData);
@@ -135,6 +140,11 @@ class UserService {
         error.response?.data?.message || 'Failed to update profile'
       );
     }
+  }
+
+  // Alias for updateUserProfile for consistency with UserProfileForm
+  async updateProfile(updateData) {
+    return this.updateUserProfile(updateData);
   }
 
   // Search donors by location

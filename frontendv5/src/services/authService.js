@@ -1,8 +1,33 @@
 // src/services/authService.js
 import apiClient from './apiClient';
 
-const requestOtp = registerRequest => {
-  return apiClient.post('/auth/register/request-otp', registerRequest);
+const requestOtp = async registerRequest => {
+  try {
+    console.log('=== AUTH SERVICE REQUEST OTP ===');
+    console.log('Request payload:', JSON.stringify(registerRequest, null, 2));
+    console.log('Payload keys:', Object.keys(registerRequest));
+    console.log('Required fields check:');
+    console.log('- fullName:', registerRequest.fullName || 'MISSING');
+    console.log('- email:', registerRequest.email || 'MISSING');
+    console.log('- password:', registerRequest.password ? '[PROVIDED]' : 'MISSING');
+    console.log('- phone:', registerRequest.phone || 'MISSING');
+    console.log('- address:', registerRequest.address || 'MISSING');
+    console.log('- dateOfBirth:', registerRequest.dateOfBirth || 'MISSING');
+    console.log('- bloodTypeId:', registerRequest.bloodTypeId || 'MISSING');
+    console.log('===============================');
+    
+    const response = await apiClient.post('/auth/register/request-otp', registerRequest);
+    console.log('Success response:', response.data);
+    return response;
+  } catch (error) {
+    console.error('=== AUTH SERVICE ERROR ===');
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    console.error('Error message:', error.message);
+    console.error('Full error:', error);
+    console.error('==========================');
+    throw error;
+  }
 };
 
 const verifyAndRegister = verifyRequest => {

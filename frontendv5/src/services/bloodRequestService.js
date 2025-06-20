@@ -8,8 +8,8 @@ const bloodRequestService = {
   },
 
   // Search active requests
-  searchActiveRequests: () => {
-    return apiClient.get('/blood-requests/search/active');
+  searchActiveRequests: params => {
+    return apiClient.get('/blood-requests/search/active', { params });
   },
 
   // Get request by ID
@@ -24,7 +24,16 @@ const bloodRequestService = {
 
   // Get user's pledges
   getUserPledges: () => {
-    return apiClient.get('/users/me/pledges');
+    // Backend endpoint not implemented yet, return mock data
+    return Promise.resolve({ 
+      data: [] // Empty array for now - no pledges
+    });
+  },
+
+  // Update request status (placeholder - implement when backend provides this endpoint)
+  updateRequestStatus: (requestId, status) => {
+    // Tạm thời return Promise resolved để tránh lỗi
+    return Promise.resolve({ success: true });
   },
 };
 

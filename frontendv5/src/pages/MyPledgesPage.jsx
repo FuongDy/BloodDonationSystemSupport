@@ -131,10 +131,12 @@ const MyPledgesPage = () => {
     const fetchMyPledges = async () => {
       setLoading(true);
       try {
+        // Note: This currently returns mock data as backend endpoint is not implemented
         const response = await bloodRequestService.getUserPledges();
         const userPledges = response.data || [];
         setPledges(userPledges);
-      } catch {
+      } catch (error) {
+        console.error('Error fetching user pledges:', error);
         toast.error('Không thể tải danh sách đăng ký hiến máu của bạn.');
         setPledges([]);
       } finally {

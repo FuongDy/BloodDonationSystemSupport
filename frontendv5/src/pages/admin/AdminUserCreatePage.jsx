@@ -4,10 +4,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 
-import userService from '../../services/userService'; //
-import InputField from '../../components/common/InputField'; //
-import Button from '../../components/common/Button'; //
-import LoadingSpinner from '../../components/common/LoadingSpinner'; //
+import userService from '../../services/userService';
+import bloodTypeService from '../../services/bloodTypeService';
+import InputField from '../../components/common/InputField';
+import Button from '../../components/common/Button';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const AdminUserCreatePage = () => {
   const navigate = useNavigate();
@@ -17,9 +18,11 @@ const AdminUserCreatePage = () => {
     fullName: '',
     password: '',
     confirmPassword: '',
-    roleName: 'Member', // Default role
-    bloodTypeId: '',
+    roleName: 'MEMBER', // Default role đúng với backend
+    dateOfBirth: '',
     phone: '',
+    address: '',
+    bloodTypeId: '',
     status: 'Active', // Default status
     emailVerified: false,
     phoneVerified: false,
@@ -33,14 +36,20 @@ const AdminUserCreatePage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const rolesData = await userService.getRoles();
-        setRoles(rolesData || []); //
-        const bloodTypesData = await userService.getBloodTypes();
+        // Tạo danh sách roles cố định vì chưa có API
+        const rolesData = [
+          { name: 'ADMIN' },
+          { name: 'STAFF' },
+          { name: 'MEMBER' }
+        ];
+        setRoles(rolesData);
+        
+        // Lấy danh sách blood types từ API
+        const bloodTypesData = await bloodTypeService.getAll();
         setBloodTypes(bloodTypesData || []);
       } catch (error) {
-        toast.error(
-          'Lỗi khi tải dữ liệu Roles hoặc Blood Types: ' + error.message
-        );
+        console.error('Error loading data:', error);
+        toast.error('Lỗi khi tải dữ liệu: ' + (error.message || 'Không thể tải dữ liệu'));
       }
       setIsLoading(false);
     };
@@ -76,6 +85,16 @@ const AdminUserCreatePage = () => {
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp.';
     if (!formData.roleName) newErrors.roleName = 'Vai trò không được để trống.';
+    if (!formData.dateOfBirth) 
+      newErrors.dateOfBirth = 'Ngày sinh không được để trống.';
+    if (!formData.phone.trim()) 
+      newErrors.phone = 'Số điện thoại không được để trống.';
+    else if (formData.phone.length < 9 || formData.phone.length > 15)
+      newErrors.phone = 'Số điện thoại phải có từ 9-15 ký tự.';
+    if (!formData.address.trim()) 
+      newErrors.address = 'Địa chỉ không được để trống.';
+    else if (formData.address.length < 10)
+      newErrors.address = 'Địa chỉ phải có ít nhất 10 ký tự.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -92,8 +111,8 @@ const AdminUserCreatePage = () => {
 
     const requestData = {
       ...formData,
-
-      phone: formData.phone.trim() || null,
+      phone: formData.phone.trim(),
+      address: formData.address.trim(),
       bloodTypeId: formData.bloodTypeId
         ? parseInt(formData.bloodTypeId, 10)
         : null,
@@ -101,10 +120,11 @@ const AdminUserCreatePage = () => {
     delete requestData.confirmPassword; // Không gửi confirmPassword lên server
 
     try {
-      await userService.createUserByAdmin(requestData); //
+      await userService.createUserByAdmin(requestData);
       toast.success('Tạo người dùng thành công!', { id: toastId });
       navigate('/admin/users');
     } catch (error) {
+      console.error('Create user error:', error);
       toast.error(
         `Lỗi khi tạo người dùng: ${error.message || 'Vui lòng thử lại.'}`,
         { id: toastId }
@@ -208,15 +228,43 @@ const AdminUserCreatePage = () => {
             disabled={isLoading}
           />
         </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <InputField
+            label='Ngày sinh'
+            id='dateOfBirth'
+            name='dateOfBirth'
+            type='date'
+            value={formData.dateOfBirth}
+            onChange={handleInputChange}
+            required
+            error={errors.dateOfBirth}
+            disabled={isLoading}
+          />
+          <InputField
+            label='Số điện thoại'
+            id='phone'
+            name='phone'
+            type='tel'
+            value={formData.phone}
+            onChange={handleInputChange}
+            required
+            error={errors.phone}
+            disabled={isLoading}
+            placeholder='VD: 0901234567'
+          />
+        </div>
         <InputField
-          label='Số điện thoại (Tùy chọn)'
-          id='phone'
-          name='phone'
-          type='tel'
-          value={formData.phone}
+          label='Địa chỉ'
+          id='address'
+          name='address'
+          as='textarea'
+          rows={3}
+          value={formData.address}
           onChange={handleInputChange}
-          error={errors.phone}
+          required
+          error={errors.address}
           disabled={isLoading}
+          placeholder='Nhập địa chỉ đầy đủ (tối thiểu 10 ký tự)'
         />
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
