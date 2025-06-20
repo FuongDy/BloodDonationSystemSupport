@@ -1,0 +1,1 @@
+import{s as t}from"./index---XYpbwv.js";const r={createBloodRequest:e=>t.post("/blood-requests",e),searchActiveRequests:()=>t.get("/blood-requests/search/active"),getRequestById:e=>t.get(`/blood-requests/${e}`),pledgeForRequest:e=>t.post(`/blood-requests/${e}/pledge`),getUserPledges:()=>t.get("/users/me/pledges")};export{r as b};
