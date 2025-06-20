@@ -4,6 +4,8 @@ import { Heart, Users, MapPin, ShieldCheck, ArrowRight, Droplet, Star, CalendarD
 import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
+import UrgentRequestsPreview from '../components/homepage/UrgentRequestsPreview';
+import TestimonialsSection from '../components/homepage/TestimonialsSection';
 
 // Helper component for animated number
 const AnimatedNumber = ({ value }) => {
@@ -77,30 +79,9 @@ const HomePage = () => {
         { icon: Hospital, value: '70+', label: 'Bệnh viện & Đối tác' },
     ];
 
-    const testimonials = [
-        {
-            quote: "BloodConnect đã giúp tôi dễ dàng tìm được những người cần máu gần nhà. Cảm giác được giúp đỡ người khác thật tuyệt vời!",
-            name: "Nguyễn Văn An",
-            role: "Người hiến máu tình nguyện",
-            avatar: "https://i.pravatar.cc/150?u=an"
-        },
-        {
-            quote: "Hệ thống này đã giúp chúng tôi kết nối nhanh chóng với những người hiến máu khi cần thiết. Rất hữu ích cho công việc cứu chữa bệnh nhân.",
-            name: "Trần Thị Bình",
-            role: "Bác sĩ tại BV Chợ Rẫy",
-            avatar: "https://i.pravatar.cc/150?u=binh"
-        },
-        {
-            quote: "Với tư cách là BloodConnect, gia đình tôi đã tìm được máu kịp thời cho ca phẫu thuật khẩn cấp. Cảm ơn rất cả những người hiến máu tình nguyện!",
-            name: "Lê Minh Châu",
-            role: "Người nhận máu",
-            avatar: "https://i.pravatar.cc/150?u=chau"
-        }
-    ];
-
     const actionCards = [
-        { icon: CalendarDays, title: "Đặt lịch hiến máu", desc: "Chọn thời gian và địa điểm phù hợp để hiến máu.", buttonText: "Đặt lịch ngay", link: "/donate-info" },
-        { icon: Heart, title: "Tìm người cần máu", desc: "Xem các yêu cầu máu khẩn cấp trong khu vực.", buttonText: "Xem yêu cầu", link: "/emergency-requests" }, // Assuming this route exists
+        { icon: CalendarDays, title: "Đặt lịch hiến máu", desc: "Chọn thời gian và địa điểm phù hợp để hiến máu.", buttonText: "Đặt lịch ngay", link: "/schedule-donation" },
+        { icon: Heart, title: "Cần máu gấp", desc: "Xem các yêu cầu máu khẩn cấp trong khu vực.", buttonText: "Xem yêu cầu", link: "/urgent-requests" },
         { icon: PhoneCall, title: "Liên hệ hỗ trợ", desc: "Cần hỗ trợ? Chúng tôi luôn sẵn sàng giúp đỡ bạn.", buttonText: "Liên hệ ngay", link: "/contact" }
     ];
 
@@ -182,40 +163,9 @@ const HomePage = () => {
                     </div>
                 </section>
 
-                {/* Testimonials Section */}
-                <section className="py-16 lg:py-24 bg-slate-50">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-12 text-center">
-                            Câu chuyện từ cộng đồng
-                        </h2>
-                        <p className="text-slate-600 max-w-2xl mx-auto text-lg mb-12 text-center leading-relaxed">
-                            Những chia sẻ chân thực từ những người đã tham gia vào hành trình lan tỏa yêu thương.
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {testimonials.map((testimonial, index) => (
-                                <div 
-                                    key={index} 
-                                    className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col"
-                                    style={{ animationDelay: `${index * 150}ms` }}
-                                >
-                                    <div className="flex mb-4">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                                        ))}
-                                    </div>
-                                    <p className="text-slate-600 italic mb-6 flex-grow">"{testimonial.quote}"</p>
-                                    <div className="flex items-center mt-auto">
-                                        <img src={testimonial.avatar} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4 object-cover" />
-                                        <div>
-                                            <p className="font-semibold text-slate-800">{testimonial.name}</p>
-                                            <p className="text-sm text-slate-500">{testimonial.role}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+                <UrgentRequestsPreview />
+                <TestimonialsSection />
+
 
                 {/* Action Cards Section */}
                 <section className="py-16 lg:py-24 bg-white">
