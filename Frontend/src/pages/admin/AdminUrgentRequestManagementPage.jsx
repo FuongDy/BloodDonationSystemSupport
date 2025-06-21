@@ -97,7 +97,7 @@ const AdminUrgentRequestManagementPage = () => {
         </span>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-        <p><strong className="font-semibold">Nhóm máu:</strong> <span className="font-mono text-red-600 font-bold">{request.bloodType}</span></p>
+        <p><strong className="font-semibold">Nhóm máu:</strong> <span className="font-mono text-red-600 font-bold">{`${request.bloodType.bloodGroup}${request.bloodType.rhFactor}`}</span></p>
         <p><strong className="font-semibold">Số lượng:</strong> {request.unitsNeeded} đơn vị</p>
         <p><strong className="font-semibold">Giới tính:</strong> {request.patientGender}</p>
         <p><strong className="font-semibold">Tuổi:</strong> {request.patientAge}</p>
