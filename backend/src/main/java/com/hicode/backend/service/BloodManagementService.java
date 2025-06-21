@@ -126,8 +126,6 @@ public class BloodManagementService {
                 .orElseThrow(() -> new EntityNotFoundException("Compatibility Rule not found with id: " + id));
 
         if (request.getIsCompatible() != null) rule.setIsCompatible(request.getIsCompatible());
-        if (request.getCompatibilityScore() != null) rule.setCompatibilityScore(request.getCompatibilityScore());
-        if (request.getIsEmergencyCompatible() != null) rule.setIsEmergencyCompatible(request.getIsEmergencyCompatible());
         if (request.getNotes() != null) rule.setNotes(request.getNotes());
 
         return mapToBloodCompatibilityDetailResponse(bloodCompatibilityRepository.save(rule));

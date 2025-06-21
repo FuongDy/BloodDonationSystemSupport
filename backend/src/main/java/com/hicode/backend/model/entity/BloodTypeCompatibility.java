@@ -27,11 +27,6 @@ public class BloodTypeCompatibility {
     @Column(nullable = false)
     private Boolean isCompatible;
 
-    private Integer compatibilityScore;
-
-    @Column(columnDefinition = "BIT DEFAULT 0")
-    private Boolean isEmergencyCompatible = false;
-
     @Lob
     @Column(columnDefinition = "NVARCHAR(MAX)")
     private String notes;

@@ -156,8 +156,6 @@ public class DataInitializer implements CommandLineRunner {
             compatibility.setDonorBloodType(donor);
             compatibility.setRecipientBloodType(recipient);
             compatibility.setIsCompatible(isCompatible);
-            compatibility.setCompatibilityScore(score);
-            compatibility.setIsEmergencyCompatible(isEmergency);
             compatibility.setNotes(notes);
             compatibilityRepository.save(compatibility);
             System.out.println("Initialized Compatibility: " + notes + " (" + donor.getBloodGroup() + " -> " + recipient.getBloodGroup() + ")");
