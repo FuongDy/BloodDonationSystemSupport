@@ -67,7 +67,7 @@ const AdminUrgentRequestManagementPage = () => {
         return;
     }
     try {
-      await urgentRequestService.rejectRequest(selectedRequest.id, rejectionReason);
+      await urgentRequestService.rejectRequest(selectedRequest.id, rejectionReason, user);
       toast.info(`Đã từ chối yêu cầu #${selectedRequest.id}`);
       fetchPendingRequests(); // Refresh the list
       closeModal();

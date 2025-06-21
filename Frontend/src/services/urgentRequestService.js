@@ -33,7 +33,8 @@ const urgentRequestService = {
    * Fetches all PENDING urgent requests for admin review.
    */
   getPendingRequests: () => {
-    return apiClient.get('/admin/urgent-requests');
+    // Corrected endpoint
+    return apiClient.get('/admin/urgent-requests/pending');
   },
 
   /**
@@ -49,9 +50,10 @@ const urgentRequestService = {
    * Rejects a pending urgent request.
    * @param {string|number} requestId - The ID of the request to reject.
    * @param {string} reason - The reason for rejection.
+   * @param {object} user - The admin/staff user performing the action.
    */
-  rejectRequest: (requestId, reason) => {
-    return apiClient.post(`/admin/urgent-requests/${requestId}/reject`, { reason });
+  rejectRequest: (requestId, reason, user) => {
+    return apiClient.post(`/admin/urgent-requests/${requestId}/reject`, { reason, user });
   },
 };
 

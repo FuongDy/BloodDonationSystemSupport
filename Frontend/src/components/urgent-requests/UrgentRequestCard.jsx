@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Hospital, User, Droplet, MapPin, Clock, ShieldAlert, ArrowRight } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../../hooks/useAuth'; // Corrected: Use named import
+import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks/useAuth';
 import apiClient from '../../services/apiClient';
 
 const urgencyColorSchemes = {
@@ -94,27 +94,37 @@ const UrgentRequestCard = ({ request, onViewDetails }) => {
                 // Mock API call
                 await apiClient.post(`/urgent-requests/${request.id}/volunteer`);
                 
-                toast.success(
-                    `Đăng ký thành công! Cảm ơn lòng tốt của bạn. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.`,
-                    { id: toastId, duration: 6000 }
-                );
+                toast.update(toastId, {
+                    render: `Đăng ký thành công! Cảm ơn lòng tốt của bạn. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.`,
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 6000,
+                });
+
             } catch (error) {
-                toast.error('Đã có lỗi xảy ra. Vui lòng thử lại sau.', { id: toastId });
-                console.error("Volunteer registration failed:", error);
+                toast.update(toastId, {
+                    render: 'Đăng ký thất bại. Vui lòng thử lại.',
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: 5000,
+                });
+                console.error('Volunteer registration failed:', error);
             }
         }
     };
 
     return (
         <div 
-            className={`bg-white rounded-lg shadow-lg overflow-hidden border-l-4 ${colorScheme.border} relative mb-6 transform hover:-translate-y-1 transition-transform duration-300 cursor-pointer`}
-            onClick={onViewDetails}
+            className={`relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out border-l-4 ${colorScheme.border} overflow-hidden cursor-pointer`}
+            onClick={() => onViewDetails(request)}
         >
-            <div className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full border ${colorScheme.pill}`}>
+            {/* Urgency Pill */}
+            <div className={`absolute top-3 right-3 text-xs font-bold py-1 px-3 rounded-full border ${colorScheme.pill}`}>
                 {urgency}
             </div>
+            
             <div className="p-5">
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-3">
                     <div className={`p-3 rounded-full mr-4 ${colorScheme.iconBg}`}>
                         <Droplet size={24} className={colorScheme.text} />
                     </div>

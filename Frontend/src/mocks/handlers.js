@@ -297,6 +297,12 @@ export const handlers = [
         return HttpResponse.json(mockPublishedUrgentRequests);
     }),
 
+    // Endpoint cho Admin/Staff xem các yêu cầu đang chờ duyệt
+    http.get(`${API_URL}/admin/urgent-requests/pending`, ({ request }) => {
+        console.log("MSW: Fetching PENDING urgent blood requests for admin...");
+        return HttpResponse.json(mockPendingUrgentRequests);
+    }),
+
     http.post(`${API_URL}/urgent-requests`, async ({ request }) => {
         const newRequest = await request.json();
         console.log("MSW: Received new urgent request for approval:", newRequest);
@@ -347,7 +353,7 @@ export const handlers = [
                 userToLogin.role = "Admin";
                 userToLogin.fullName = "Mock Admin";
                 userToLogin.email = email;
-            } else if (email.includes("staff")) { // <<< FIX: Add specific check for staff
+            } else if (email.includes("staff")) {
                 userToLogin.role = "Staff";
                 userToLogin.fullName = "Mock Staff User";
                 userToLogin.email = email;
@@ -366,6 +372,57 @@ export const handlers = [
             });
         }
         return HttpResponse.json({ message: "Invalid credentials (MSW)" }, { status: 401 });
+    }),
+
+    // Endpoint để duyệt yêu cầu
+    http.post(`${API_URL}/admin/urgent-requests/:id/approve`, async ({ params, request }) => {
+        const { id } = params;
+        const { user } = await request.json(); // Lấy user từ body
+        console.log(`MSW: Approving request ${id} by ${user.email}`);
+
+        const requestIndex = mockPendingUrgentRequests.findIndex(req => req.id.toString() === id);
+        if (requestIndex === -1) {
+            return new HttpResponse(null, { status: 404, statusText: 'Pending Request Not Found' });
+        }
+
+        const requestToApprove = mockPendingUrgentRequests[requestIndex];
+        
+        // Xóa khỏi danh sách chờ duyệt
+        mockPendingUrgentRequests.splice(requestIndex, 1);
+
+        // Thêm vào danh sách đã duyệt
+        const approvedRequest = {
+            ...requestToApprove,
+            id: requestToApprove.id, // Giữ lại ID cũ
+            status: 'Approved',
+            approvedBy: user.email,
+            approvedAt: new Date().toISOString(),
+        };
+        mockPublishedUrgentRequests.push(approvedRequest);
+
+        return HttpResponse.json(approvedRequest, { status: 200 });
+    }),
+
+    // Endpoint để từ chối yêu cầu
+    http.post(`${API_URL}/admin/urgent-requests/:id/reject`, async ({ params, request }) => {
+        const { id } = params;
+        const { reason, user } = await request.json();
+        console.log(`MSW: Rejecting request ${id} by ${user.email} for reason: ${reason}`);
+
+        const requestIndex = mockPendingUrgentRequests.findIndex(req => req.id.toString() === id);
+        if (requestIndex === -1) {
+            return new HttpResponse(null, { status: 404, statusText: 'Pending Request Not Found' });
+        }
+
+        const requestToReject = mockPendingUrgentRequests[requestIndex];
+        
+        // Xóa khỏi danh sách chờ duyệt
+        mockPendingUrgentRequests.splice(requestIndex, 1);
+
+        // (Tùy chọn) Có thể thêm vào một danh sách đã từ chối để theo dõi
+        // console.log("Rejected request:", { ...requestToReject, status: 'Rejected', reason });
+
+        return HttpResponse.json({ message: `Request ${id} rejected` }, { status: 200 });
     }),
 
     // UserService - Admin
