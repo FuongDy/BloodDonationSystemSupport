@@ -1,5 +1,5 @@
 import React from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from './LoadingSpinner'; // Giả sử spinner có sẵn
 
 // /**
 //  * Component Button đa dụng và có thể tùy chỉnh cao.
@@ -15,6 +15,7 @@ import LoadingSpinner from './LoadingSpinner';
 //  * @param {React.ReactNode} [props.iconLeft] - Icon hiển thị bên trái nội dung.
 //  * @param {React.ReactNode} [props.iconRight] - Icon hiển thị bên phải nội dung.
 //  */
+
 const Button = ({
     children,
     onClick,
@@ -38,10 +39,14 @@ const Button = ({
     };
 
     const variantStyles = {
-        primary: 'text-white bg-red-600 hover:bg-red-700 focus:ring-red-500 disabled:bg-red-400',
-        secondary: 'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300 border border-gray-300 disabled:bg-gray-50 disabled:text-gray-400',
-        danger: 'text-white bg-red-500 hover:bg-red-600 focus:ring-red-500 disabled:bg-red-300',
-        outline: 'text-red-600 bg-white border border-red-600 hover:bg-red-50 focus:ring-red-500 disabled:text-red-300 disabled:border-red-300 disabled:hover:bg-white',
+        primary:
+            'text-white bg-red-600 hover:bg-red-700 focus:ring-red-500 disabled:bg-red-400',
+        secondary:
+            'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-300 border border-gray-300 disabled:bg-gray-50 disabled:text-gray-400',
+        danger:
+            'text-white bg-red-500 hover:bg-red-600 focus:ring-red-500 disabled:bg-red-300',
+        outline:
+            'text-red-600 bg-white border border-red-600 hover:bg-red-50 focus:ring-red-500 disabled:text-red-300 disabled:border-red-300 disabled:hover:bg-white',
         icon: 'p-2 text-gray-500 hover:text-red-600 hover:bg-red-100 focus:ring-red-500 disabled:text-gray-300 disabled:hover:bg-transparent',
         link: 'text-red-600 hover:text-red-800 focus:ring-red-500 underline disabled:text-gray-400 disabled:no-underline',
     };
@@ -56,10 +61,10 @@ const Button = ({
             className={`${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${disabled || isLoading ? disabledStyle : ''} ${className}`}
             {...props}
         >
-            {isLoading && <LoadingSpinner />}
-            {!isLoading && iconLeft && <span className="mr-2">{iconLeft}</span>}
+            {isLoading && <LoadingSpinner size='5' className='mr-2' />}
+            {!isLoading && iconLeft && <span className='mr-2'>{iconLeft}</span>}
             {children}
-            {!isLoading && iconRight && <span className="ml-2">{iconRight}</span>}
+            {!isLoading && iconRight && <span className='ml-2'>{iconRight}</span>}
         </button>
     );
 };
