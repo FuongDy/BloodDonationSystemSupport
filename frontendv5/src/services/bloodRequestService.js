@@ -21,13 +21,9 @@ const bloodRequestService = {
   pledgeForRequest: requestId => {
     return apiClient.post(`/blood-requests/${requestId}/pledge`);
   },
-
   // Get user's pledges
   getUserPledges: () => {
-    // Backend endpoint not implemented yet, return mock data
-    return Promise.resolve({ 
-      data: [] // Empty array for now - no pledges
-    });
+    return apiClient.get('/users/me/pledges');
   },
 
   // Update request status (placeholder - implement when backend provides this endpoint)

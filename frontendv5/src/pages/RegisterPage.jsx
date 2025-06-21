@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '../hooks/useAuth';
-import { useAppStore } from '../store/appStore';
+import { useAppStore, showNotification } from '../store/appStore';
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';
 import DatePicker from '../components/common/DatePicker';
@@ -66,9 +66,8 @@ const RegisterPage = () => {
   const {
     requestRegistration,
     isAuthenticated,
-    loading: authLoading,
-  } = useAuth();
-  const { showNotification, setLoading } = useAppStore();
+    loading: authLoading,  } = useAuth();
+  const { setLoading } = useAppStore();
   const navigate = useNavigate();
 
   /**
@@ -99,7 +98,6 @@ const RegisterPage = () => {
       fetchBloodTypes();
     }
   }, [isAuthenticated, navigate, fetchBloodTypes]);
-
   /**
    * Xử lý thay đổi input với real-time validation
    * @param {Event} e - Input change event
@@ -124,6 +122,19 @@ const RegisterPage = () => {
             ...prev,
             [name]: validationError.message,
           }));
+        }
+
+        // Nếu đang validate confirmPassword, cũng validate lại password để đảm bảo sync
+        if (name === 'confirmPassword' || name === 'password') {
+          try {
+            await userRegistrationSchema.validateAt('confirmPassword', updatedData);
+            setValidationErrors(prev => ({ ...prev, confirmPassword: '' }));
+          } catch (validationError) {
+            setValidationErrors(prev => ({
+              ...prev,
+              confirmPassword: validationError.message,
+            }));
+          }
         }
       }, 0);
 
@@ -157,19 +168,24 @@ const RegisterPage = () => {
 
       // Remove fields không cần thiết cho API
       delete registrationData.confirmPassword;
-      delete registrationData.agreeTerms;
-
-      console.log('=== REGISTER REQUEST ===');
+      delete registrationData.agreeTerms;      console.log('=== REGISTER REQUEST ===');
       console.log('Registration Data:', registrationData);
-      console.log('=======================');
-
-      await requestRegistration(registrationData);
-
-      showNotification(
-        'Mã OTP đã được gửi! Vui lòng kiểm tra email.',
-        'success'
-      );
-      navigate('/verify-otp', { state: { registrationData } });
+      console.log('=======================');      try {
+        await requestRegistration(registrationData);
+        
+        // Chỉ navigate khi requestRegistration thành công
+        console.log('✅ Registration request successful, navigating to OTP page...');
+        showNotification(
+          'Mã OTP đã được gửi! Vui lòng kiểm tra email.',
+          'success'
+        );
+        navigate('/verify-otp', { state: { registrationData } });
+        console.log('✅ Navigation completed');
+      } catch (requestError) {
+        // Xử lý lỗi từ requestRegistration
+        console.error('❌ Request registration error:', requestError);
+        throw requestError; // Re-throw để outer catch xử lý
+      }
     } catch (error) {
       if (error.name === 'ValidationError') {
         // Xử lý validation errors

@@ -8,8 +8,7 @@ import * as yup from 'yup';
 
 // Common validation patterns
 const PHONE_REGEX = /^(\+84|0)[0-9]{9,10}$/;
-const PASSWORD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
 
 // Custom validation methods
 const phoneValidation = yup
@@ -18,10 +17,10 @@ const phoneValidation = yup
 
 const passwordValidation = yup
   .string()
-  .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+  .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
   .matches(
     PASSWORD_REGEX,
-    'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt'
+    'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số'
   );
 
 /**

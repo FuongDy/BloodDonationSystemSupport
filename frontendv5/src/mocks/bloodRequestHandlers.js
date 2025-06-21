@@ -224,35 +224,118 @@ export const bloodRequestHandlers = [
       return HttpResponse.json({
       message: 'Blood request deleted successfully (MSW)',
     });
-  }),
-  // Get user's pledges
+  }),  // Get user's pledges
   http.get(`${API_URL}/users/me/pledges`, () => {
-    try {
-      // Filter requests that have pledges from current user (mock user id: 3)
-      const userPledges = [];
-      
-      mockBloodRequests.forEach(request => {
-        if (request.pledges && Array.isArray(request.pledges) && request.pledges.length > 0) {
-          const userPledge = request.pledges.find(pledge => pledge.donor && pledge.donor.id === 3);
-          if (userPledge) {
-            userPledges.push({
-              ...userPledge,
-              bloodRequest: request
-            });
+    console.log('🩸 Mock: Fetching user pledges...');
+    
+    const mockPledges = [
+      {
+        id: 1,
+        status: 'PENDING',
+        createdAt: '2024-12-15T10:30:00',
+        bloodRequest: {
+          id: 101,
+          description: 'Cần máu khẩn cấp cho bệnh nhân tai nạn giao thông. Tình trạng rất nguy kịch.',
+          quantityNeeded: 3,
+          location: 'Bệnh viện Chợ Rẫy, TP.HCM',
+          neededBy: '2024-12-20T18:00:00',
+          priority: 'EMERGENCY',
+          contactPhone: '0909123456',
+          contactEmail: 'emergency@choray.vn',
+          bloodType: {
+            id: 1,
+            bloodGroup: 'A',
+            componentType: '+',
+            description: 'A+'
           }
         }
-      });
-      
-      return HttpResponse.json({
-        data: userPledges,
-        message: 'User pledges retrieved successfully (MSW)',
-      });
-    } catch (error) {
-      console.error('MSW Error in getUserPledges:', error);
-      return HttpResponse.json(
-        { message: 'Error retrieving user pledges (MSW)', error: error.message },
-        { status: 500 }
-      );
-    }
+      },
+      {
+        id: 2,
+        status: 'CONFIRMED',
+        createdAt: '2024-12-10T14:20:00',
+        bloodRequest: {
+          id: 102,
+          description: 'Bệnh nhân chuẩn bị phẫu thuật tim mạch cần dự trữ máu.',
+          quantityNeeded: 2,
+          location: 'Viện Tim mạch Việt Nam, Hà Nội',
+          neededBy: '2024-12-25T08:00:00',
+          priority: 'URGENT',
+          contactPhone: '0912345678',
+          contactEmail: 'cardio@timvietnam.vn',
+          bloodType: {
+            id: 2,
+            bloodGroup: 'O',
+            componentType: '-',
+            description: 'O-'
+          }
+        }
+      },
+      {
+        id: 3,
+        status: 'COMPLETED',
+        createdAt: '2024-12-05T09:15:00',
+        bloodRequest: {
+          id: 103,
+          description: 'Bệnh nhân ung thư máu cần truyền máu thường xuyên trong quá trình điều trị.',
+          quantityNeeded: 1,
+          location: 'Bệnh viện K, Hà Nội',
+          neededBy: '2024-12-15T16:00:00',
+          priority: 'NORMAL',
+          contactPhone: '0987654321',
+          contactEmail: 'oncology@benhvienk.vn',
+          bloodType: {
+            id: 3,
+            bloodGroup: 'B',
+            componentType: '+',
+            description: 'B+'
+          }
+        }
+      },
+      {
+        id: 4,
+        status: 'PENDING',
+        createdAt: '2024-12-12T16:45:00',
+        bloodRequest: {
+          id: 104,
+          description: 'Thai phụ sinh non cần máu khẩn cấp.',
+          quantityNeeded: 4,
+          location: 'Bệnh viện Phụ sản Trung ương, Hà Nội',
+          neededBy: '2024-12-18T12:00:00',
+          priority: 'URGENT',
+          contactPhone: '0934567890',
+          contactEmail: 'maternity@phusan.vn',
+          bloodType: {
+            id: 4,
+            bloodGroup: 'AB',
+            componentType: '+',
+            description: 'AB+'
+          }
+        }
+      },
+      {
+        id: 5,
+        status: 'CANCELLED',
+        createdAt: '2024-12-08T11:30:00',
+        bloodRequest: {
+          id: 105,
+          description: 'Bệnh nhân bỏng nặng cần máu để phẫu thuật ghép da.',
+          quantityNeeded: 2,
+          location: 'Viện Bỏng Quốc gia, TP.HCM',
+          neededBy: '2024-12-14T10:00:00',
+          priority: 'NORMAL',
+          contactPhone: '0945678901',
+          contactEmail: 'burns@vienbong.vn',
+          bloodType: {
+            id: 5,
+            bloodGroup: 'O',
+            componentType: '+',
+            description: 'O+'
+          }
+        }
+      }
+    ];
+    
+    return HttpResponse.json(mockPledges);
   }),
 ];

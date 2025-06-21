@@ -1,22 +1,26 @@
 // src/components/common/DateTimePicker.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const DateTimePicker = ({ 
-  label, 
-  value, 
-  onChange, 
-  required = false, 
+const DateTimePicker = ({
+  label,
+  value,
+  onChange,
+  required = false,
   disabled = false,
   minDate = null,
   maxDate = null,
   className = '',
-  ...props 
+  ...props
 }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const calendarRef = useRef(null);
+  const timePickerRef = useRef(null);
 
   // Parse initial value
   useEffect(() => {
@@ -38,6 +42,23 @@ const DateTimePicker = ({
     }
   }, [selectedDate, selectedTime, value, props.name]); // Removed onChange from dependencies
 
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+      if (timePickerRef.current && !timePickerRef.current.contains(event.target)) {
+        setShowTimePicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Generate calendar days
   const generateCalendarDays = () => {
     const year = currentMonth.getFullYear();
@@ -54,7 +75,7 @@ const DateTimePicker = ({
     for (let i = 0; i < 42; i++) {
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
-      
+
       const isCurrentMonth = date.getMonth() === month;
       const isToday = date.getTime() === today.getTime();
       const isSelected = selectedDate === date.toISOString().split('T')[0];
@@ -88,11 +109,15 @@ const DateTimePicker = ({
     }
     return slots;
   };
-
   const handleDateClick = (date) => {
     if (date.isDisabled) return;
     setSelectedDate(date.date.toISOString().split('T')[0]);
     setShowCalendar(false);
+  };
+
+  const handleTimeClick = (time) => {
+    setSelectedTime(time);
+    setShowTimePicker(false);
   };
 
   const navigateMonth = (direction) => {
@@ -113,7 +138,6 @@ const DateTimePicker = ({
       day: 'numeric'
     });
   };
-
   const formatDisplayTime = () => {
     if (!selectedTime) return 'Chọn giờ';
     return selectedTime;
@@ -128,14 +152,13 @@ const DateTimePicker = ({
 
   return (
     <div className={`space-y-2 ${className}`}>      {label && (
-        <label className="block text-sm font-medium text-gray-700">
-          {label}
-        </label>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Date Picker */}
-        <div className="relative">
+      <label className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+    )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        {/* Date Picker */}
+        <div className="relative" ref={calendarRef}>
           <button
             type="button"
             onClick={() => setShowCalendar(!showCalendar)}
@@ -217,29 +240,60 @@ const DateTimePicker = ({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Time Picker */}
-        <div className="relative">
-          <select
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
+        </div>        {/* Time Picker */}
+        <div className="relative" ref={timePickerRef}>
+          <button
+            type="button"
+            onClick={() => setShowTimePicker(!showTimePicker)}
             disabled={disabled}
-            className="w-full appearance-none px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            <option value="">Chọn giờ</option>
-            {generateTimeSlots().map(time => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Clock className="w-5 h-5 text-gray-400" />
-          </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <ChevronRight className="w-5 h-5 text-gray-400 rotate-90" />
-          </div>
+            <div className="flex items-center">
+              <Clock className="w-5 h-5 text-gray-400 mr-3" />
+              <span className={selectedTime ? 'text-gray-900' : 'text-gray-500'}>
+                {formatDisplayTime()}
+              </span>
+            </div>
+            <ChevronRight className={`w-5 h-5 text-gray-400 transform transition-transform ${showTimePicker ? 'rotate-90' : ''}`} />
+          </button>
+
+          {/* Time Dropdown */}
+          {showTimePicker && (
+            <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-full max-h-64 overflow-y-auto">
+              <div className="p-2">
+                <div className="mb-2 px-3 py-2 text-sm font-medium text-gray-700 border-b border-gray-100">
+                  Chọn giờ làm việc
+                </div>
+                <div className="space-y-1">
+                  {generateTimeSlots().map(time => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => handleTimeClick(time)}
+                      className={`
+                        w-full px-3 py-2 text-sm text-left rounded-lg transition-colors
+                        ${selectedTime === time
+                          ? 'bg-red-500 text-white font-semibold'
+                          : 'text-gray-900 hover:bg-gray-100'
+                        }
+                      `}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-2 pt-2 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowTimePicker(false)}
+                    className="w-full px-3 py-2 text-sm text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-50"
+                  >
+                    Đóng
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
