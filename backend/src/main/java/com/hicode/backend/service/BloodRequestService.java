@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,10 @@ public class BloodRequestService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
 
+    /**
+     * Staff/Admin tạo một yêu cầu cần máu mới.
+     * Trả về DTO thay vì Entity.
+     */
     @Transactional
     public BloodRequestResponse createRequest(CreateBloodRequestRequest request) {
         User currentStaff = userService.getCurrentUser();
@@ -43,6 +48,7 @@ public class BloodRequestService {
         newRequest.setQuantityInUnits(request.getQuantityInUnits());
         newRequest.setUrgency(request.getUrgency());
         newRequest.setCreatedBy(currentStaff);
+        newRequest.setStatus(RequestStatus.PENDING);
 
         BloodRequest savedRequest = bloodRequestRepository.save(newRequest);
         sendNotificationToAvailableDonors(savedRequest);
@@ -50,22 +56,37 @@ public class BloodRequestService {
         return mapToResponse(savedRequest);
     }
 
+    /**
+     * Lấy danh sách các yêu cầu đang hoạt động (PENDING) cho Member xem.
+     */
+    @Transactional(readOnly = true)
     public List<BloodRequestResponse> searchActiveRequests() {
         List<BloodRequest> requests = bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
         return requests.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    /**
+     * Lấy chi tiết một yêu cầu máu theo ID.
+     */
+    @Transactional(readOnly = true)
     public BloodRequestResponse getRequestById(Long id) {
         BloodRequest request = bloodRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + id));
         return mapToResponse(request);
     }
 
+    /**
+     * Lấy tất cả yêu cầu máu có phân trang cho Staff/Admin.
+     */
+    @Transactional(readOnly = true)
     public Page<BloodRequestResponse> getAllRequests(Pageable pageable) {
         Page<BloodRequest> requestPage = bloodRequestRepository.findAll(pageable);
         return requestPage.map(this::mapToResponse);
     }
 
+    /**
+     * Cho phép một Member đăng ký hiến tặng cho một yêu cầu cụ thể.
+     */
     @Transactional
     public DonationPledge pledgeForRequest(Long requestId) {
         User currentUser = userService.getCurrentUser();
@@ -73,7 +94,7 @@ public class BloodRequestService {
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found"));
 
         if(bloodRequest.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalStateException("This blood request is no longer active.");
+            throw new IllegalStateException("This blood request is no longer active for pledging.");
         }
 
         boolean alreadyPledged = bloodRequest.getPledges().stream()
@@ -87,25 +108,66 @@ public class BloodRequestService {
         pledge.setBloodRequest(bloodRequest);
 
         DonationPledge savedPledge = pledgeRepository.save(pledge);
-        checkAndUpdateRequestStatus(bloodRequest);
+
+        // Tải lại đối tượng cha để cập nhật danh sách pledge trong bộ nhớ
+        BloodRequest updatedRequest = bloodRequestRepository.findById(requestId).get();
+        checkAndUpdateRequestStatus(updatedRequest);
+
         return savedPledge;
     }
 
+    /**
+     * Staff/Admin cập nhật trạng thái của một yêu cầu.
+     */
+    @Transactional
+    public BloodRequestResponse updateStatus(Long requestId, RequestStatus newStatus) {
+        BloodRequest request = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + requestId));
+        request.setStatus(newStatus);
+        return mapToResponse(bloodRequestRepository.save(request));
+    }
+
+    /**
+     * Hàm nội bộ để kiểm tra và cập nhật trạng thái yêu cầu máu theo quy tắc N+1.
+     */
     private void checkAndUpdateRequestStatus(BloodRequest bloodRequest) {
-        BloodRequest updatedRequest = bloodRequestRepository.findById(bloodRequest.getId()).get();
-        int requiredQuantity = updatedRequest.getQuantityInUnits();
-        int currentPledges = updatedRequest.getPledges().size();
-        if (currentPledges >= requiredQuantity) {
-            updatedRequest.setStatus(RequestStatus.FULFILLED);
-            bloodRequestRepository.save(updatedRequest);
+        int requiredQuantity = bloodRequest.getQuantityInUnits();
+        int currentPledges = bloodRequest.getPledges().size();
+        int requiredPledges = requiredQuantity + 1;
+
+        if (currentPledges >= requiredPledges) {
+            bloodRequest.setStatus(RequestStatus.FULFILLED);
+            bloodRequestRepository.save(bloodRequest);
         }
     }
 
+    /**
+     * Gửi email thông báo bất đồng bộ đến các người hiến máu phù hợp.
+     */
     @Async
     public void sendNotificationToAvailableDonors(BloodRequest bloodRequest) {
-        // ...
+        List<User> availableDonors = userRepository.findByIsReadyToDonateFalseAndLastDonationDateIsNotNull();
+
+        String subject = "[Khẩn cấp] Kêu gọi hiến máu nhóm " + bloodRequest.getBloodType().getBloodGroup();
+        String text = String.format(
+                "Chào bạn,\n\nHệ thống hiến máu đang có một trường hợp khẩn cấp cần máu nhóm %s tại %s cho bệnh nhân %s.\n" +
+                        "Số lượng cần: %d đơn vị.\n\n" +
+                        "Vui lòng truy cập ứng dụng để xem chi tiết và đăng ký hỗ trợ nếu bạn đủ điều kiện.\n\n" +
+                        "Trân trọng.",
+                bloodRequest.getBloodType().getBloodGroup(),
+                bloodRequest.getHospital(),
+                bloodRequest.getPatientName(),
+                bloodRequest.getQuantityInUnits()
+        );
+
+        for (User donor : availableDonors) {
+            emailService.sendEmail(donor.getEmail(), subject, text);
+        }
     }
 
+    /**
+     * Hàm helper để chuyển đổi BloodRequest Entity sang BloodRequestResponse DTO.
+     */
     private BloodRequestResponse mapToResponse(BloodRequest entity) {
         BloodRequestResponse response = new BloodRequestResponse();
         BeanUtils.copyProperties(entity, response, "bloodType", "createdBy", "pledges");

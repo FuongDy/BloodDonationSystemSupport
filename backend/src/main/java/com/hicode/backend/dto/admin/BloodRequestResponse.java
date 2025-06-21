@@ -18,6 +18,6 @@ public class BloodRequestResponse {
     private UrgencyLevel urgency;
     private RequestStatus status;
     private UserResponse createdBy;
-    private int pledgeCount; // Số người đã đăng ký hiến
+    private int pledgeCount;
     private LocalDateTime createdAt;
 }

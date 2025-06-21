@@ -3,6 +3,7 @@ package com.hicode.backend.controller;
 import com.hicode.backend.dto.admin.BloodRequestResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
 import com.hicode.backend.model.entity.DonationPledge;
+import com.hicode.backend.model.enums.RequestStatus;
 import com.hicode.backend.service.BloodRequestService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,13 @@ public class BloodRequestController {
     public ResponseEntity<DonationPledge> pledgeToDonate(@PathVariable Long requestId) {
         DonationPledge pledge = bloodRequestService.pledgeForRequest(requestId);
         return ResponseEntity.status(HttpStatus.CREATED).body(pledge);
+    }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<BloodRequestResponse> updateRequestStatus(
+            @PathVariable Long id,
+            @RequestParam RequestStatus newStatus) {
+        return ResponseEntity.ok(bloodRequestService.updateStatus(id, newStatus));
     }
 }
