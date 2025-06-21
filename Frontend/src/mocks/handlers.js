@@ -193,13 +193,122 @@ const mockUrgentRequests = [
     },
 ];
 
+// --- START: Urgent Request Management Mocks ---
+
+// Yêu cầu đã được duyệt và hiển thị công khai
+let mockPublishedUrgentRequests = [
+    {
+        id: 1,
+        status: 'Approved',
+        bloodType: "A+",
+        bloodRh: "(Dương)",
+        hospital: "Bệnh viện Chợ Rẫy",
+        patientName: "Nguyễn Văn A",
+        patientGender: "Nam",
+        patientAge: 45,
+        unitsNeeded: 3,
+        location: "Q5, TP.HCM",
+        reason: "Bệnh nhân đang cần máu gấp do tai nạn giao thông nghiêm trọng.",
+        urgency: "Rất khẩn cấp",
+        requestDate: "2025-06-20T10:00:00Z",
+        approvedBy: 'admin@example.com',
+        approvedAt: '2025-06-20T11:00:00Z',
+    },
+    {
+        id: 2,
+        status: 'Approved',
+        bloodType: "O+",
+        bloodRh: "(Dương)",
+        hospital: "Bệnh viện Quận 7",
+        patientName: "Trần Thị C",
+        patientGender: "Nữ",
+        patientAge: 32,
+        unitsNeeded: 2,
+        location: "Q7, TP.HCM",
+        reason: "Ca mổ khẩn cấp, cần máu cùng nhóm trong vòng 24 giờ.",
+        urgency: "Rất khẩn cấp",
+        requestDate: "2025-06-21T08:30:00Z",
+        approvedBy: 'admin@example.com',
+        approvedAt: '2025-06-21T09:00:00Z',
+    },
+    {
+        id: 3,
+        status: 'Approved',
+        bloodType: "B-",
+        bloodRh: "(Âm)",
+        hospital: "Bệnh viện Đa khoa Thủ Đức",
+        patientName: "Lê Văn E",
+        patientGender: "Nam",
+        patientAge: 28,
+        unitsNeeded: 1,
+        location: "TP. Thủ Đức, TP.HCM",
+        reason: "Bệnh nhân cần máu hiếm B âm cho ca ghép tủy.",
+        urgency: "Khẩn cấp",
+        requestDate: "2025-06-21T11:00:00Z",
+        approvedBy: 'staff@example.com',
+        approvedAt: '2025-06-21T12:00:00Z',
+    },
+];
+
+// Yêu cầu đang chờ duyệt
+let mockPendingUrgentRequests = [
+    {
+        id: 101,
+        status: 'Pending',
+        patientName: 'Chờ Duyệt 1',
+        patientAge: 60,
+        patientGender: 'Nữ',
+        hospital: 'Bệnh viện Thống Nhất',
+        location: 'Q.Tân Bình, TP.HCM',
+        bloodType: 'A-',
+        unitsNeeded: 2,
+        reason: 'Bệnh nhân thiếu máu mãn tính, cần truyền máu gấp.',
+        urgency: 'Khẩn cấp',
+        contactPhone: '0912345678',
+        isAnonymous: false,
+        requestDate: new Date().toISOString(),
+        createdBy: 'staff@example.com',
+    },
+    {
+        id: 102,
+        status: 'Pending',
+        patientName: 'Chờ Duyệt 2',
+        patientAge: 7, 
+        patientGender: 'Nam',
+        hospital: 'Bệnh viện Nhi Đồng 1',
+        location: 'Q10, TP.HCM',
+        bloodType: 'O-',
+        unitsNeeded: 1,
+        reason: 'Bé trai bị sốt xuất huyết, tiểu cầu giảm mạnh.',
+        urgency: 'Rất khẩn cấp',
+        contactPhone: '0987654321',
+        isAnonymous: true, // Ẩn danh
+        requestDate: new Date().toISOString(),
+        createdBy: 'admin@example.com',
+    },
+];
+
+// --- END: Urgent Request Management Mocks ---
+
 export const handlers = [
     // Urgent Blood Requests
     http.get(`${API_URL}/urgent-requests`, ({ request }) => {
-        console.log("MSW: Fetching urgent blood requests...");
-        // In a real scenario, you would filter based on query params
-        // For now, we return all mock requests
-        return HttpResponse.json(mockUrgentRequests);
+        console.log("MSW: Fetching PUBLISHED urgent blood requests...");
+        return HttpResponse.json(mockPublishedUrgentRequests);
+    }),
+
+    http.post(`${API_URL}/urgent-requests`, async ({ request }) => {
+        const newRequest = await request.json();
+        console.log("MSW: Received new urgent request for approval:", newRequest);
+        const newPendingRequest = {
+            ...newRequest,
+            id: Date.now(), // Tạo ID duy nhất
+            status: 'Pending',
+            requestDate: new Date().toISOString(),
+            // createdBy sẽ được thêm từ phía client dựa trên user đang đăng nhập
+        };
+        mockPendingUrgentRequests.push(newPendingRequest);
+        return HttpResponse.json(newPendingRequest, { status: 201 });
     }),
 
     http.post(`${API_URL}/urgent-requests/:id/volunteer`, async ({ params }) => {
@@ -207,7 +316,7 @@ export const handlers = [
         // Simulate network delay
         await new Promise(res => setTimeout(res, 500)); 
         
-        const requestExists = mockUrgentRequests.some(req => req.id.toString() === params.id);
+        const requestExists = mockPublishedUrgentRequests.some(req => req.id.toString() === params.id);
 
         if (!requestExists) {
             return new HttpResponse(null, { status: 404, statusText: 'Request Not Found' });
@@ -237,6 +346,10 @@ export const handlers = [
             if (email.includes("admin")) {
                 userToLogin.role = "Admin";
                 userToLogin.fullName = "Mock Admin";
+                userToLogin.email = email;
+            } else if (email.includes("staff")) { // <<< FIX: Add specific check for staff
+                userToLogin.role = "Staff";
+                userToLogin.fullName = "Mock Staff User";
                 userToLogin.email = email;
             } else {
                 userToLogin.role = "Member";
@@ -354,6 +467,49 @@ export const handlers = [
         console.log(`MSW Soft Deleted User ${userId} by Admin`);
         return HttpResponse.json({ message: `User ${userId} soft deleted (MSW)` });
     }),
+
+    // START: Admin Urgent Request Management Handlers
+    http.get(`${API_URL}/admin/urgent-requests`, () => {
+        console.log("MSW: Admin fetching PENDING urgent requests...");
+        return HttpResponse.json(mockPendingUrgentRequests);
+    }),
+
+    http.post(`${API_URL}/admin/urgent-requests/:id/approve`, async ({ request, params }) => {
+        const { id } = params;
+        const { user } = await request.json(); // Lấy thông tin người duyệt
+        console.log(`MSW: Approving request ${id} by ${user.email}`);
+
+        const requestIndex = mockPendingUrgentRequests.findIndex(req => req.id.toString() === id);
+        if (requestIndex === -1) {
+            return HttpResponse.json({ message: 'Request not found' }, { status: 404 });
+        }
+
+        const [approvedRequest] = mockPendingUrgentRequests.splice(requestIndex, 1);
+
+        approvedRequest.status = 'Approved';
+        approvedRequest.approvedBy = user.email;
+        approvedRequest.approvedAt = new Date().toISOString();
+
+        mockPublishedUrgentRequests.unshift(approvedRequest); // Thêm vào đầu danh sách công khai
+
+        return HttpResponse.json(approvedRequest, { status: 200 });
+    }),
+
+    http.post(`${API_URL}/admin/urgent-requests/:id/reject`, async ({ request, params }) => {
+        const { id } = params;
+        const { reason } = await request.json(); // Lấy lý do từ chối
+        console.log(`MSW: Rejecting request ${id}. Reason: ${reason}`);
+
+        const initialLength = mockPendingUrgentRequests.length;
+        mockPendingUrgentRequests = mockPendingUrgentRequests.filter(req => req.id.toString() !== id);
+
+        if (mockPendingUrgentRequests.length < initialLength) {
+            return HttpResponse.json({ message: `Request ${id} rejected successfully.` }, { status: 200 });
+        }
+
+        return HttpResponse.json({ message: 'Request not found' }, { status: 404 });
+    }),
+    // END: Admin Urgent Request Management Handlers
 
     // UserService - Common data
     http.get(`${API_URL}/roles`, () => {

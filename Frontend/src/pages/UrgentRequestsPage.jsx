@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import UrgentRequestCard from '../components/urgent-requests/UrgentRequestCard';
 import UrgentRequestFilters from '../components/urgent-requests/UrgentRequestFilters';
 import apiClient from '../services/apiClient';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, PlusCircle } from 'lucide-react';
 import UrgentRequestDetailModal from '../components/urgent-requests/UrgentRequestDetailModal';
+import { useAuth } from '../hooks/useAuth';
+import Button from '../components/common/Button';
 
 const UrgentRequestsPage = () => {
+  const { user } = useAuth(); // Get user from auth context
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,12 +76,24 @@ const UrgentRequestsPage = () => {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 pt-24">
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 relative">
             <ShieldAlert size={48} className="mx-auto text-red-500 mb-4" />
             <h1 className="text-4xl font-bold text-gray-800">Các Trường Hợp Cần Máu Khẩn Cấp</h1>
             <p className="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
                 Mỗi giọt máu cho đi, một cuộc đời ở lại. Hãy cùng chung tay giúp đỡ những bệnh nhân đang cần máu.
             </p>
+
+            {/* Add Create Request Button for Admin/Staff */}
+            {user && (user.role === 'Admin' || user.role === 'Staff') && (
+                <div className="absolute top-0 right-0">
+                    <Link to="/urgent-requests/create">
+                        <Button variant="primary">
+                            <PlusCircle size={20} className="mr-2" />
+                            Tạo yêu cầu mới
+                        </Button>
+                    </Link>
+                </div>
+            )}
         </div>
 
         {/* Filters */}

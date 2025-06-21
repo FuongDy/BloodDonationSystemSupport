@@ -4,7 +4,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth'; // Sử dụng useAuth hook
 import LoadingSpinner from '../components/common/LoadingSpinner'; // Component spinner
 
-const ProtectedRoute = ({ requiredRole }) => {
+const ProtectedRoute = ({ requiredRoles }) => {
     const { user, isAuthenticated, loading } = useAuth(); // Lấy trạng thái từ AuthContext
     const location = useLocation();
 
@@ -22,11 +22,12 @@ const ProtectedRoute = ({ requiredRole }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Kiểm tra role nếu requiredRole được cung cấp
-    if (requiredRole && user?.role !== requiredRole) { //
-        // Người dùng đã đăng nhập nhưng không có quyền truy cập
-        // Có thể redirect đến trang "Forbidden" hoặc trang chủ
-        return <Navigate to="/forbidden" replace />; // Hoặc <Navigate to="/" replace />;
+    // Kiểm tra role nếu requiredRoles được cung cấp và là một mảng
+    if (requiredRoles && Array.isArray(requiredRoles) && requiredRoles.length > 0) {
+        if (!user?.role || !requiredRoles.includes(user.role)) {
+            // Người dùng đã đăng nhập nhưng không có quyền truy cập
+            return <Navigate to="/forbidden" replace />;
+        }
     }
 
     return <Outlet />; // Hiển thị component con nếu đã xác thực và có quyền

@@ -10,7 +10,7 @@ import { useAuth } from '../../hooks/useAuth';
 const AdminSidebar = ({ isOpen, toggleSidebar }) => { 
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth(); // Lấy thông tin user
 
     const handleLogout = () => {
         logout();
@@ -19,15 +19,17 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
 
     const isActive = (path) => location.pathname === path || (path !== "/admin" && location.pathname.startsWith(path));
 
-    const menuItems = [
-        { path: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/admin/users", icon: Users, label: "Quản lý người dùng" },
-        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu" },
-        { path: "/admin/blood-compatibility", icon: GitCompareArrows, label: "Quản lý tương thích" },
-        { path: "/admin/emergency-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu Khẩn cấp" },
-        { path: "/admin/donation-history", icon: History, label: "Quản lí lịch sử hiến máu" },
-        { path: "/admin/blood-inventory", icon: Archive, label: "Quản lý kho máu" },
+    const allMenuItems = [
+        { path: "/admin", icon: LayoutDashboard, label: "Dashboard", roles: ['Admin'] },
+        { path: "/admin/users", icon: Users, label: "Quản lý người dùng", roles: ['Admin'] },
+        { path: "/admin/urgent-requests", icon: MessageSquareWarning, label: "Quản lý yêu cầu khẩn cấp", roles: ['Admin', 'Staff'] },
+        { path: "/admin/blood-types", icon: Droplets, label: "Quản lý loại máu", roles: ['Admin'] },
+        { path: "/admin/blood-inventory", icon: Archive, label: "Quản lý kho máu", roles: ['Admin'] },
+        // Thêm các mục menu khác với roles tương ứng ở đây
     ];
+
+    // Lọc các mục menu dựa trên vai trò của người dùng
+    const menuItems = allMenuItems.filter(item => user?.role && item.roles.includes(user.role));
 
     return (
         <aside 

@@ -12,10 +12,12 @@ const InputField = ({
     required = false,
     disabled = false,
     error,
+    helpText, // Accept helpText prop
     className = '',
     labelClassName = '',
     inputClassName = '',
     errorClassName = '',
+    helpTextClassName = '', // Add className for helpText
     hasIcon = false,
     icon,
     onIconClick,
@@ -55,6 +57,7 @@ const InputField = ({
                 )}
             </div>
             {error && <p className={`mt-1 text-xs text-red-600 ${errorClassName}`}>{error}</p>}
+            {helpText && !error && <p className={`mt-1 text-xs text-gray-500 ${helpTextClassName}`}>{helpText}</p>}
         </div>
     );
 };

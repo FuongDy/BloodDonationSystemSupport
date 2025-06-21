@@ -9,6 +9,7 @@ import NotFoundPage from "../pages/NotFoundPage.jsx";
 import UserProfilePage from "../pages/UserProfilePage";
 import ForbiddenPage from "../pages/ForbiddenPage";
 import UrgentRequestsPage from "../pages/UrgentRequestsPage";
+import CreateUrgentRequestPage from "../pages/CreateUrgentRequestPage"; // Import the new page
 import ScheduleDonationPage from "../pages/ScheduleDonationPage";
 import HandbookPage from "../pages/HandbookPage"; // Import HandbookPage
 import BlogPage from "../pages/BlogPage"; // Import BlogPage
@@ -21,9 +22,7 @@ import AdminUserCreatePage from "../pages/admin/AdminUserCreatePage";
 import AdminUserEditPage from "../pages/admin/AdminUserEditPage";
 import AdminBloodTypePage from "../pages/admin/AdminBloodTypePage"; // Import AdminBloodTypePage
 import AdminBloodInventoryPage from "../pages/admin/AdminBloodInventoryPage"; // Import AdminBloodInventoryPage
-
-
-
+import AdminUrgentRequestManagementPage from "../pages/admin/AdminUrgentRequestManagementPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -45,16 +44,22 @@ const AppRoutes = () => (
             {/* Thêm các route khác cho member ở đây */}
         </Route>
 
-        {/* Admin Routes */}
-        <Route element={<ProtectedRoute requiredRole="Admin" />}> {/* */}
-            <Route path="/admin" element={<AdminLayout />}> {/* */}
-                <Route index element={<AdminDashboardPage />} /> {/* */}
-                <Route path="users" element={<AdminUserListPage />} /> {/* */}
-                <Route path="users/new" element={<AdminUserCreatePage />} /> {/* */}
-                <Route path="users/edit/:userId" element={<AdminUserEditPage />} /> {/* */}
-                <Route path="blood-types" element={<AdminBloodTypePage />} /> {/* Add route for blood types */}
-                <Route path="blood-inventory" element={<AdminBloodInventoryPage />} /> {/* Add route for blood inventory */}
-               
+        {/* Admin & Staff Routes */}
+        <Route element={<ProtectedRoute requiredRoles={['Admin', 'Staff']} />}>
+            <Route path="/urgent-requests/create" element={<CreateUrgentRequestPage />} />
+            <Route path="/admin" element={<AdminLayout />}>
+                {/* This route is for both Admin and Staff */}
+                <Route path="urgent-requests" element={<AdminUrgentRequestManagementPage />} />
+
+                {/* These routes are ONLY for Admin */}
+                <Route element={<ProtectedRoute requiredRoles={['Admin']} />}>
+                    <Route index element={<AdminDashboardPage />} />
+                    <Route path="users" element={<AdminUserListPage />} />
+                    <Route path="users/new" element={<AdminUserCreatePage />} />
+                    <Route path="users/edit/:userId" element={<AdminUserEditPage />} />
+                    <Route path="blood-types" element={<AdminBloodTypePage />} />
+                    <Route path="blood-inventory" element={<AdminBloodInventoryPage />} />
+                </Route>
             </Route>
         </Route>
 
