@@ -5,6 +5,7 @@ import {
   USER_STATUSES,
   DONATION_STATUS,
   REQUEST_STATUS,
+  INVENTORY_STATUS,
 } from '../../utils/constants';
 
 const StatusBadge = ({ status, type = 'user', className, ...props }) => {
@@ -62,6 +63,20 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
             return 'Từ chối';
           case REQUEST_STATUS.CANCELLED:
             return 'Đã hủy';
+          default:
+            return status;
+        }
+
+      case 'inventory':
+        switch (status) {
+          case INVENTORY_STATUS.AVAILABLE:
+            return 'Có sẵn';
+          case INVENTORY_STATUS.EXPIRED:
+            return 'Hết hạn';
+          case INVENTORY_STATUS.USED:
+            return 'Đã sử dụng';
+          case INVENTORY_STATUS.RESERVED:
+            return 'Đã đặt chỗ';
           default:
             return status;
         }
