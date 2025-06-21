@@ -200,8 +200,7 @@ let mockPublishedUrgentRequests = [
     {
         id: 1,
         status: 'Approved',
-        bloodType: "A+",
-        bloodRh: "(Dương)",
+        bloodType: mockBloodTypes.find(bt => bt.bloodGroup === 'A' && bt.rhFactor === '+'),
         hospital: "Bệnh viện Chợ Rẫy",
         patientName: "Nguyễn Văn A",
         patientGender: "Nam",
@@ -217,8 +216,7 @@ let mockPublishedUrgentRequests = [
     {
         id: 2,
         status: 'Approved',
-        bloodType: "O+",
-        bloodRh: "(Dương)",
+        bloodType: mockBloodTypes.find(bt => bt.bloodGroup === 'O' && bt.rhFactor === '+'),
         hospital: "Bệnh viện Quận 7",
         patientName: "Trần Thị C",
         patientGender: "Nữ",
@@ -234,8 +232,7 @@ let mockPublishedUrgentRequests = [
     {
         id: 3,
         status: 'Approved',
-        bloodType: "B-",
-        bloodRh: "(Âm)",
+        bloodType: mockBloodTypes.find(bt => bt.bloodGroup === 'B' && bt.rhFactor === '-'),
         hospital: "Bệnh viện Đa khoa Thủ Đức",
         patientName: "Lê Văn E",
         patientGender: "Nam",
@@ -260,7 +257,7 @@ let mockPendingUrgentRequests = [
         patientGender: 'Nữ',
         hospital: 'Bệnh viện Thống Nhất',
         location: 'Q.Tân Bình, TP.HCM',
-        bloodType: 'A-',
+        bloodType: mockBloodTypes.find(bt => bt.bloodGroup === 'A' && bt.rhFactor === '-'),
         unitsNeeded: 2,
         reason: 'Bệnh nhân thiếu máu mãn tính, cần truyền máu gấp.',
         urgency: 'Khẩn cấp',
@@ -277,7 +274,7 @@ let mockPendingUrgentRequests = [
         patientGender: 'Nam',
         hospital: 'Bệnh viện Nhi Đồng 1',
         location: 'Q10, TP.HCM',
-        bloodType: 'O-',
+        bloodType: mockBloodTypes.find(bt => bt.bloodGroup === 'O' && bt.rhFactor === '-'),
         unitsNeeded: 1,
         reason: 'Bé trai bị sốt xuất huyết, tiểu cầu giảm mạnh.',
         urgency: 'Rất khẩn cấp',
@@ -303,18 +300,36 @@ export const handlers = [
         return HttpResponse.json(mockPendingUrgentRequests);
     }),
 
+    // [POST] /urgent-requests - Tạo yêu cầu mới (chuyển vào hàng đợi)
     http.post(`${API_URL}/urgent-requests`, async ({ request }) => {
-        const newRequest = await request.json();
-        console.log("MSW: Received new urgent request for approval:", newRequest);
-        const newPendingRequest = {
-            ...newRequest,
-            id: Date.now(), // Tạo ID duy nhất
-            status: 'Pending',
+        const newRequestData = await request.json();
+        console.log("MSW: Received new urgent request data:", newRequestData);
+
+        // Tìm bloodType object từ bloodTypeId
+        const bloodType = mockBloodTypes.find(bt => bt.id == newRequestData.bloodTypeId);
+        if (!bloodType) {
+            return HttpResponse.json({ message: `Blood type with ID ${newRequestData.bloodTypeId} not found.` }, { status: 400 });
+        }
+
+        const newRequest = {
+            ...newRequestData,
+            id: Date.now(),
+            bloodType: bloodType, // Ensure bloodType is the full object
+            unitsNeeded: newRequestData.unitsNeeded || 1, // Default to 1 if not provided
+            urgency: newRequestData.urgency || 'Cần thiết', // Default urgency
             requestDate: new Date().toISOString(),
-            // createdBy sẽ được thêm từ phía client dựa trên user đang đăng nhập
+            status: 'Pending',
+            createdBy: 'staff@example.com', // Hardcoded for now
         };
-        mockPendingUrgentRequests.push(newPendingRequest);
-        return HttpResponse.json(newPendingRequest, { status: 201 });
+        
+        // Remove bloodTypeId as we now have the full bloodType object
+        delete newRequest.bloodTypeId; 
+
+        console.log("MSW: Creating new pending request:", newRequest);
+
+        mockPendingUrgentRequests.unshift(newRequest); // Add to the start of the pending list
+
+        return HttpResponse.json(newRequest, { status: 201 });
     }),
 
     http.post(`${API_URL}/urgent-requests/:id/volunteer`, async ({ params }) => {

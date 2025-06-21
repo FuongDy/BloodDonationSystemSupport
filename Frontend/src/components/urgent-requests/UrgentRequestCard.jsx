@@ -119,9 +119,11 @@ const UrgentRequestCard = ({ request, onViewDetails }) => {
             onClick={() => onViewDetails(request)}
         >
             {/* Urgency Pill */}
-            <div className={`absolute top-3 right-3 text-xs font-bold py-1 px-3 rounded-full border ${colorScheme.pill}`}>
-                {urgency}
-            </div>
+            {urgency && (
+                <div className={`absolute top-3 right-3 text-xs font-bold py-1 px-3 rounded-full border ${colorScheme.pill}`}>
+                    {urgency}
+                </div>
+            )}
             
             <div className="p-5">
                 <div className="flex items-center mb-3">
@@ -129,7 +131,7 @@ const UrgentRequestCard = ({ request, onViewDetails }) => {
                         <Droplet size={24} className={colorScheme.text} />
                     </div>
                     <div>
-                        <h3 className={`text-2xl font-bold ${colorScheme.text}`}>{bloodType} <span className="font-normal text-lg">{bloodRh}</span></h3>
+                        <h3 className={`text-2xl font-bold ${colorScheme.text}`}>{request.bloodType?.bloodGroup || 'N/A'} <span className="font-normal text-lg">{request.bloodType?.rhFactor || ''}</span></h3>
                         <p className="text-gray-500 flex items-center"><Hospital size={14} className="mr-2"/>{hospital}</p>
                     </div>
                 </div>
