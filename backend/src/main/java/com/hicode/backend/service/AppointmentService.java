@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AppointmentService {
 
@@ -123,5 +126,18 @@ public class AppointmentService {
             response.setStaff(userService.mapToUserResponse(entity.getStaff()));
         }
         return response;
+    }
+
+    /**
+     * Lấy danh sách tất cả các lịch hẹn của người dùng đang đăng nhập.
+     * @return Danh sách AppointmentResponse DTO.
+     */
+    @Transactional(readOnly = true)
+    public List<AppointmentResponse> getMyAppointments() {
+        User currentUser = userService.getCurrentUser();
+        List<DonationAppointment> appointments = appointmentRepository.findByDonorId(currentUser.getId());
+        return appointments.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
