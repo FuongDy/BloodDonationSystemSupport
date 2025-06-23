@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/appointments")
 public class AppointmentController {
@@ -23,6 +25,13 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> createAppointment(@Valid @RequestBody CreateAppointmentRequest request) {
         AppointmentResponse newAppointment = appointmentService.createAppointment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(newAppointment);
+    }
+
+    @GetMapping("/my-appointments")
+    @PreAuthorize("isAuthenticated()") // Chỉ cần đăng nhập là được
+    public ResponseEntity<List<AppointmentResponse>> getMyAppointments() {
+        List<AppointmentResponse> appointments = appointmentService.getMyAppointments();
+        return ResponseEntity.ok(appointments);
     }
 
     @PutMapping("/{id}/request-reschedule")
