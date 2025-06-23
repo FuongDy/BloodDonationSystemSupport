@@ -12,14 +12,14 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { requireAuth } = useAuthRedirect();
+// Check if the user has already pledged for this request
 
-  // Check if user has already pledged
+// Ensure request and pledges are defined
   const hasUserPledged = request.pledges?.some(
     pledge => pledge.donor?.id === user?.id
   );
 
   const handlePledge = async () => {
-    // Use requireAuth to handle authentication check and redirect
     const canProceed = requireAuth(null, 'Vui lòng đăng nhập để đăng ký hiến máu.');
     if (!canProceed) return;
 
