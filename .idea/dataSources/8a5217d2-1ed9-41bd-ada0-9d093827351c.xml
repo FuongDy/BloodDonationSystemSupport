@@ -16563,7 +16563,7 @@
     </collation>
     <database id="5510" parent="1" name="BloodDonationDB_CF">
       <Current>1</Current>
-      <Fingerprint>5.45817/60DF399D-913A-4ECB-A516-698CC4DB8A45@TUATUA\TUATUA</Fingerprint>
+      <Fingerprint>5.45829/1F951FD2-0AC7-4C3E-913D-B9908E8FCD64@TUATUA\TUATUA</Fingerprint>
       <Grants>5|database||1|connect|G
 5|database||0|view any column encryption key definition|G
 5|database||0|view any column master key definition|G</Grants>
@@ -16786,83 +16786,83 @@
       <DefaultGroup>1</DefaultGroup>
       <ObjectId>1</ObjectId>
     </filegroup>
-    <role id="5553" parent="5510" name="public">
-      <AuthType>none</AuthType>
-      <ObjectId>0</ObjectId>
-      <Type>database-role</Type>
-      <OwnerId>1</OwnerId>
-    </role>
-    <role id="5554" parent="5510" name="dbo">
-      <AuthType>instance</AuthType>
-      <DefaultSchema>dbo</DefaultSchema>
-      <ObjectId>1</ObjectId>
-    </role>
-    <role id="5555" parent="5510" name="guest">
-      <AuthType>none</AuthType>
-      <DefaultSchema>guest</DefaultSchema>
-      <ObjectId>2</ObjectId>
-    </role>
-    <role id="5556" parent="5510" name="INFORMATION_SCHEMA">
+    <role id="5553" parent="5510" name="INFORMATION_SCHEMA">
       <AuthType>none</AuthType>
       <ObjectId>3</ObjectId>
     </role>
-    <role id="5557" parent="5510" name="sys">
-      <AuthType>none</AuthType>
-      <ObjectId>4</ObjectId>
-    </role>
-    <role id="5558" parent="5510" name="db_owner">
-      <AuthType>none</AuthType>
-      <ObjectId>16384</ObjectId>
-      <Type>database-role</Type>
-      <OwnerId>1</OwnerId>
-    </role>
-    <role id="5559" parent="5510" name="db_accessadmin">
+    <role id="5554" parent="5510" name="db_accessadmin">
       <AuthType>none</AuthType>
       <ObjectId>16385</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5560" parent="5510" name="db_securityadmin">
-      <AuthType>none</AuthType>
-      <ObjectId>16386</ObjectId>
-      <Type>database-role</Type>
-      <OwnerId>1</OwnerId>
-    </role>
-    <role id="5561" parent="5510" name="db_ddladmin">
-      <AuthType>none</AuthType>
-      <ObjectId>16387</ObjectId>
-      <Type>database-role</Type>
-      <OwnerId>1</OwnerId>
-    </role>
-    <role id="5562" parent="5510" name="db_backupoperator">
+    <role id="5555" parent="5510" name="db_backupoperator">
       <AuthType>none</AuthType>
       <ObjectId>16389</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5563" parent="5510" name="db_datareader">
+    <role id="5556" parent="5510" name="db_datareader">
       <AuthType>none</AuthType>
       <ObjectId>16390</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5564" parent="5510" name="db_datawriter">
+    <role id="5557" parent="5510" name="db_datawriter">
       <AuthType>none</AuthType>
       <ObjectId>16391</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5565" parent="5510" name="db_denydatareader">
+    <role id="5558" parent="5510" name="db_ddladmin">
+      <AuthType>none</AuthType>
+      <ObjectId>16387</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5559" parent="5510" name="db_denydatareader">
       <AuthType>none</AuthType>
       <ObjectId>16392</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5566" parent="5510" name="db_denydatawriter">
+    <role id="5560" parent="5510" name="db_denydatawriter">
       <AuthType>none</AuthType>
       <ObjectId>16393</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
+    </role>
+    <role id="5561" parent="5510" name="db_owner">
+      <AuthType>none</AuthType>
+      <ObjectId>16384</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5562" parent="5510" name="db_securityadmin">
+      <AuthType>none</AuthType>
+      <ObjectId>16386</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5563" parent="5510" name="dbo">
+      <AuthType>instance</AuthType>
+      <DefaultSchema>dbo</DefaultSchema>
+      <ObjectId>1</ObjectId>
+    </role>
+    <role id="5564" parent="5510" name="guest">
+      <AuthType>none</AuthType>
+      <DefaultSchema>guest</DefaultSchema>
+      <ObjectId>2</ObjectId>
+    </role>
+    <role id="5565" parent="5510" name="public">
+      <AuthType>none</AuthType>
+      <ObjectId>0</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5566" parent="5510" name="sys">
+      <AuthType>none</AuthType>
+      <ObjectId>4</ObjectId>
     </role>
     <schema id="5567" parent="5510" name="INFORMATION_SCHEMA">
       <ObjectId>3</ObjectId>
@@ -16896,9 +16896,25 @@
     </schema>
     <schema id="5577" parent="5510" name="dbo">
       <Current>1</Current>
-      <IntrospectionTimestamp>2025-06-14.16:08:13.560</IntrospectionTimestamp>
-      <LastIntrospectionLocalTimestamp>2025-06-14.02:08:13</LastIntrospectionLocalTimestamp>
+      <DescriptionsCheckSum>7857711514</DescriptionsCheckSum>
+      <Grants>82099333|||0|execute|G
+82099333|||2|execute|D
+98099390|||0|execute|G
+98099390|||2|execute|D
+114099447|||0|execute|G
+114099447|||2|execute|D
+130099504|||0|execute|G
+130099504|||2|execute|D
+146099561|||0|execute|G
+146099561|||2|execute|D
+162099618|||0|execute|G
+162099618|||2|execute|D
+178099675|||0|execute|G
+178099675|||2|execute|D</Grants>
+      <IntrospectionTimestamp>2025-06-24.04:17:57.320</IntrospectionTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-06-23.14:17:57</LastIntrospectionLocalTimestamp>
       <ObjectId>1</ObjectId>
+      <PermissionsCheckSum>13781185599</PermissionsCheckSum>
     </schema>
     <schema id="5578" parent="5510" name="guest">
       <ObjectId>2</ObjectId>
@@ -16906,163 +16922,407 @@
     <schema id="5579" parent="5510" name="sys">
       <ObjectId>4</ObjectId>
     </schema>
-    <table id="5580" parent="5577" name="blood_requests">
-      <CreatedTimestamp>2025-06-11.16:38:25.220</CreatedTimestamp>
+    <routine id="5580" parent="5577" name="fn_diagramobjects">
+      <CreatedTimestamp>2025-06-24.00:13:33.013</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:33.013</ModifiedTimestamp>
+      <ObjectId>178099675</ObjectId>
+      <RoutineType>scalar-fun</RoutineType>
+      <SourceTextLength>1647</SourceTextLength>
+    </routine>
+    <routine id="5581" parent="5577" name="sp_alterdiagram">
+      <CreatedTimestamp>2025-06-24.00:13:33.003</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:33.003</ModifiedTimestamp>
+      <ObjectId>146099561</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>1501</SourceTextLength>
+    </routine>
+    <routine id="5582" parent="5577" name="sp_creatediagram">
+      <CreatedTimestamp>2025-06-24.00:13:32.997</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:32.997</ModifiedTimestamp>
+      <ObjectId>114099447</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>1223</SourceTextLength>
+    </routine>
+    <routine id="5583" parent="5577" name="sp_dropdiagram">
+      <CreatedTimestamp>2025-06-24.00:13:33.010</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:33.010</ModifiedTimestamp>
+      <ObjectId>162099618</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>896</SourceTextLength>
+    </routine>
+    <routine id="5584" parent="5577" name="sp_helpdiagramdefinition">
+      <CreatedTimestamp>2025-06-24.00:13:32.993</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:32.993</ModifiedTimestamp>
+      <ObjectId>98099390</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>921</SourceTextLength>
+    </routine>
+    <routine id="5585" parent="5577" name="sp_helpdiagrams">
+      <CreatedTimestamp>2025-06-24.00:13:32.990</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:32.990</ModifiedTimestamp>
+      <ObjectId>82099333</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>658</SourceTextLength>
+    </routine>
+    <routine id="5586" parent="5577" name="sp_renamediagram">
+      <CreatedTimestamp>2025-06-24.00:13:33</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:33</ModifiedTimestamp>
+      <ObjectId>130099504</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>1721</SourceTextLength>
+    </routine>
+    <routine id="5587" parent="5577" name="sp_upgraddiagrams">
+      <CreatedTimestamp>2025-06-24.00:13:32.973</CreatedTimestamp>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:32.973</ModifiedTimestamp>
+      <ObjectId>18099105</ObjectId>
+      <RoutineType>proc</RoutineType>
+      <SourceTextLength>1463</SourceTextLength>
+    </routine>
+    <table id="5588" parent="5577" name="blog_posts">
+      <CreatedTimestamp>2025-06-22.21:14:49.347</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.15:21:44.760</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-24.03:58:50.193</ModifiedTimestamp>
       <ObjectId>1205579333</ObjectId>
       <LobDataSpaceId>1</LobDataSpaceId>
     </table>
-    <table id="5581" parent="5577" name="blood_type_compatibility">
-      <CreatedTimestamp>2025-06-11.16:38:25.223</CreatedTimestamp>
+    <table id="5589" parent="5577" name="blood_requests">
+      <CreatedTimestamp>2025-06-22.21:14:49.353</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:33.770</ModifiedTimestamp>
-      <ObjectId>1269579561</ObjectId>
-      <LobDataSpaceId>1</LobDataSpaceId>
+      <ModifiedTimestamp>2025-06-22.21:14:49.440</ModifiedTimestamp>
+      <ObjectId>1253579504</ObjectId>
+      <LobDataSpaceId>0</LobDataSpaceId>
     </table>
-    <table id="5582" parent="5577" name="blood_types">
-      <CreatedTimestamp>2025-06-11.16:38:25.227</CreatedTimestamp>
+    <table id="5590" parent="5577" name="blood_type_compatibility">
+      <CreatedTimestamp>2025-06-22.21:14:49.357</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:34.127</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-24.03:58:50.207</ModifiedTimestamp>
       <ObjectId>1317579732</ObjectId>
-      <LobDataSpaceId>0</LobDataSpaceId>
-    </table>
-    <table id="5583" parent="5577" name="blood_units">
-      <CreatedTimestamp>2025-06-14.16:07:33.787</CreatedTimestamp>
-      <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:34.130</ModifiedTimestamp>
-      <ObjectId>1845581613</ObjectId>
-      <LobDataSpaceId>0</LobDataSpaceId>
-    </table>
-    <table id="5584" parent="5577" name="donation_appointments">
-      <CreatedTimestamp>2025-06-11.16:38:25.230</CreatedTimestamp>
-      <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:33.793</ModifiedTimestamp>
-      <ObjectId>1349579846</ObjectId>
       <LobDataSpaceId>1</LobDataSpaceId>
     </table>
-    <table id="5585" parent="5577" name="donation_processes">
-      <CreatedTimestamp>2025-06-11.16:38:25.233</CreatedTimestamp>
+    <table id="5591" parent="5577" name="blood_types">
+      <CreatedTimestamp>2025-06-22.21:14:49.357</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:34.130</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.450</ModifiedTimestamp>
+      <ObjectId>1349579846</ObjectId>
+      <LobDataSpaceId>0</LobDataSpaceId>
+    </table>
+    <table id="5592" parent="5577" name="blood_units">
+      <CreatedTimestamp>2025-06-22.21:14:49.360</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ModifiedTimestamp>2025-06-22.21:14:49.437</ModifiedTimestamp>
       <ObjectId>1381579960</ObjectId>
       <LobDataSpaceId>0</LobDataSpaceId>
     </table>
-    <table id="5586" parent="5577" name="health_checks">
-      <CreatedTimestamp>2025-06-11.16:38:25.237</CreatedTimestamp>
+    <table id="5593" parent="5577" name="donation_appointments">
+      <CreatedTimestamp>2025-06-22.21:14:49.363</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:33.800</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-24.03:58:50.210</ModifiedTimestamp>
       <ObjectId>1429580131</ObjectId>
       <LobDataSpaceId>1</LobDataSpaceId>
     </table>
-    <table id="5587" parent="5577" name="roles">
-      <CreatedTimestamp>2025-06-11.16:38:25.240</CreatedTimestamp>
+    <table id="5594" parent="5577" name="donation_pledges">
+      <CreatedTimestamp>2025-06-22.21:14:49.363</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:33.800</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.443</ModifiedTimestamp>
       <ObjectId>1461580245</ObjectId>
-      <LobDataSpaceId>1</LobDataSpaceId>
+      <LobDataSpaceId>0</LobDataSpaceId>
     </table>
-    <table id="5588" parent="5577" name="users">
-      <CreatedTimestamp>2025-06-11.16:38:25.243</CreatedTimestamp>
+    <table id="5595" parent="5577" name="donation_processes">
+      <CreatedTimestamp>2025-06-22.21:14:49.367</CreatedTimestamp>
       <DataRetentionPeriod>-1</DataRetentionPeriod>
-      <ModifiedTimestamp>2025-06-14.16:07:33.807</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.447</ModifiedTimestamp>
       <ObjectId>1493580359</ObjectId>
+      <LobDataSpaceId>0</LobDataSpaceId>
+    </table>
+    <table id="5596" parent="5577" name="health_checks">
+      <CreatedTimestamp>2025-06-22.21:14:49.370</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ModifiedTimestamp>2025-06-24.03:58:50.213</ModifiedTimestamp>
+      <ObjectId>1541580530</ObjectId>
       <LobDataSpaceId>1</LobDataSpaceId>
     </table>
-    <check id="5589" parent="5580" name="CK__blood_req__statu__49C3F6B7">
+    <table id="5597" parent="5577" name="roles">
+      <CreatedTimestamp>2025-06-22.21:14:49.370</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ModifiedTimestamp>2025-06-24.03:58:50.220</ModifiedTimestamp>
+      <ObjectId>1573580644</ObjectId>
+      <LobDataSpaceId>1</LobDataSpaceId>
+    </table>
+    <table id="5598" parent="5577" name="sysdiagrams">
+      <CreatedTimestamp>2025-06-24.00:13:32.980</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ExtendedProperties>microsoft_database_tools_support
+1
+int</ExtendedProperties>
+      <ModifiedTimestamp>2025-06-24.00:13:32.980</ModifiedTimestamp>
+      <ObjectId>34099162</ObjectId>
+      <LobDataSpaceId>1</LobDataSpaceId>
+    </table>
+    <table id="5599" parent="5577" name="users">
+      <CreatedTimestamp>2025-06-22.21:14:49.373</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ModifiedTimestamp>2025-06-24.03:58:50.233</ModifiedTimestamp>
+      <ObjectId>1605580758</ObjectId>
+      <LobDataSpaceId>1</LobDataSpaceId>
+    </table>
+    <table id="5600" parent="5577" name="verification_tokens">
+      <CreatedTimestamp>2025-06-22.21:14:49.380</CreatedTimestamp>
+      <DataRetentionPeriod>-1</DataRetentionPeriod>
+      <ModifiedTimestamp>2025-06-24.03:58:50.233</ModifiedTimestamp>
+      <ObjectId>1701581100</ObjectId>
+      <LobDataSpaceId>1</LobDataSpaceId>
+    </table>
+    <argument id="5601" parent="5580">
+      <ArgumentDirection>R</ArgumentDirection>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5602" parent="5581" name="@diagramname">
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5603" parent="5581" name="@owner_id">
+      <DefaultExpression>null</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5604" parent="5581" name="@version">
+      <Position>3</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5605" parent="5581" name="@definition">
+      <Position>4</Position>
+      <StoredType>varbinary(max)|0s</StoredType>
+    </argument>
+    <argument id="5606" parent="5582" name="@diagramname">
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5607" parent="5582" name="@owner_id">
+      <DefaultExpression>null</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5608" parent="5582" name="@version">
+      <Position>3</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5609" parent="5582" name="@definition">
+      <Position>4</Position>
+      <StoredType>varbinary(max)|0s</StoredType>
+    </argument>
+    <argument id="5610" parent="5583" name="@diagramname">
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5611" parent="5583" name="@owner_id">
+      <DefaultExpression>null</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5612" parent="5584" name="@diagramname">
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5613" parent="5584" name="@owner_id">
+      <DefaultExpression>null</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5614" parent="5585" name="@diagramname">
+      <DefaultExpression>NULL</DefaultExpression>
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5615" parent="5585" name="@owner_id">
+      <DefaultExpression>NULL</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5616" parent="5586" name="@diagramname">
+      <Position>1</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <argument id="5617" parent="5586" name="@owner_id">
+      <DefaultExpression>null</DefaultExpression>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </argument>
+    <argument id="5618" parent="5586" name="@new_diagramname">
+      <Position>3</Position>
+      <StoredType>sysname|0s</StoredType>
+    </argument>
+    <check id="5619" parent="5588" name="CK__blog_post__statu__49C3F6B7">
       <ColNames>status</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.220</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.220</ModifiedTimestamp>
+      <CreatedTimestamp>2025-06-22.21:14:49.350</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.350</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>1237579447</ObjectId>
-      <Predicate>[status]=&apos;CANCELLED&apos; OR [status]=&apos;REJECTED&apos; OR [status]=&apos;FULFILLED&apos; OR [status]=&apos;APPROVED&apos; OR [status]=&apos;PENDING&apos;</Predicate>
+      <Predicate>[status]=&apos;PENDING_APPROVAL&apos; OR [status]=&apos;DRAFT&apos; OR [status]=&apos;PUBLISHED&apos;</Predicate>
     </check>
-    <check id="5590" parent="5580" name="CK__blood_req__urgen__4AB81AF0">
-      <ColNames>urgency</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.223</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.223</ModifiedTimestamp>
+    <column id="5620" parent="5588" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <SequenceIdentity>1(3)</SequenceIdentity>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="5621" parent="5588" name="content">
+      <Position>2</Position>
+      <StoredType>nvarchar(max)|0s</StoredType>
+    </column>
+    <column id="5622" parent="5588" name="created_at">
+      <Position>3</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5623" parent="5588" name="status">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>varchar(20 char)|0s</StoredType>
+    </column>
+    <column id="5624" parent="5588" name="title">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>nvarchar(255 char)|0s</StoredType>
+    </column>
+    <column id="5625" parent="5588" name="updated_at">
+      <Position>6</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5626" parent="5588" name="author_id">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <foreign-key id="5627" parent="5588" name="FKlog64k5g2l1679hjl2wuyyk5n">
+      <ColNames>author_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.417</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.417</ModifiedTimestamp>
+      <ObjectId>1861581670</ObjectId>
+      <RefColNames>id</RefColNames>
+      <RefTableId>1605580758</RefTableId>
+      <RefTableName>users</RefTableName>
+    </foreign-key>
+    <index id="5628" parent="5588" name="PK__blog_pos__3213E83FF55AE968">
+      <Clustering>1</Clustering>
+      <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1253579504</ObjectId>
-      <Predicate>[urgency]=&apos;CRITICAL&apos; OR [urgency]=&apos;URGENCY&apos; OR [urgency]=&apos;NORMAL&apos;</Predicate>
+      <Position>1</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <key id="5629" parent="5588" name="PK__blog_pos__3213E83FF55AE968">
+      <CreatedTimestamp>2025-06-22.21:14:49.350</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.350</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1221579390</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK__blog_pos__3213E83FF55AE968</UnderlyingIndexName>
+    </key>
+    <check id="5630" parent="5589" name="CK__blood_req__statu__4CA06362">
+      <ColNames>status</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.353</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.353</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1285579618</ObjectId>
+      <Predicate>[status]=&apos;CANCELLED&apos; OR [status]=&apos;FULFILLED&apos; OR [status]=&apos;PENDING&apos;</Predicate>
     </check>
-    <column id="5591" parent="5580" name="id">
+    <check id="5631" parent="5589" name="CK__blood_req__urgen__4D94879B">
+      <ColNames>urgency</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.353</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.353</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1301579675</ObjectId>
+      <Predicate>[urgency]=&apos;CRITICAL&apos; OR [urgency]=&apos;URGENT&apos; OR [urgency]=&apos;NORMAL&apos;</Predicate>
+    </check>
+    <column id="5632" parent="5589" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="5592" parent="5580" name="contact_phone">
+    <column id="5633" parent="5589" name="created_at">
       <Position>2</Position>
-      <StoredType>varchar(20 char)|0s</StoredType>
-    </column>
-    <column id="5593" parent="5580" name="created_at">
-      <Position>3</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5594" parent="5580" name="delivery_address">
+    <column id="5634" parent="5589" name="hospital">
+      <Position>3</Position>
+      <StoredType>nvarchar(255 char)|0s</StoredType>
+    </column>
+    <column id="5635" parent="5589" name="patient_name">
       <Position>4</Position>
-      <StoredType>nvarchar(max)|0s</StoredType>
+      <StoredType>nvarchar(255 char)|0s</StoredType>
     </column>
-    <column id="5595" parent="5580" name="latitude">
-      <Position>5</Position>
-      <StoredType>float|0s</StoredType>
-    </column>
-    <column id="5596" parent="5580" name="longitude">
-      <Position>6</Position>
-      <StoredType>float|0s</StoredType>
-    </column>
-    <column id="5597" parent="5580" name="quantity_in_units">
+    <column id="5636" parent="5589" name="quantity_in_units">
       <NotNull>1</NotNull>
-      <Position>7</Position>
+      <Position>5</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5598" parent="5580" name="reason">
-      <Position>8</Position>
-      <StoredType>nvarchar(max)|0s</StoredType>
+    <column id="5637" parent="5589" name="status">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StoredType>varchar(20 char)|0s</StoredType>
     </column>
-    <column id="5599" parent="5580" name="status">
+    <column id="5638" parent="5589" name="updated_at">
+      <Position>7</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5639" parent="5589" name="urgency">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StoredType>varchar(20 char)|0s</StoredType>
+    </column>
+    <column id="5640" parent="5589" name="blood_type_id">
       <NotNull>1</NotNull>
       <Position>9</Position>
-      <StoredType>varchar(20 char)|0s</StoredType>
-    </column>
-    <column id="5600" parent="5580" name="updated_at">
-      <Position>10</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5601" parent="5580" name="urgency">
-      <NotNull>1</NotNull>
-      <Position>11</Position>
-      <StoredType>varchar(20 char)|0s</StoredType>
-    </column>
-    <column id="5602" parent="5580" name="blood_type_id">
-      <NotNull>1</NotNull>
-      <Position>12</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5603" parent="5580" name="requester_id">
+    <column id="5641" parent="5589" name="created_by_staff_id">
       <NotNull>1</NotNull>
-      <Position>13</Position>
+      <Position>10</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <foreign-key id="5604" parent="5580" name="FKq67x9ft4t37q504aucam4r7q7">
+    <foreign-key id="5642" parent="5589" name="FKq67x9ft4t37q504aucam4r7q7">
       <ColNames>blood_type_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.277</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.277</ModifiedTimestamp>
-      <ObjectId>1669580986</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.420</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.420</ModifiedTimestamp>
+      <ObjectId>1877581727</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1317579732</RefTableId>
+      <RefTableId>1349579846</RefTableId>
       <RefTableName>blood_types</RefTableName>
     </foreign-key>
-    <foreign-key id="5605" parent="5580" name="FKk51c5ec8hviroqoj099ox95v5">
-      <ColNames>requester_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.280</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.280</ModifiedTimestamp>
-      <ObjectId>1685581043</ObjectId>
+    <foreign-key id="5643" parent="5589" name="FK27yo3jtafsg3iajibilkjn5km">
+      <ColNames>created_by_staff_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.423</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.423</ModifiedTimestamp>
+      <ObjectId>1893581784</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1493580359</RefTableId>
+      <RefTableId>1605580758</RefTableId>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <index id="5606" parent="5580" name="PK__blood_re__3213E83F3645C4C4">
+    <index id="5644" parent="5589" name="PK__blood_re__3213E83FC13175AD">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17070,83 +17330,66 @@
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5607" parent="5580" name="PK__blood_re__3213E83F3645C4C4">
-      <CreatedTimestamp>2025-06-11.16:38:25.220</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.220</ModifiedTimestamp>
+    <key id="5645" parent="5589" name="PK__blood_re__3213E83FC13175AD">
+      <CreatedTimestamp>2025-06-22.21:14:49.353</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.353</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1221579390</ObjectId>
+      <ObjectId>1269579561</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__blood_re__3213E83F3645C4C4</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__blood_re__3213E83FC13175AD</UnderlyingIndexName>
     </key>
-    <column id="5608" parent="5581" name="id">
+    <column id="5646" parent="5590" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <SequenceIdentity>1(77)</SequenceIdentity>
+      <SequenceIdentity>1(59)</SequenceIdentity>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5609" parent="5581" name="compatibility_score">
+    <column id="5647" parent="5590" name="created_at">
       <Position>2</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="5610" parent="5581" name="created_at">
-      <Position>3</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5611" parent="5581" name="is_compatible">
+    <column id="5648" parent="5590" name="is_compatible">
       <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>bit|0s</StoredType>
+    </column>
+    <column id="5649" parent="5590" name="notes">
       <Position>4</Position>
-      <StoredType>bit|0s</StoredType>
-    </column>
-    <column id="5612" parent="5581" name="is_emergency_compatible">
-      <Position>5</Position>
-      <StoredType>bit|0s</StoredType>
-      <DefaultConstraintId>1301579675</DefaultConstraintId>
-      <DefaultConstraintName>DF__blood_typ__is_em__4D94879B</DefaultConstraintName>
-    </column>
-    <column id="5613" parent="5581" name="notes">
-      <Position>6</Position>
       <StoredType>nvarchar(max)|0s</StoredType>
     </column>
-    <column id="5614" parent="5581" name="updated_at">
-      <Position>7</Position>
+    <column id="5650" parent="5590" name="updated_at">
+      <Position>5</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5615" parent="5581" name="donor_blood_type_id">
+    <column id="5651" parent="5590" name="donor_blood_type_id">
       <NotNull>1</NotNull>
-      <Position>8</Position>
+      <Position>6</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5616" parent="5581" name="recipient_blood_type_id">
+    <column id="5652" parent="5590" name="recipient_blood_type_id">
       <NotNull>1</NotNull>
-      <Position>9</Position>
+      <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <default id="5617" parent="5581" name="DF__blood_typ__is_em__4D94879B">
-      <ColNames>is_emergency_compatible</ColNames>
-      <DefaultExpression>0</DefaultExpression>
-      <ModifiedTimestamp>2025-06-11.16:38:25.227</ModifiedTimestamp>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1301579675</ObjectId>
-    </default>
-    <foreign-key id="5618" parent="5581" name="FKl20h65aebdr6ayjkwjet29bim">
+    <foreign-key id="5653" parent="5590" name="FKl20h65aebdr6ayjkwjet29bim">
       <ColNames>donor_blood_type_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.280</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.280</ModifiedTimestamp>
-      <ObjectId>1701581100</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.427</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.427</ModifiedTimestamp>
+      <ObjectId>1909581841</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1317579732</RefTableId>
+      <RefTableId>1349579846</RefTableId>
       <RefTableName>blood_types</RefTableName>
     </foreign-key>
-    <foreign-key id="5619" parent="5581" name="FKjsibb3bghh2yhpgk1gtmtuyd6">
+    <foreign-key id="5654" parent="5590" name="FKjsibb3bghh2yhpgk1gtmtuyd6">
       <ColNames>recipient_blood_type_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.283</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.283</ModifiedTimestamp>
-      <ObjectId>1717581157</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.430</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.430</ModifiedTimestamp>
+      <ObjectId>1925581898</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1317579732</RefTableId>
+      <RefTableId>1349579846</RefTableId>
       <RefTableName>blood_types</RefTableName>
     </foreign-key>
-    <index id="5620" parent="5581" name="PK__blood_ty__3213E83F178799E4">
+    <index id="5655" parent="5590" name="PK__blood_ty__3213E83F2162E499">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17154,47 +17397,48 @@
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5621" parent="5581" name="PK__blood_ty__3213E83F178799E4">
-      <CreatedTimestamp>2025-06-11.16:38:25.227</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.227</ModifiedTimestamp>
+    <key id="5656" parent="5590" name="PK__blood_ty__3213E83F2162E499">
+      <CreatedTimestamp>2025-06-22.21:14:49.357</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.357</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1285579618</ObjectId>
+      <ObjectId>1333579789</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__blood_ty__3213E83F178799E4</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__blood_ty__3213E83F2162E499</UnderlyingIndexName>
     </key>
-    <column id="5622" parent="5582" name="id">
+    <column id="5657" parent="5591" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <SequenceIdentity>1(33)</SequenceIdentity>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5623" parent="5582" name="blood_group">
+    <column id="5658" parent="5591" name="blood_group">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(3 char)|0s</StoredType>
     </column>
-    <column id="5624" parent="5582" name="component_type">
+    <column id="5659" parent="5591" name="component_type">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(30 char)|0s</StoredType>
     </column>
-    <column id="5625" parent="5582" name="created_at">
+    <column id="5660" parent="5591" name="created_at">
       <Position>4</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5626" parent="5582" name="description">
+    <column id="5661" parent="5591" name="description">
       <Position>5</Position>
       <StoredType>varchar(50 char)|0s</StoredType>
     </column>
-    <column id="5627" parent="5582" name="updated_at">
+    <column id="5662" parent="5591" name="shelf_life_days">
+      <NotNull>1</NotNull>
       <Position>6</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5628" parent="5582" name="volume_ml">
-      <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <index id="5629" parent="5582" name="PK__blood_ty__3213E83F9CCF600C">
+    <column id="5663" parent="5591" name="updated_at">
+      <Position>7</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <index id="5664" parent="5591" name="PK__blood_ty__3213E83F0C98AD94">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17202,176 +17446,93 @@
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5630" parent="5582" name="UQ_blood_group_component">
+    <index id="5665" parent="5591" name="UQ_blood_group_component">
       <ColNames>blood_group
 component_type</ColNames>
       <Position>2</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5631" parent="5582" name="PK__blood_ty__3213E83F9CCF600C">
-      <CreatedTimestamp>2025-06-11.16:38:25.227</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.227</ModifiedTimestamp>
+    <key id="5666" parent="5591" name="PK__blood_ty__3213E83F0C98AD94">
+      <CreatedTimestamp>2025-06-22.21:14:49.360</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.360</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1333579789</ObjectId>
+      <ObjectId>1365579903</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__blood_ty__3213E83F9CCF600C</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__blood_ty__3213E83F0C98AD94</UnderlyingIndexName>
     </key>
-    <key id="5632" parent="5582" name="UQ_blood_group_component">
-      <CreatedTimestamp>2025-06-11.16:38:25.253</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.253</ModifiedTimestamp>
-      <ObjectId>1573580644</ObjectId>
+    <key id="5667" parent="5591" name="UQ_blood_group_component">
+      <CreatedTimestamp>2025-06-22.21:14:49.387</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.387</ModifiedTimestamp>
+      <ObjectId>1733581214</ObjectId>
       <UnderlyingIndexName>UQ_blood_group_component</UnderlyingIndexName>
     </key>
-    <check id="5633" parent="5583" name="CK__blood_uni__statu__6FE99F9F">
+    <check id="5668" parent="5592" name="CK__blood_uni__statu__5441852A">
       <ColNames>status</ColNames>
-      <CreatedTimestamp>2025-06-14.16:07:33.790</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-14.16:07:33.790</ModifiedTimestamp>
+      <CreatedTimestamp>2025-06-22.21:14:49.363</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.363</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1877581727</ObjectId>
+      <ObjectId>1413580074</ObjectId>
       <Predicate>[status]=&apos;DISPOSED&apos; OR [status]=&apos;EXPIRED&apos; OR [status]=&apos;USED&apos; OR [status]=&apos;RESERVED&apos; OR [status]=&apos;AVAILABLE&apos;</Predicate>
     </check>
-    <column id="5634" parent="5583" name="id">
+    <column id="5669" parent="5592" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>varchar(50 char)|0s</StoredType>
     </column>
-    <column id="5635" parent="5583" name="collection_date">
+    <column id="5670" parent="5592" name="collection_date">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <column id="5636" parent="5583" name="expiry_date">
+    <column id="5671" parent="5592" name="expiry_date">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <column id="5637" parent="5583" name="status">
+    <column id="5672" parent="5592" name="status">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>varchar(20 char)|0s</StoredType>
     </column>
-    <column id="5638" parent="5583" name="storage_location">
+    <column id="5673" parent="5592" name="storage_location">
       <Position>5</Position>
       <StoredType>nvarchar(255 char)|0s</StoredType>
     </column>
-    <column id="5639" parent="5583" name="volume_ml">
+    <column id="5674" parent="5592" name="volume_ml">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5640" parent="5583" name="blood_type_id">
+    <column id="5675" parent="5592" name="blood_type_id">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5641" parent="5583" name="process_id">
+    <column id="5676" parent="5592" name="process_id">
       <NotNull>1</NotNull>
       <Position>8</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <foreign-key id="5642" parent="5583" name="FK5xto81ji9v2mb48w3f31m470m">
+    <foreign-key id="5677" parent="5592" name="FK5xto81ji9v2mb48w3f31m470m">
       <ColNames>blood_type_id</ColNames>
-      <CreatedTimestamp>2025-06-14.16:07:34.127</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-14.16:07:34.127</ModifiedTimestamp>
-      <ObjectId>1909581841</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.433</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.433</ModifiedTimestamp>
+      <ObjectId>1941581955</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1317579732</RefTableId>
+      <RefTableId>1349579846</RefTableId>
       <RefTableName>blood_types</RefTableName>
     </foreign-key>
-    <foreign-key id="5643" parent="5583" name="FKjc59c24fed11jipnuxmbw02sj">
+    <foreign-key id="5678" parent="5592" name="FKjc59c24fed11jipnuxmbw02sj">
       <ColNames>process_id</ColNames>
-      <CreatedTimestamp>2025-06-14.16:07:34.130</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-14.16:07:34.130</ModifiedTimestamp>
-      <ObjectId>1925581898</ObjectId>
-      <RefColNames>id</RefColNames>
-      <RefTableId>1381579960</RefTableId>
-      <RefTableName>donation_processes</RefTableName>
-    </foreign-key>
-    <index id="5644" parent="5583" name="PK__blood_un__3213E83F81D7804E">
-      <Clustering>1</Clustering>
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Position>1</Position>
-      <Unique>1</Unique>
-      <PartitionDataSpaceId>1</PartitionDataSpaceId>
-    </index>
-    <index id="5645" parent="5583" name="UKfu5ya04cod5j88qyetvg3hqeo">
-      <ColNames>process_id</ColNames>
-      <Position>2</Position>
-      <Unique>1</Unique>
-      <PartitionDataSpaceId>1</PartitionDataSpaceId>
-    </index>
-    <key id="5646" parent="5583" name="PK__blood_un__3213E83F81D7804E">
-      <CreatedTimestamp>2025-06-14.16:07:33.790</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-14.16:07:33.790</ModifiedTimestamp>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1861581670</ObjectId>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PK__blood_un__3213E83F81D7804E</UnderlyingIndexName>
-    </key>
-    <key id="5647" parent="5583" name="UKfu5ya04cod5j88qyetvg3hqeo">
-      <CreatedTimestamp>2025-06-14.16:07:33.870</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-14.16:07:33.870</ModifiedTimestamp>
-      <ObjectId>1893581784</ObjectId>
-      <UnderlyingIndexName>UKfu5ya04cod5j88qyetvg3hqeo</UnderlyingIndexName>
-    </key>
-    <column id="5648" parent="5584" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <SequenceIdentity>1</SequenceIdentity>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="5649" parent="5584" name="appointment_date_time">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5650" parent="5584" name="created_at">
-      <Position>3</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5651" parent="5584" name="location">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>nvarchar(255 char)|0s</StoredType>
-    </column>
-    <column id="5652" parent="5584" name="notes">
-      <Position>5</Position>
-      <StoredType>nvarchar(max)|0s</StoredType>
-    </column>
-    <column id="5653" parent="5584" name="updated_at">
-      <Position>6</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5654" parent="5584" name="process_id">
-      <NotNull>1</NotNull>
-      <Position>7</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="5655" parent="5584" name="staff_id">
-      <Position>8</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <foreign-key id="5656" parent="5584" name="FK1ja536b9f5wnblwm6ffhsqt50">
-      <ColNames>process_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.287</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.287</ModifiedTimestamp>
-      <ObjectId>1733581214</ObjectId>
-      <RefColNames>id</RefColNames>
-      <RefTableId>1381579960</RefTableId>
-      <RefTableName>donation_processes</RefTableName>
-    </foreign-key>
-    <foreign-key id="5657" parent="5584" name="FK62funrnsdf8pkt9b39re8xiwq">
-      <ColNames>staff_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.287</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.287</ModifiedTimestamp>
-      <ObjectId>1749581271</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.433</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.433</ModifiedTimestamp>
+      <ObjectId>1957582012</ObjectId>
       <RefColNames>id</RefColNames>
       <RefTableId>1493580359</RefTableId>
-      <RefTableName>users</RefTableName>
+      <RefTableName>donation_processes</RefTableName>
     </foreign-key>
-    <index id="5658" parent="5584" name="PK__donation__3213E83F52AB6AAD">
+    <index id="5679" parent="5592" name="PK__blood_un__3213E83FEEB7125D">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17379,76 +17540,74 @@ component_type</ColNames>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5659" parent="5584" name="UKstsp76x0bpxqx0wytxcv08r2r">
+    <index id="5680" parent="5592" name="UKfu5ya04cod5j88qyetvg3hqeo">
       <ColNames>process_id</ColNames>
       <Position>2</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5660" parent="5584" name="PK__donation__3213E83F52AB6AAD">
-      <CreatedTimestamp>2025-06-11.16:38:25.230</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.230</ModifiedTimestamp>
+    <key id="5681" parent="5592" name="PK__blood_un__3213E83FEEB7125D">
+      <CreatedTimestamp>2025-06-22.21:14:49.360</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.360</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1365579903</ObjectId>
+      <ObjectId>1397580017</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__donation__3213E83F52AB6AAD</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__blood_un__3213E83FEEB7125D</UnderlyingIndexName>
     </key>
-    <key id="5661" parent="5584" name="UKstsp76x0bpxqx0wytxcv08r2r">
-      <CreatedTimestamp>2025-06-11.16:38:25.257</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.257</ModifiedTimestamp>
-      <ObjectId>1589580701</ObjectId>
-      <UnderlyingIndexName>UKstsp76x0bpxqx0wytxcv08r2r</UnderlyingIndexName>
+    <key id="5682" parent="5592" name="UKfu5ya04cod5j88qyetvg3hqeo">
+      <CreatedTimestamp>2025-06-22.21:14:49.390</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.390</ModifiedTimestamp>
+      <ObjectId>1749581271</ObjectId>
+      <UnderlyingIndexName>UKfu5ya04cod5j88qyetvg3hqeo</UnderlyingIndexName>
     </key>
-    <check id="5662" parent="5585" name="CK__donation___statu__5441852A">
-      <ColNames>status</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.233</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.233</ModifiedTimestamp>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1413580074</ObjectId>
-      <Predicate>[status]=&apos;CANCELLED&apos; OR [status]=&apos;COMPLETED&apos; OR [status]=&apos;TESTING_FAILED&apos; OR [status]=&apos;TESTING_PASSED&apos; OR [status]=&apos;BLOOD_COLLECTED&apos; OR [status]=&apos;HEALTH_CHECK_FAILED&apos; OR [status]=&apos;HEALTH_CHECK_PASSED&apos; OR [status]=&apos;APPOINTMENT_SCHEDULED&apos; OR [status]=&apos;APPOINTMENT_PENDING&apos; OR [status]=&apos;REJECTED&apos; OR [status]=&apos;PENDING_APPROVAL&apos;</Predicate>
-    </check>
-    <column id="5663" parent="5585" name="id">
+    <column id="5683" parent="5593" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <SequenceIdentity>1(4)</SequenceIdentity>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="5664" parent="5585" name="created_at">
+    <column id="5684" parent="5593" name="appointment_date_time">
+      <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5665" parent="5585" name="note">
+    <column id="5685" parent="5593" name="location">
+      <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>nvarchar(255 char)|0s</StoredType>
     </column>
-    <column id="5666" parent="5585" name="status">
-      <NotNull>1</NotNull>
+    <column id="5686" parent="5593" name="notes">
       <Position>4</Position>
-      <StoredType>varchar(30 char)|0s</StoredType>
+      <StoredType>nvarchar(max)|0s</StoredType>
     </column>
-    <column id="5667" parent="5585" name="updated_at">
-      <Position>5</Position>
-      <StoredType>datetime2(6 digit)|0s</StoredType>
-    </column>
-    <column id="5668" parent="5585" name="donor_id">
+    <column id="5687" parent="5593" name="process_id">
       <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="5688" parent="5593" name="staff_id">
       <Position>6</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="5669" parent="5585" name="collected_volume_ml">
-      <Position>7</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <foreign-key id="5670" parent="5585" name="FKi9tb7vdngm1gs54dk5nghq562">
-      <ColNames>donor_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.290</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.290</ModifiedTimestamp>
-      <ObjectId>1765581328</ObjectId>
+    <foreign-key id="5689" parent="5593" name="FK1ja536b9f5wnblwm6ffhsqt50">
+      <ColNames>process_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.437</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.437</ModifiedTimestamp>
+      <ObjectId>1973582069</ObjectId>
       <RefColNames>id</RefColNames>
       <RefTableId>1493580359</RefTableId>
+      <RefTableName>donation_processes</RefTableName>
+    </foreign-key>
+    <foreign-key id="5690" parent="5593" name="FK62funrnsdf8pkt9b39re8xiwq">
+      <ColNames>staff_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.437</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.437</ModifiedTimestamp>
+      <ObjectId>1989582126</ObjectId>
+      <RefColNames>id</RefColNames>
+      <RefTableId>1605580758</RefTableId>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <index id="5671" parent="5585" name="PK__donation__3213E83FCF802A6D">
+    <index id="5691" parent="5593" name="PK__donation__3213E83FF5C05DB4">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17456,60 +17615,69 @@ component_type</ColNames>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5672" parent="5585" name="PK__donation__3213E83FCF802A6D">
-      <CreatedTimestamp>2025-06-11.16:38:25.233</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.233</ModifiedTimestamp>
+    <index id="5692" parent="5593" name="UKstsp76x0bpxqx0wytxcv08r2r">
+      <ColNames>process_id</ColNames>
+      <Position>2</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <key id="5693" parent="5593" name="PK__donation__3213E83FF5C05DB4">
+      <CreatedTimestamp>2025-06-22.21:14:49.363</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.363</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1397580017</ObjectId>
+      <ObjectId>1445580188</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__donation__3213E83FCF802A6D</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__donation__3213E83FF5C05DB4</UnderlyingIndexName>
     </key>
-    <column id="5673" parent="5586" name="id">
+    <key id="5694" parent="5593" name="UKstsp76x0bpxqx0wytxcv08r2r">
+      <CreatedTimestamp>2025-06-22.21:14:49.393</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.393</ModifiedTimestamp>
+      <ObjectId>1765581328</ObjectId>
+      <UnderlyingIndexName>UKstsp76x0bpxqx0wytxcv08r2r</UnderlyingIndexName>
+    </key>
+    <column id="5695" parent="5594" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <SequenceIdentity>1</SequenceIdentity>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="5674" parent="5586" name="blood_pressure_diastolic">
+    <column id="5696" parent="5594" name="created_at">
       <Position>2</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="5675" parent="5586" name="blood_pressure_systolic">
-      <Position>3</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="5676" parent="5586" name="check_date">
-      <Position>4</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5677" parent="5586" name="hemoglobin_level">
-      <Position>5</Position>
-      <StoredType>float|0s</StoredType>
+    <column id="5697" parent="5594" name="status">
+      <Position>3</Position>
+      <StoredType>varchar(50 char)|0s</StoredType>
     </column>
-    <column id="5678" parent="5586" name="is_eligible">
+    <column id="5698" parent="5594" name="blood_request_id">
       <NotNull>1</NotNull>
-      <Position>6</Position>
-      <StoredType>bit|0s</StoredType>
-    </column>
-    <column id="5679" parent="5586" name="notes">
-      <Position>7</Position>
-      <StoredType>nvarchar(max)|0s</StoredType>
-    </column>
-    <column id="5680" parent="5586" name="process_id">
-      <NotNull>1</NotNull>
-      <Position>8</Position>
+      <Position>4</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <foreign-key id="5681" parent="5586" name="FK4x532hh3p6gyc9adeauxgaujg">
-      <ColNames>process_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.290</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.290</ModifiedTimestamp>
-      <ObjectId>1781581385</ObjectId>
+    <column id="5699" parent="5594" name="donor_id">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <foreign-key id="5700" parent="5594" name="FKevmjhoqxdqcxk6x602o2rcuwu">
+      <ColNames>blood_request_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.440</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.440</ModifiedTimestamp>
+      <ObjectId>2005582183</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1381579960</RefTableId>
-      <RefTableName>donation_processes</RefTableName>
+      <RefTableId>1253579504</RefTableId>
+      <RefTableName>blood_requests</RefTableName>
     </foreign-key>
-    <index id="5682" parent="5586" name="PK__health_c__3213E83F55D5DC7A">
+    <foreign-key id="5701" parent="5594" name="FKbuh1mh2ei42e3g8s3uxe8770t">
+      <ColNames>donor_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.440</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.440</ModifiedTimestamp>
+      <ObjectId>2021582240</ObjectId>
+      <RefColNames>id</RefColNames>
+      <RefTableId>1605580758</RefTableId>
+      <RefTableName>users</RefTableName>
+    </foreign-key>
+    <index id="5702" parent="5594" name="PK__donation__3213E83F95759D85">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17517,54 +17685,180 @@ component_type</ColNames>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5683" parent="5586" name="UKe77mc5x4w9p3ce9i0suqtxt32">
+    <key id="5703" parent="5594" name="PK__donation__3213E83F95759D85">
+      <CreatedTimestamp>2025-06-22.21:14:49.367</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.367</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1477580302</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK__donation__3213E83F95759D85</UnderlyingIndexName>
+    </key>
+    <check id="5704" parent="5595" name="CK__donation___statu__5AEE82B9">
+      <ColNames>status</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.367</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.367</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1525580473</ObjectId>
+      <Predicate>[status]=&apos;CANCELLED&apos; OR [status]=&apos;COMPLETED&apos; OR [status]=&apos;TESTING_FAILED&apos; OR [status]=&apos;TESTING_PASSED&apos; OR [status]=&apos;BLOOD_COLLECTED&apos; OR [status]=&apos;HEALTH_CHECK_FAILED&apos; OR [status]=&apos;HEALTH_CHECK_PASSED&apos; OR [status]=&apos;RESCHEDULE_REQUESTED&apos; OR [status]=&apos;APPOINTMENT_SCHEDULED&apos; OR [status]=&apos;APPOINTMENT_PENDING&apos; OR [status]=&apos;REJECTED&apos; OR [status]=&apos;PENDING_APPROVAL&apos;</Predicate>
+    </check>
+    <column id="5705" parent="5595" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <SequenceIdentity>1(5)</SequenceIdentity>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="5706" parent="5595" name="collected_volume_ml">
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5707" parent="5595" name="created_at">
+      <Position>3</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5708" parent="5595" name="note">
+      <Position>4</Position>
+      <StoredType>nvarchar(255 char)|0s</StoredType>
+    </column>
+    <column id="5709" parent="5595" name="status">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>varchar(30 char)|0s</StoredType>
+    </column>
+    <column id="5710" parent="5595" name="updated_at">
+      <Position>6</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5711" parent="5595" name="donor_id">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <foreign-key id="5712" parent="5595" name="FKi9tb7vdngm1gs54dk5nghq562">
+      <ColNames>donor_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.443</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.443</ModifiedTimestamp>
+      <ObjectId>2037582297</ObjectId>
+      <RefColNames>id</RefColNames>
+      <RefTableId>1605580758</RefTableId>
+      <RefTableName>users</RefTableName>
+    </foreign-key>
+    <index id="5713" parent="5595" name="PK__donation__3213E83F5BC6EC7B">
+      <Clustering>1</Clustering>
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Position>1</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <key id="5714" parent="5595" name="PK__donation__3213E83F5BC6EC7B">
+      <CreatedTimestamp>2025-06-22.21:14:49.367</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.367</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1509580416</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK__donation__3213E83F5BC6EC7B</UnderlyingIndexName>
+    </key>
+    <column id="5715" parent="5596" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <SequenceIdentity>1(2)</SequenceIdentity>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="5716" parent="5596" name="blood_pressure_diastolic">
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5717" parent="5596" name="blood_pressure_systolic">
+      <Position>3</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5718" parent="5596" name="check_date">
+      <Position>4</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5719" parent="5596" name="hemoglobin_level">
+      <Position>5</Position>
+      <StoredType>float|0s</StoredType>
+    </column>
+    <column id="5720" parent="5596" name="is_eligible">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StoredType>bit|0s</StoredType>
+    </column>
+    <column id="5721" parent="5596" name="notes">
+      <Position>7</Position>
+      <StoredType>nvarchar(max)|0s</StoredType>
+    </column>
+    <column id="5722" parent="5596" name="process_id">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <foreign-key id="5723" parent="5596" name="FK4x532hh3p6gyc9adeauxgaujg">
+      <ColNames>process_id</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.447</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.447</ModifiedTimestamp>
+      <ObjectId>2053582354</ObjectId>
+      <RefColNames>id</RefColNames>
+      <RefTableId>1493580359</RefTableId>
+      <RefTableName>donation_processes</RefTableName>
+    </foreign-key>
+    <index id="5724" parent="5596" name="PK__health_c__3213E83F1062720C">
+      <Clustering>1</Clustering>
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Position>1</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <index id="5725" parent="5596" name="UKe77mc5x4w9p3ce9i0suqtxt32">
       <ColNames>process_id</ColNames>
       <Position>2</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5684" parent="5586" name="PK__health_c__3213E83F55D5DC7A">
-      <CreatedTimestamp>2025-06-11.16:38:25.237</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.237</ModifiedTimestamp>
+    <key id="5726" parent="5596" name="PK__health_c__3213E83F1062720C">
+      <CreatedTimestamp>2025-06-22.21:14:49.370</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.370</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1445580188</ObjectId>
+      <ObjectId>1557580587</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__health_c__3213E83F55D5DC7A</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__health_c__3213E83F1062720C</UnderlyingIndexName>
     </key>
-    <key id="5685" parent="5586" name="UKe77mc5x4w9p3ce9i0suqtxt32">
-      <CreatedTimestamp>2025-06-11.16:38:25.260</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.260</ModifiedTimestamp>
-      <ObjectId>1605580758</ObjectId>
+    <key id="5727" parent="5596" name="UKe77mc5x4w9p3ce9i0suqtxt32">
+      <CreatedTimestamp>2025-06-22.21:14:49.397</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.397</ModifiedTimestamp>
+      <ObjectId>1781581385</ObjectId>
       <UnderlyingIndexName>UKe77mc5x4w9p3ce9i0suqtxt32</UnderlyingIndexName>
     </key>
-    <column id="5686" parent="5587" name="id">
+    <column id="5728" parent="5597" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <SequenceIdentity>1(5)</SequenceIdentity>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5687" parent="5587" name="created_at">
+    <column id="5729" parent="5597" name="created_at">
       <Position>2</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5688" parent="5587" name="description">
+    <column id="5730" parent="5597" name="description">
       <Position>3</Position>
       <StoredType>varchar(255 char)|0s</StoredType>
     </column>
-    <column id="5689" parent="5587" name="name">
+    <column id="5731" parent="5597" name="name">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>varchar(50 char)|0s</StoredType>
     </column>
-    <column id="5690" parent="5587" name="permissions">
+    <column id="5732" parent="5597" name="permissions">
       <Position>5</Position>
       <StoredType>nvarchar(max)|0s</StoredType>
     </column>
-    <column id="5691" parent="5587" name="updated_at">
+    <column id="5733" parent="5597" name="updated_at">
       <Position>6</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <index id="5692" parent="5587" name="PK__roles__3213E83F1917ED3D">
+    <index id="5734" parent="5597" name="PK__roles__3213E83F8EE56504">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17572,168 +17866,229 @@ component_type</ColNames>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5693" parent="5587" name="UKofx66keruapi6vyqpv6f2or37">
+    <index id="5735" parent="5597" name="UKofx66keruapi6vyqpv6f2or37">
       <ColNames>name</ColNames>
       <Position>2</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5694" parent="5587" name="PK__roles__3213E83F1917ED3D">
-      <CreatedTimestamp>2025-06-11.16:38:25.240</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.240</ModifiedTimestamp>
+    <key id="5736" parent="5597" name="PK__roles__3213E83F8EE56504">
+      <CreatedTimestamp>2025-06-22.21:14:49.373</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.373</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1477580302</ObjectId>
+      <ObjectId>1589580701</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__roles__3213E83F1917ED3D</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__roles__3213E83F8EE56504</UnderlyingIndexName>
     </key>
-    <key id="5695" parent="5587" name="UKofx66keruapi6vyqpv6f2or37">
-      <CreatedTimestamp>2025-06-11.16:38:25.267</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.267</ModifiedTimestamp>
-      <ObjectId>1621580815</ObjectId>
+    <key id="5737" parent="5597" name="UKofx66keruapi6vyqpv6f2or37">
+      <CreatedTimestamp>2025-06-22.21:14:49.403</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.403</ModifiedTimestamp>
+      <ObjectId>1797581442</ObjectId>
       <UnderlyingIndexName>UKofx66keruapi6vyqpv6f2or37</UnderlyingIndexName>
     </key>
-    <column id="5696" parent="5588" name="id">
+    <column id="5738" parent="5598" name="name">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <SequenceIdentity>1(4)</SequenceIdentity>
+      <StoredType>sysname|0s</StoredType>
+    </column>
+    <column id="5739" parent="5598" name="principal_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5740" parent="5598" name="diagram_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5741" parent="5598" name="version">
+      <Position>4</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="5742" parent="5598" name="definition">
+      <Position>5</Position>
+      <StoredType>varbinary(max)|0s</StoredType>
+    </column>
+    <index id="5743" parent="5598" name="PK__sysdiagr__C2B05B61456CEFD3">
+      <Clustering>1</Clustering>
+      <ColNames>diagram_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Position>1</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <index id="5744" parent="5598" name="UK_principal_name">
+      <ColNames>principal_id
+name</ColNames>
+      <Position>2</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <key id="5745" parent="5598" name="PK__sysdiagr__C2B05B61456CEFD3">
+      <CreatedTimestamp>2025-06-24.00:13:32.983</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-24.00:13:32.983</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>50099219</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK__sysdiagr__C2B05B61456CEFD3</UnderlyingIndexName>
+    </key>
+    <key id="5746" parent="5598" name="UK_principal_name">
+      <CreatedTimestamp>2025-06-24.00:13:32.987</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-24.00:13:32.987</ModifiedTimestamp>
+      <ObjectId>66099276</ObjectId>
+      <UnderlyingIndexName>UK_principal_name</UnderlyingIndexName>
+    </key>
+    <check id="5747" parent="5599" name="CK__users__status__6477ECF3">
+      <ColNames>status</ColNames>
+      <CreatedTimestamp>2025-06-22.21:14:49.377</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.377</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1685581043</ObjectId>
+      <Predicate>[status]=&apos;DEACTIVATED&apos; OR [status]=&apos;SUSPENDED&apos; OR [status]=&apos;ACTIVE&apos;</Predicate>
+    </check>
+    <column id="5748" parent="5599" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <SequenceIdentity>1(3)</SequenceIdentity>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="5697" parent="5588" name="address">
+    <column id="5749" parent="5599" name="address">
       <Position>2</Position>
       <StoredType>nvarchar(max)|0s</StoredType>
     </column>
-    <column id="5698" parent="5588" name="created_at">
+    <column id="5750" parent="5599" name="created_at">
       <Position>3</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5699" parent="5588" name="date_of_birth">
+    <column id="5751" parent="5599" name="date_of_birth">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <column id="5700" parent="5588" name="email">
+    <column id="5752" parent="5599" name="email">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>varchar(150 char)|0s</StoredType>
     </column>
-    <column id="5701" parent="5588" name="email_verified">
+    <column id="5753" parent="5599" name="email_verified">
       <Position>6</Position>
       <StoredType>bit|0s</StoredType>
-      <DefaultConstraintId>1525580473</DefaultConstraintId>
-      <DefaultConstraintName>DF__users__email_ver__5AEE82B9</DefaultConstraintName>
+      <DefaultConstraintId>1637580872</DefaultConstraintId>
+      <DefaultConstraintName>DF__users__email_ver__619B8048</DefaultConstraintName>
     </column>
-    <column id="5702" parent="5588" name="emergency_contact">
+    <column id="5754" parent="5599" name="emergency_contact">
       <Position>7</Position>
       <StoredType>varchar(255 char)|0s</StoredType>
     </column>
-    <column id="5703" parent="5588" name="full_name">
+    <column id="5755" parent="5599" name="full_name">
       <Position>8</Position>
       <StoredType>nvarchar(150 char)|0s</StoredType>
     </column>
-    <column id="5704" parent="5588" name="gender">
+    <column id="5756" parent="5599" name="gender">
       <Position>9</Position>
       <StoredType>varchar(10 char)|0s</StoredType>
     </column>
-    <column id="5705" parent="5588" name="is_ready_to_donate">
+    <column id="5757" parent="5599" name="is_ready_to_donate">
       <Position>10</Position>
       <StoredType>bit|0s</StoredType>
-      <DefaultConstraintId>1541580530</DefaultConstraintId>
-      <DefaultConstraintName>DF__users__is_ready___5BE2A6F2</DefaultConstraintName>
+      <DefaultConstraintId>1653580929</DefaultConstraintId>
+      <DefaultConstraintName>DF__users__is_ready___628FA481</DefaultConstraintName>
     </column>
-    <column id="5706" parent="5588" name="last_donation_date">
+    <column id="5758" parent="5599" name="last_donation_date">
       <Position>11</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <column id="5707" parent="5588" name="latitude">
+    <column id="5759" parent="5599" name="latitude">
       <Position>12</Position>
       <StoredType>float|0s</StoredType>
     </column>
-    <column id="5708" parent="5588" name="longitude">
+    <column id="5760" parent="5599" name="longitude">
       <Position>13</Position>
       <StoredType>float|0s</StoredType>
     </column>
-    <column id="5709" parent="5588" name="medical_conditions">
+    <column id="5761" parent="5599" name="medical_conditions">
       <Position>14</Position>
       <StoredType>nvarchar(max)|0s</StoredType>
     </column>
-    <column id="5710" parent="5588" name="password_hash">
+    <column id="5762" parent="5599" name="password_hash">
       <NotNull>1</NotNull>
       <Position>15</Position>
       <StoredType>varchar(255 char)|0s</StoredType>
     </column>
-    <column id="5711" parent="5588" name="phone">
+    <column id="5763" parent="5599" name="phone">
       <NotNull>1</NotNull>
       <Position>16</Position>
       <StoredType>varchar(20 char)|0s</StoredType>
     </column>
-    <column id="5712" parent="5588" name="phone_verified">
+    <column id="5764" parent="5599" name="phone_verified">
       <Position>17</Position>
       <StoredType>bit|0s</StoredType>
-      <DefaultConstraintId>1557580587</DefaultConstraintId>
-      <DefaultConstraintName>DF__users__phone_ver__5CD6CB2B</DefaultConstraintName>
+      <DefaultConstraintId>1669580986</DefaultConstraintId>
+      <DefaultConstraintName>DF__users__phone_ver__6383C8BA</DefaultConstraintName>
     </column>
-    <column id="5713" parent="5588" name="status">
+    <column id="5765" parent="5599" name="status">
+      <NotNull>1</NotNull>
       <Position>18</Position>
       <StoredType>varchar(20 char)|0s</StoredType>
     </column>
-    <column id="5714" parent="5588" name="updated_at">
+    <column id="5766" parent="5599" name="updated_at">
       <Position>19</Position>
       <StoredType>datetime2(6 digit)|0s</StoredType>
     </column>
-    <column id="5715" parent="5588" name="username">
-      <NotNull>1</NotNull>
+    <column id="5767" parent="5599" name="username">
       <Position>20</Position>
-      <StoredType>varchar(100 char)|0s</StoredType>
+      <StoredType>nvarchar(150 char)|0s</StoredType>
     </column>
-    <column id="5716" parent="5588" name="blood_type_id">
+    <column id="5768" parent="5599" name="blood_type_id">
       <Position>21</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="5717" parent="5588" name="role_id">
+    <column id="5769" parent="5599" name="role_id">
       <NotNull>1</NotNull>
       <Position>22</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <default id="5718" parent="5588" name="DF__users__email_ver__5AEE82B9">
+    <default id="5770" parent="5599" name="DF__users__email_ver__619B8048">
       <ColNames>email_verified</ColNames>
       <DefaultExpression>0</DefaultExpression>
-      <ModifiedTimestamp>2025-06-11.16:38:25.243</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.377</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1525580473</ObjectId>
+      <ObjectId>1637580872</ObjectId>
     </default>
-    <default id="5719" parent="5588" name="DF__users__is_ready___5BE2A6F2">
+    <default id="5771" parent="5599" name="DF__users__is_ready___628FA481">
       <ColNames>is_ready_to_donate</ColNames>
       <DefaultExpression>1</DefaultExpression>
-      <ModifiedTimestamp>2025-06-11.16:38:25.247</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.377</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1541580530</ObjectId>
+      <ObjectId>1653580929</ObjectId>
     </default>
-    <default id="5720" parent="5588" name="DF__users__phone_ver__5CD6CB2B">
+    <default id="5772" parent="5599" name="DF__users__phone_ver__6383C8BA">
       <ColNames>phone_verified</ColNames>
       <DefaultExpression>0</DefaultExpression>
-      <ModifiedTimestamp>2025-06-11.16:38:25.247</ModifiedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.377</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1557580587</ObjectId>
+      <ObjectId>1669580986</ObjectId>
     </default>
-    <foreign-key id="5721" parent="5588" name="FKb2uxwxbut1bsd70hlwk311j3o">
+    <foreign-key id="5773" parent="5599" name="FKb2uxwxbut1bsd70hlwk311j3o">
       <ColNames>blood_type_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.293</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.293</ModifiedTimestamp>
-      <ObjectId>1797581442</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.450</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.450</ModifiedTimestamp>
+      <ObjectId>2069582411</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1317579732</RefTableId>
+      <RefTableId>1349579846</RefTableId>
       <RefTableName>blood_types</RefTableName>
     </foreign-key>
-    <foreign-key id="5722" parent="5588" name="FKp56c1712k691lhsyewcssf40f">
+    <foreign-key id="5774" parent="5599" name="FKp56c1712k691lhsyewcssf40f">
       <ColNames>role_id</ColNames>
-      <CreatedTimestamp>2025-06-11.16:38:25.293</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.293</ModifiedTimestamp>
-      <ObjectId>1813581499</ObjectId>
+      <CreatedTimestamp>2025-06-22.21:14:49.450</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.450</ModifiedTimestamp>
+      <ObjectId>2085582468</ObjectId>
       <RefColNames>id</RefColNames>
-      <RefTableId>1461580245</RefTableId>
+      <RefTableId>1573580644</RefTableId>
       <RefTableName>roles</RefTableName>
     </foreign-key>
-    <index id="5723" parent="5588" name="PK__users__3213E83F30FB2F42">
+    <index id="5775" parent="5599" name="PK__users__3213E83FC31C8592">
       <Clustering>1</Clustering>
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
@@ -17741,37 +18096,90 @@ component_type</ColNames>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5724" parent="5588" name="UK6dotkott2kjsp8vw4d0m25fb7">
+    <index id="5776" parent="5599" name="UK6dotkott2kjsp8vw4d0m25fb7">
       <ColNames>email</ColNames>
       <Position>2</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <index id="5725" parent="5588" name="UKr43af9ap4edm43mmtq01oddj6">
+    <index id="5777" parent="5599" name="UKr43af9ap4edm43mmtq01oddj6">
       <ColNames>username</ColNames>
       <Position>3</Position>
       <Unique>1</Unique>
       <PartitionDataSpaceId>1</PartitionDataSpaceId>
     </index>
-    <key id="5726" parent="5588" name="PK__users__3213E83F30FB2F42">
-      <CreatedTimestamp>2025-06-11.16:38:25.243</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.243</ModifiedTimestamp>
+    <key id="5778" parent="5599" name="PK__users__3213E83FC31C8592">
+      <CreatedTimestamp>2025-06-22.21:14:49.377</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.377</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>1509580416</ObjectId>
+      <ObjectId>1621580815</ObjectId>
       <Primary>1</Primary>
-      <UnderlyingIndexName>PK__users__3213E83F30FB2F42</UnderlyingIndexName>
+      <UnderlyingIndexName>PK__users__3213E83FC31C8592</UnderlyingIndexName>
     </key>
-    <key id="5727" parent="5588" name="UK6dotkott2kjsp8vw4d0m25fb7">
-      <CreatedTimestamp>2025-06-11.16:38:25.270</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.270</ModifiedTimestamp>
-      <ObjectId>1637580872</ObjectId>
+    <key id="5779" parent="5599" name="UK6dotkott2kjsp8vw4d0m25fb7">
+      <CreatedTimestamp>2025-06-22.21:14:49.407</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.407</ModifiedTimestamp>
+      <ObjectId>1813581499</ObjectId>
       <UnderlyingIndexName>UK6dotkott2kjsp8vw4d0m25fb7</UnderlyingIndexName>
     </key>
-    <key id="5728" parent="5588" name="UKr43af9ap4edm43mmtq01oddj6">
-      <CreatedTimestamp>2025-06-11.16:38:25.273</CreatedTimestamp>
-      <ModifiedTimestamp>2025-06-11.16:38:25.273</ModifiedTimestamp>
-      <ObjectId>1653580929</ObjectId>
+    <key id="5780" parent="5599" name="UKr43af9ap4edm43mmtq01oddj6">
+      <CreatedTimestamp>2025-06-22.21:14:49.410</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.410</ModifiedTimestamp>
+      <ObjectId>1829581556</ObjectId>
       <UnderlyingIndexName>UKr43af9ap4edm43mmtq01oddj6</UnderlyingIndexName>
+    </key>
+    <column id="5781" parent="5600" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <SequenceIdentity>1(2)</SequenceIdentity>
+      <StoredType>bigint|0s</StoredType>
+    </column>
+    <column id="5782" parent="5600" name="email">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>varchar(255 char)|0s</StoredType>
+    </column>
+    <column id="5783" parent="5600" name="expiry_date">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>datetime2(6 digit)|0s</StoredType>
+    </column>
+    <column id="5784" parent="5600" name="token">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>varchar(255 char)|0s</StoredType>
+    </column>
+    <column id="5785" parent="5600" name="user_registration_info">
+      <Position>5</Position>
+      <StoredType>nvarchar(max)|0s</StoredType>
+    </column>
+    <index id="5786" parent="5600" name="PK__verifica__3213E83FDBC2A5C3">
+      <Clustering>1</Clustering>
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Position>1</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <index id="5787" parent="5600" name="UKcg6up3nmtq7j6opg5os1sugt3">
+      <ColNames>email</ColNames>
+      <Position>2</Position>
+      <Unique>1</Unique>
+      <PartitionDataSpaceId>1</PartitionDataSpaceId>
+    </index>
+    <key id="5788" parent="5600" name="PK__verifica__3213E83FDBC2A5C3">
+      <CreatedTimestamp>2025-06-22.21:14:49.380</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.380</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1717581157</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK__verifica__3213E83FDBC2A5C3</UnderlyingIndexName>
+    </key>
+    <key id="5789" parent="5600" name="UKcg6up3nmtq7j6opg5os1sugt3">
+      <CreatedTimestamp>2025-06-22.21:14:49.413</CreatedTimestamp>
+      <ModifiedTimestamp>2025-06-22.21:14:49.413</ModifiedTimestamp>
+      <ObjectId>1845581613</ObjectId>
+      <UnderlyingIndexName>UKcg6up3nmtq7j6opg5os1sugt3</UnderlyingIndexName>
     </key>
   </database-model>
 </dataSource>

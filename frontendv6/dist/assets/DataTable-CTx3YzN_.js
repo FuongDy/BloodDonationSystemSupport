@@ -1,0 +1,16 @@
+import{i as n,r as N,j as e,l as u}from"./index-1dtSQISR.js";import{P as f}from"./Pagination-DEb_1VK8.js";import{E as b}from"./EmptyState-CqnLvH6d.js";/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const w=[["path",{d:"m21 16-4 4-4-4",key:"f6ql7i"}],["path",{d:"M17 20V4",key:"1ejh1v"}],["path",{d:"m3 8 4-4 4 4",key:"11wl7u"}],["path",{d:"M7 4v16",key:"1glfcx"}]],k=n("arrow-up-down",w);/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const P=[["path",{d:"m6 9 6 6 6-6",key:"qrunsl"}]],_=n("chevron-down",P);/**
+ * @license lucide-react v0.511.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const z=[["path",{d:"m18 15-6-6-6 6",key:"153udz"}]],C=n("chevron-up",z),L=({data:d=[],columns:i=[],loading:o=!1,pagination:r,onSort:c,sortField:h,sortDirection:x,emptyState:m,className:g="",...y})=>{const[p,l]=N.useState(null),j=s=>{c&&c(s)},v=s=>h!==s?e.jsx(k,{size:14,className:"text-gray-400"}):x==="asc"?e.jsx(C,{size:14,className:"text-gray-600"}):e.jsx(_,{size:14,className:"text-gray-600"});return o?e.jsx("div",{className:"bg-white rounded-lg shadow-sm border",children:e.jsxs("div",{className:"p-8 text-center",children:[e.jsx(u,{size:"12"}),e.jsx("p",{className:"mt-4 text-gray-500",children:"Đang tải dữ liệu..."})]})}):!d||d.length===0?e.jsx("div",{className:"bg-white rounded-lg shadow-sm border",children:m||e.jsx(b,{})}):e.jsxs("div",{className:`bg-white rounded-lg shadow-sm border overflow-hidden ${g}`,...y,children:[e.jsx("div",{className:"overflow-x-auto",children:e.jsxs("table",{className:"min-w-full divide-y divide-gray-200",children:[e.jsx("thead",{className:"bg-gray-50",children:e.jsx("tr",{children:i.map(s=>e.jsx("th",{scope:"col",className:`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${s.sortable?"cursor-pointer hover:bg-gray-100":""}`,onClick:()=>s.sortable&&j(s.key),children:e.jsxs("div",{className:"flex items-center space-x-1",children:[e.jsx("span",{children:s.title}),s.sortable&&v(s.key)]})},s.key))})}),e.jsx("tbody",{className:"bg-white divide-y divide-gray-200",children:d.map((s,a)=>e.jsx("tr",{className:`transition-colors duration-150 ${p===a?"bg-gray-50":"hover:bg-gray-50"}`,onMouseEnter:()=>l(a),onMouseLeave:()=>l(null),children:i.map(t=>e.jsx("td",{className:"px-6 py-4 whitespace-nowrap text-sm text-gray-900",children:t.render?t.render(s[t.key],s,a):s[t.key]},t.key))},s.id||a))})]})}),r&&e.jsx("div",{className:"bg-gray-50 px-6 py-3 border-t border-gray-200",children:e.jsxs("div",{className:"flex items-center justify-between",children:[e.jsxs("div",{className:"text-sm text-gray-700",children:["Hiển thị ",e.jsx("span",{className:"font-medium",children:r.from})," ","đến ",e.jsx("span",{className:"font-medium",children:r.to})," trong tổng số ",e.jsx("span",{className:"font-medium",children:r.total})," ","kết quả"]}),e.jsx(f,{currentPage:r.currentPage,totalPages:r.totalPages,onPageChange:r.onPageChange,isLoading:o})]})})]})};export{L as D};

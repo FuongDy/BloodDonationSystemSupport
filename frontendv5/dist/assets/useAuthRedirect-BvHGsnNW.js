@@ -1,0 +1,1 @@
+import{b as s,u as n,V as o}from"./index-1dtSQISR.js";const A=()=>{const i=s(),{isAuthenticated:r}=n(),u=(t,e="Vui lòng đăng nhập để tiếp tục")=>r?(t&&t(),!0):(o.error(e),i("/register",{replace:!0}),!1);return{requireAuth:u,requireAuthForAction:(t,e)=>()=>{u(t,e)},isAuthenticated:r}};export{A as u};

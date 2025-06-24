@@ -4,7 +4,282 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="499d83b9-87c8-40c3-b4be-b54449b96b80" name="Changes" comment="" />
+    <list default="true" id="499d83b9-87c8-40c3-b4be-b54449b96b80" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontendv5/src/pages/PrivacyPolicyPage.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontendv5/src/pages/TermsOfServicePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/bdss-v4.06.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bdss-v4.06.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a5217d2-1ed9-41bd-ada0-9d093827351c.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/8a5217d2-1ed9-41bd-ada0-9d093827351c.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/BackendApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/config/DataInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/config/WebConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/AdminUserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/AppointmentController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/BlogPostController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/BloodCompatibilityController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/BloodRequestController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/BloodTypeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/DonationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/InventoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/converter/BloodComponentTypeConverter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/AuthResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/BlogPostResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/CreateBlogPostRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/LocationSearchRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/LoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/RegisterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/UpdateBlogPostRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/UpdateUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/UserResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/VerifyRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/AdminCreateUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/AdminUpdateUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/AppointmentResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/BloodCompatibilityDetailResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/BloodTestResultRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/BloodTypeResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/BloodUnitResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/CollectionInfoRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/CreateAppointmentRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/CreateBloodCompatibilityRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/CreateBloodRequestRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/CreateBloodTypeRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/DonationProcessResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/HealthCheckRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/InventorySummary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/UpdateBloodCompatibilityRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/UpdateBloodTypeRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/dto/admin/UpdateDonationStatusRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/BlogPost.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/BloodRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/BloodType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/BloodTypeCompatibility.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/BloodUnit.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/DonationAppointment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/DonationPledge.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/DonationProcess.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/HealthCheck.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/entity/VerificationToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/BlogPostStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/BloodComponentType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/DonationStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/InventoryStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/RequestStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/UrgencyLevel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/model/enums/UserStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/BlogPostRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/BloodRequestRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/BloodTypeCompatibilityRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/BloodTypeRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/BloodUnitRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/DonationAppointmentRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/DonationPledgeRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/DonationProcessRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/HealthCheckRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/RoleRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/repository/VerificationTokenRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/security/JwtAuthenticationEntryPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/security/JwtAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/security/JwtTokenProvider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/security/UserDetailsServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/AppointmentService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/AuthService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/BlogPostService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/BloodManagementService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/BloodRequestService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/DonationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/EmailService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/InventoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/UserAvailabilityService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/java/com/hicode/backend/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backendv5/src/test/java/com/hicode/backend/BackendApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/.env" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminBlogManagementPage-Da1k8-Ag.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminBloodCompatibilityPage-D2firrpd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminBloodInventoryPage-DbDRsTRd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminBloodTypePage-DGSV2o0T.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminDashboardPage-DRgp5l9q.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminDonationHistoryPage-CXgShv66.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminEmergencyRequestsPage-Dk1mbSvW.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminUserCreatePage-DX0glQEe.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminUserDetailPage-Bz5YrNt8.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminUserEditPage-CzwEWCHl.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminUserForm-pWLnxOxn.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/AdminUserListPage-BWzkgjR9.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/Badge-CQfEYjAW.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/BlogCreateEditPage-CVGYTL-9.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/BlogDetailPage-lu6TLhzw.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/BlogPage-CzJAve7Q.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/BloodCompatibilityCheckerPage-C2H6TyRE.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/DatePicker-kDRNnyzI.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/EmergencyBloodRequest-CX0mvUww.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/InputField-DaRo0h-I.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/Modal-BkrSRTrd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/MyPledgesPage-Ld-dYLOb.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/OTPVerificationPage-BdHohDft.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/PageHeader-CQ3hne2O.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/Pagination-DOZZa0LB.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/RegisterPage-BUMmVSVa.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/RequestDonationPage-BfpP1XzD.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/StatusBadge-Dsy472OM.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/UserProfilePage-DHfmGzgB.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/arrow-left-DadGTnD1.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/blogPostService-CsMorYPX.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/bloodCompatibilityService-DGaDvxwk.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/bloodRequestService-B58BiMDq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/bloodTypeService-BdQ8LDYK.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/chevron-right-CdXhp0uB.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/circle-check-big-D_YqM5lF.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/circle-plus-y9cgvwk6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/circle-user-1Og4Sh00.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/circle-x-CaqJchf-.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/clock-BhMIrEhg.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/constants-CyaO7I1E.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/donationService-B9ga8Wkv.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/index-265Lkhjq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/index-Bkev37wI.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/info-BFtJTCu8.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/pen-line-CDYeDFnM.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/plus-DDON2jIp.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/save-BZskVtHA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/square-pen-YrntV1hG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/trash-2-CdJf02lJ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/trending-up-ujPYGSdd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/useAuthRedirect-DbLCBRc1.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/assets/userService--IM6FtzJ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/scripts/eslint-autofix.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/scripts/eslint-autofix.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/admin/AdminUserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/admin/AdminUserForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/admin/BloodCompatibilityFormModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/admin/BloodCompatibilityFormModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/admin/BloodTypeFormModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/admin/BloodTypeFormModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/admin/UserManagementTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/admin/UserManagementTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/blood/BloodRequestCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/blood/BloodRequestCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/blood/PledgeButton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/blood/PledgeButton.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/ActionButtonGroup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/ActionButtonGroup.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/Button.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/Button.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/DataTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/DataTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/DatePicker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/DatePicker.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/DateTimeDisplay.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/DateTimeDisplay.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/DateTimePicker.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/DateTimePicker.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/EmptyIllustration.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/EmptyIllustration.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/EmptyState.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/EmptyState.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/ErrorBoundary.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/ErrorBoundary.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/InfoRow.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/InfoRow.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/InputField.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/InputField.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/LoadingCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/LoadingCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/LoadingSpinner.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/LoadingSpinner.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/Modal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/Modal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/PageHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/PageHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/Pagination.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/Pagination.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/SearchBar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/SearchBar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/SectionHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/SectionHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/StatsCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/StatsCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/StatusBadge.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/StatusBadge.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/TabNavigation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/TabNavigation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/TableSkeleton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/TableSkeleton.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/common/UrgencyBadge.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/common/UrgencyBadge.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/AdminLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/AdminLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/Footer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/Footer.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/MainLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/MainLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/PageContainer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/PageContainer.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/layout/PageHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/layout/PageHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/profile/ProfileSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/profile/ProfileSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/profile/UserProfileForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/profile/UserProfileForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/ui/Avatar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/ui/Avatar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/ui/Badge.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/ui/Badge.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/ui/Card.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/ui/Card.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/ui/Skeleton.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/ui/Skeleton.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/components/user/DonationHistoryList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/components/user/DonationHistoryList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/config/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/config/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/contexts/AuthContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/contexts/AuthContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useApiWithStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useApiWithStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useAsync.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useAsync.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useAuthRedirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useAuthRedirect.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useDebounce.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useDebounce.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/hooks/useLocalStorage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/hooks/useLocalStorage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/main.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/adminHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/adminHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/authHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/authHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/bloodCompatibilityHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/bloodCompatibilityHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/bloodRequestHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/bloodRequestHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/browser.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/browser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/donationHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/donationHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/handlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/handlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/pledgeHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/pledgeHandlers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/mocks/test-import.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/mocks/test-import.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/BlogCreateEditPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/BlogCreateEditPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/BlogDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/BlogDetailPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/BlogPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/BlogPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/BloodCompatibilityCheckerPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/BloodCompatibilityCheckerPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/EmergencyBloodRequest.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/ForbiddenPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/ForbiddenPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/HomePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/MyPledgesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/MyPledgesPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/NotFoundPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/NotFoundPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/OTPVerificationPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/OTPVerificationPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/RegisterPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/RegisterPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/RequestDonationPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/RequestDonationPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/UserProfilePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/UserProfilePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBlogManagementPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBlogManagementPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodCompatibilityPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodCompatibilityPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodInventoryPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodInventoryPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodInventoryPageNew.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodTypePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminBloodTypePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminDashboardPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminDashboardPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminDonationHistoryPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminDonationHistoryPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminEmergencyRequestsPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminEmergencyRequestsPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserCreatePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserCreatePage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserDetailPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserDetailPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserEditPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserEditPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserListPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/AdminUserListPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/admin/UserManagementTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/admin/UserManagementTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/profile/UserProfileEditPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/profile/UserProfileEditPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/pages/profile/UserProfileViewPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/pages/profile/UserProfileViewPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/routes/AppRoutes.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/routes/AppRoutes.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/routes/ProtectedRoute.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/routes/ProtectedRoute.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/apiClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/apiClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/appointmentService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/appointmentService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/blogPostService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/blogPostService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/bloodCompatibilityService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/bloodCompatibilityService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/bloodRequestService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/bloodRequestService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/bloodTypeService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/bloodTypeService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/donationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/donationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/inventoryService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/inventoryService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/services/userService.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/services/userService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/store/appStore.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/store/appStore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/cn.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/cn.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/dialogs.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/dialogs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/errorHandler.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/errorHandler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/formatters.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/formatters.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/src/utils/validationSchemas.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/src/utils/validationSchemas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontendv5/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontendv5/vite.config.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,6 +288,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ntu254&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/FuongDy/BloodDonationSystemSupport.git&quot;,
+    &quot;accountId&quot;: &quot;378ec7d1-25e5-4702-ab14-12d9c2cb22cc&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -29,14 +316,20 @@
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.BackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fe-v5&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/BloodDonation/bdss-v4.06&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/BloodDonation/bdssv5-git/bdss-v5&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;DatabaseDriversLRU&quot;: [
@@ -70,6 +363,12 @@
       <updated>1749866819864</updated>
       <workItem from="1749866821010" duration="182000" />
       <workItem from="1749867013942" duration="18000" />
+      <workItem from="1750466252508" duration="199000" />
+      <workItem from="1750675856514" duration="1631000" />
+      <workItem from="1750684371157" duration="1288000" />
+      <workItem from="1750687102179" duration="662000" />
+      <workItem from="1750688265757" duration="1066000" />
+      <workItem from="1750690800084" duration="47000" />
     </task>
     <servers />
   </component>
