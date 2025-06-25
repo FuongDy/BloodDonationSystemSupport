@@ -1,4 +1,4 @@
-// src/components/donation/DonationHistoryCard.jsx
+
 import React from 'react';
 import { Calendar, MapPin, Droplets, Building2, Award, Activity, ChevronRight } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';

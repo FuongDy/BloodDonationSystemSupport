@@ -1,9 +1,6 @@
 package com.hicode.backend.controller;
 
-import com.hicode.backend.dto.AuthResponse;
-import com.hicode.backend.dto.LoginRequest;
-import com.hicode.backend.dto.RegisterRequest;
-import com.hicode.backend.dto.VerifyRequest;
+import com.hicode.backend.dto.*;
 import com.hicode.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +40,11 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body("The email or password is invalid");
         }
+    }
+
+    @PostMapping("/register/resend-otp")
+    public ResponseEntity<String> resendOtp(@Valid @RequestBody ResendOtpRequest resendRequest) {
+        authService.resendOtp(resendRequest);
+        return ResponseEntity.ok("A new verification OTP has been sent to your email.");
     }
 }

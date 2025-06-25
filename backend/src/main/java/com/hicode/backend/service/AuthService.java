@@ -3,10 +3,7 @@ package com.hicode.backend.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.hicode.backend.dto.AuthResponse;
-import com.hicode.backend.dto.LoginRequest;
-import com.hicode.backend.dto.RegisterRequest;
-import com.hicode.backend.dto.VerifyRequest;
+import com.hicode.backend.dto.*;
 import com.hicode.backend.model.entity.Role;
 import com.hicode.backend.model.entity.User;
 import com.hicode.backend.model.enums.UserStatus;
@@ -131,5 +128,27 @@ public class AuthService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequest.getEmail()));
         return new AuthResponse(jwt, user.getId(), user.getEmail(), user.getFullName(), user.getRole().getName());
+    }
+
+    /**
+     * Bước mới: Gửi lại mã OTP cho một email đã đăng ký tạm thời.
+     */
+    @Transactional
+    public void resendOtp(ResendOtpRequest resendRequest) {
+        // 1. Tìm token hiện có của email này
+        VerificationToken verificationToken = tokenRepository.findByEmail(resendRequest.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("No pending registration found for this email. Please start over."));
+
+        // 2. Tạo mã OTP mới
+        String newOtp = String.format("%06d", new Random().nextInt(999999));
+
+        // 3. Cập nhật token và thời gian hết hạn mới (10 phút)
+        verificationToken.setToken(newOtp);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusMinutes(10));
+        tokenRepository.save(verificationToken);
+
+        // 4. Gửi lại email chứa mã OTP mới
+        String emailBody = "Mã xác thực mới của bạn là: " + newOtp + ". Mã này sẽ hết hạn sau 10 phút.";
+        emailService.sendEmail(resendRequest.getEmail(), "Yêu cầu gửi lại mã OTP", emailBody);
     }
 }

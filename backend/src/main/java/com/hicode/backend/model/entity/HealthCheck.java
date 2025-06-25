@@ -1,4 +1,5 @@
 package com.hicode.backend.model.entity;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +21,18 @@ public class HealthCheck {
     private DonationProcess donationProcess;
 
     @Column(nullable = false)
-    private Boolean isEligible;
+    private Boolean isEligible; // True = Đạt tiêu chuẩn, False = Không đạt
 
-    private Integer bloodPressureSystolic;
-    private Integer bloodPressureDiastolic;
-    private Double hemoglobinLevel;
+    private Integer bloodPressureSystolic; // Huyết áp tâm thu
+    private Integer bloodPressureDiastolic; // Huyết áp tâm trương
+    private Double hemoglobinLevel; // Nồng độ hemoglobin
+
+    private Double weight; // Cân nặng (kg)
+    private Integer heartRate; // Nhịp tim (bpm)
+    private Double temperature; // Nhiệt độ (°C)
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String notes;
+    private String notes; // Ghi chú của nhân viên y tế
 
     @Column(updatable = false)
     private LocalDateTime checkDate;

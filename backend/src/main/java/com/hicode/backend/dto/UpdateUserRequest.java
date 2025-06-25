@@ -1,5 +1,6 @@
 package com.hicode.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,8 @@ public class UpdateUserRequest {
     private String emergencyContact;
     private Integer bloodTypeId;
     private String medicalConditions;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate lastDonationDate;
     private Boolean isReadyToDonate;
 }
