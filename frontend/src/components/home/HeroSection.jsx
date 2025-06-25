@@ -1,81 +1,53 @@
+// src/components/home/HeroSection.jsx
 import React from 'react';
-import { 
-    Container, 
-    Title, 
-    Text, 
-    Button, 
-    Box, 
-    Group,
-    Stack,
-    Overlay,
-    BackgroundImage
-} from '@mantine/core';
-import { IconDroplet, IconHeart, IconCalendarPlus } from '@tabler/icons-react';
+import { ArrowRight, Droplet } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Button from '../common/Button';
+import PageContainer from '../layout/PageContainer';
 
-export default function HeroSection() {
-    return (
-        <Box 
-            h={600}
-            pos="relative"
-            style={{
-                background: 'linear-gradient(135deg, #e03131 0%, #d6336c 100%)',
-                display: 'flex',
-                alignItems: 'center'
-            }}
-        >
-            <Container size="xl" style={{ position: 'relative', zIndex: 1 }}>
-                <Stack align="center" gap="xl" ta="center">
-                    <Group gap="sm" justify="center">
-                        <IconDroplet size={48} color="white" />
-                        <Title order={1} c="white" size="3.5rem" fw={900}>
-                            BloodConnect
-                        </Title>
-                    </Group>
-                    
-                    <Title order={2} c="white" size="2rem" ta="center" maw={800}>
-                        Kết nối yêu thương - Trao đi hạnh phúc
-                    </Title>
-                    
-                    <Text c="red.1" size="lg" ta="center" maw={600}>
-                        Tham gia cộng đồng hiến máu tình nguyện để cứu sống những sinh mạng quý báu. 
-                        Mỗi giọt máu bạn hiến là một cơ hội cứu sống một con người.
-                    </Text>
-                    
-                    <Group gap="md" justify="center">
-                        <Button 
-                            component={Link}
-                            to="/register"
-                            size="lg" 
-                            variant="white" 
-                            color="red"
-                            leftSection={<IconHeart size={20} />}
-                            radius="xl"
-                        >
-                            Đăng ký hiến máu
-                        </Button>
-                        <Button 
-                            component={Link}
-                            to="/request-donation"
-                            size="lg" 
-                            variant="outline" 
-                            c="white"
-                            leftSection={<IconCalendarPlus size={20} />}
-                            radius="xl"
-                            styles={{
-                                root: {
-                                    borderColor: 'white',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                    }
-                                }
-                            }}
-                        >
-                            Đặt lịch hiến máu
-                        </Button>
-                    </Group>
-                </Stack>
-            </Container>
-        </Box>
-    );
-}
+const HeroSection = () => {
+  return (
+    <section className='relative overflow-hidden bg-gradient-to-br from-red-50 via-pink-50 to-rose-50'>
+      <div className='absolute inset-0 bg-gradient-to-r from-red-600/5 to-pink-600/5'></div>
+      <PageContainer className='relative section-padding'>
+        <div className='text-center animate-fade-in-up'>
+          <div className='mb-8'>
+            <div className='inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6 animate-bounce-gentle'>
+              <Droplet className='w-10 h-10 text-red-600' />
+            </div>
+          </div>
+
+          <h1 className='heading-1 mb-6'>
+            Kết nối yêu thương, <br />
+            <span className='text-red-600 relative'>
+              Chia sẻ sự sống
+              <div className='absolute -bottom-2 left-0 right-0 h-1 bg-red-200 rounded-full'></div>
+            </span>
+          </h1>
+
+          <p className='text-body-large mb-10 max-w-3xl mx-auto'>
+            BloodConnect là nền tảng kết nối người hiến máu tình nguyện với
+            những người đang cần máu, góp phần lan tỏa giá trị nhân ái và
+            mang lại hy vọng cho cộng đồng.
+          </p>
+
+          <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+            <Link to='/register'>
+              <Button size='lg' className='btn-primary group'>
+                Tham gia ngay
+                <ArrowRight className='ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform' />
+              </Button>
+            </Link>
+            <Link to='/blood-compatibility'>
+              <Button variant='outline' size='lg'>
+                Tìm hiểu thêm
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </PageContainer>
+    </section>
+  );
+};
+
+export default HeroSection;
