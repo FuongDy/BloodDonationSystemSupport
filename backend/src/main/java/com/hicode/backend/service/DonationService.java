@@ -84,22 +84,35 @@ public class DonationService {
     }
 
     /**
-     * Staff/Admin ghi nhận kết quả khám sàng lọc.
+     * Ghi nhận kết quả khám sàng lọc.
      */
     @Transactional
     public DonationProcessResponse recordHealthCheck(Long processId, HealthCheckRequest request) {
         DonationProcess process = findProcessById(processId);
         if (process.getStatus() != DonationStatus.APPOINTMENT_SCHEDULED) {
-            throw new IllegalStateException("Cannot record health check for a process that is not in a scheduled state.");
+            throw new IllegalStateException("Cannot record health check for a process that is not in scheduled state.");
         }
+
         HealthCheck healthCheck = new HealthCheck();
+
+        // BeanUtils sẽ tự động sao chép các trường mới (weight, heartRate, temperature)
+        // vì chúng có cùng tên ở cả DTO và Entity.
         BeanUtils.copyProperties(request, healthCheck);
+
         healthCheck.setDonationProcess(process);
         healthCheckRepository.save(healthCheck);
 
-        process.setStatus(request.getIsEligible() ? DonationStatus.HEALTH_CHECK_PASSED : DonationStatus.HEALTH_CHECK_FAILED);
-        process.setNote("Health check recorded. Result: " + (request.getIsEligible() ? "Passed." : "Failed. " + request.getNotes()));
-        return mapToResponse(donationProcessRepository.save(process));
+        // Cập nhật trạng thái của quy trình chính
+        if (request.getIsEligible()) {
+            process.setStatus(DonationStatus.HEALTH_CHECK_PASSED);
+            process.setNote("Health check passed. Ready for blood collection.");
+        } else {
+            process.setStatus(DonationStatus.HEALTH_CHECK_FAILED);
+            process.setNote("Health check failed. " + request.getNotes());
+        }
+
+        DonationProcess updatedProcess = donationProcessRepository.save(process);
+        return mapToResponse(updatedProcess);
     }
 
     /**

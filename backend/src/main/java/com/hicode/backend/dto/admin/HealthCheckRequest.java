@@ -13,5 +13,10 @@ public class HealthCheckRequest {
     private Integer bloodPressureSystolic;
     private Integer bloodPressureDiastolic;
     private Double hemoglobinLevel;
+
+    private Double weight;
+    private Integer heartRate;
+    private Double temperature;
+
     private String notes;
 }
