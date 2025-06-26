@@ -1,85 +1,79 @@
-// components/home/FeaturesSection.jsx
-import { 
-    Container, 
-    Title, 
-    Text, 
-    SimpleGrid, 
-    Card, 
-    ThemeIcon, 
-    Box, 
-    Group,
-    Stack
-} from '@mantine/core';
-import { 
-    IconHeart, 
-    IconUsers, 
-    IconMapPin, 
-    IconShield 
-} from '@tabler/icons-react';
+// src/components/home/FeaturesSection.jsx
+import React from 'react';
+import { Heart, Users, MapPin, Shield } from 'lucide-react';
+import { Card, CardContent } from '../ui/Card';
+import PageContainer from '../layout/PageContainer';
 
-export default function FeaturesSection() {
-    const features = [
-        { 
-            icon: IconHeart, 
-            title: "Hiến máu dễ dàng", 
-            description: "Đăng ký và đặt lịch hiến máu chỉ với vài thao tác đơn giản.", 
-            color: "red" 
-        },
-        { 
-            icon: IconUsers, 
-            title: "Cộng đồng lớn mạnh", 
-            description: "Kết nối với hàng ngàn người hiến máu tình nguyện trên cả nước.", 
-            color: "blue" 
-        },
-        { 
-            icon: IconMapPin, 
-            title: "Tìm kiếm nhanh chóng", 
-            description: "Dễ dàng tìm kiếm các địa điểm hiến máu hoặc người cần máu gần bạn.", 
-            color: "green" 
-        },
-        { 
-            icon: IconShield, 
-            title: "An toàn & Bảo mật", 
-            description: "Thông tin cá nhân của bạn được bảo vệ và bảo mật tuyệt đối.", 
-            color: "violet" 
-        },
-    ];
+const FeaturesSection = () => {
+  const features = [
+    {
+      icon: Heart,
+      title: 'Hiến máu dễ dàng',
+      description:
+        'Đăng ký và đặt lịch hiến máu chỉ với vài thao tác đơn giản.',
+      color: 'text-red-500',
+    },
+    {
+      icon: Users,
+      title: 'Cộng đồng lớn mạnh',
+      description:
+        'Kết nối với hàng ngàn người hiến máu tình nguyện trên cả nước.',
+      color: 'text-blue-500',
+    },
+    {
+      icon: MapPin,
+      title: 'Tìm kiếm nhanh chóng',
+      description:
+        'Dễ dàng tìm kiếm các địa điểm hiến máu hoặc người cần máu gần bạn.',
+      color: 'text-green-500',
+    },
+    {
+      icon: Shield,
+      title: 'An toàn & Bảo mật',
+      description:
+        'Thông tin cá nhân của bạn được bảo vệ và bảo mật tuyệt đối.',
+      color: 'text-purple-500',
+    },
+  ];
 
-    return (
-        <Box bg="gray.0" py={80}>
-            <Container size="xl">
-                <Stack align="center" gap="xl" mb={60}>
-                    <Title order={2} ta="center" size="h1">
-                        Tại sao chọn BloodConnect?
-                    </Title>
-                    <Text size="lg" ta="center" maw={600} c="dimmed">
-                        Chúng tôi cung cấp một nền tảng an toàn, minh bạch và tiện lợi để kết nối cộng đồng hiến máu.
-                    </Text>
-                </Stack>
+  return (
+    <section className='section-padding bg-gray-50'>
+      <PageContainer>
+        <div className='text-center mb-16 animate-fade-in-up'>
+          <h2 className='heading-2 mb-4'>Tại sao chọn BloodConnect?</h2>
+          <p className='text-body-large max-w-2xl mx-auto'>
+            Chúng tôi cung cấp một nền tảng an toàn, minh bạch và tiện lợi
+            để kết nối cộng đồng hiến máu.
+          </p>
+        </div>
 
-                <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="xl">
-                    {features.map((feature, index) => (
-                        <Card key={feature.title} p="xl" radius="md" className="hover-card">
-                            <Stack align="center" gap="md">
-                                <ThemeIcon 
-                                    size={64} 
-                                    radius="xl" 
-                                    variant="light" 
-                                    color={feature.color}
-                                >
-                                    <feature.icon size={32} />
-                                </ThemeIcon>
-                                <Title order={3} ta="center" size="h4">
-                                    {feature.title}
-                                </Title>
-                                <Text ta="center" c="dimmed" size="sm">
-                                    {feature.description}
-                                </Text>
-                            </Stack>
-                        </Card>
-                    ))}
-                </SimpleGrid>
-            </Container>
-        </Box>
-    );
-}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          {features.map((feature, index) => (
+            <Card
+              key={feature.title}
+              hover
+              className='text-center group animate-fade-in-up'
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <CardContent className='p-6'>
+                <div
+                  className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-50 group-hover:bg-red-50 transition-colors ${feature.color}`}
+                >
+                  <feature.icon className='w-8 h-8' />
+                </div>
+                <h3 className='text-xl font-semibold text-gray-900 mb-2'>
+                  {feature.title}
+                </h3>
+                <p className='text-gray-600 text-sm leading-relaxed'>
+                  {feature.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </PageContainer>
+    </section>
+  );
+};
+
+export default FeaturesSection;

@@ -15,6 +15,7 @@ import MyAppointmentsPage from '../pages/MyAppointmentsPage';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
 import AdminAppointmentManagementPage from '../pages/admin/AdminAppointmentManagementPage';
 
+
 // Layout components
 import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
@@ -25,6 +26,7 @@ import AdminLayout from '../components/layout/AdminLayout';
  */
 const AppRoutes = () => (
   <ErrorBoundary source='app-router' level='app'>
+
 <Routes>
       {/* Authenticated User Routes */}
       <Route element={<MainLayout />}>
@@ -34,7 +36,6 @@ const AppRoutes = () => (
           <Route path='/my-appointments' element={<MyAppointmentsPage />} />
         </Route>
       </Route>
-
       {/* Admin Routes */}
       <Route element={<ProtectedRoute requiredRoles={['Admin']} />}>
         <Route path='/admin' element={<AdminLayout />}>
@@ -42,7 +43,6 @@ const AppRoutes = () => (
           <Route path='appointment-management' element={<AdminAppointmentManagementPage />} />
         </Route>
       </Route>
-
 
       {/* Not Found Route */}
       <Route path='*' element={<NotFoundPage />} />
