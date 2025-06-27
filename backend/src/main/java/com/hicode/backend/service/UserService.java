@@ -118,11 +118,9 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
 
-        // --- PHẦN SỬA LỖI ---
         // Đảm bảo gán giá trị cho các trường bắt buộc
         user.setDateOfBirth(request.getDateOfBirth());
         user.setAddress(request.getAddress());
-        // --- KẾT THÚC PHẦN SỬA LỖI ---
 
         Role role = roleRepository.findByName(request.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Error: Role '" + request.getRoleName() + "' not found."));
