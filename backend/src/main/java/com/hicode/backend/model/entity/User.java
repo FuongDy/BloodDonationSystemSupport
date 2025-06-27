@@ -45,6 +45,15 @@ public class User {
     @Column(columnDefinition = "NVARCHAR(MAX)", nullable = false)
     private String address;
 
+    @Column(name = "id_card_front_url", length = 255)
+    private String idCardFrontUrl; // URL ảnh CCCD mặt trước
+
+    @Column(name = "id_card_back_url", length = 255)
+    private String idCardBackUrl; // URL ảnh CCCD mặt sau
+
+    @Column(name = "id_card_verified", columnDefinition = "BIT DEFAULT 0")
+    private Boolean idCardVerified = false; // Trạng thái đã đối chiếu thông tin
+
     private Double latitude;
     private Double longitude;
 

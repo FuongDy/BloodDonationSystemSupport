@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hicode.backend.dto.*;
-import com.hicode.backend.model.entity.Role;
-import com.hicode.backend.model.entity.User;
-import com.hicode.backend.model.enums.UserStatus;
-import com.hicode.backend.model.entity.VerificationToken;
+import com.hicode.backend.model.entity.*;
+import com.hicode.backend.model.enums.*;
+import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
 import com.hicode.backend.repository.VerificationTokenRepository;
@@ -21,8 +20,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -35,44 +37,58 @@ public class AuthService {
     @Autowired private JwtTokenProvider tokenProvider;
     @Autowired private VerificationTokenRepository tokenRepository;
     @Autowired private EmailService emailService;
+    @Autowired private StorageService storageService;
+    @Autowired private BloodTypeRepository bloodTypeRepository;
+    @Autowired private OcrValidationService ocrValidationService;
+
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
-     * Bước 1: User gửi thông tin, hệ thống tạo và gửi OTP.
+     * Bước 1 của quy trình đăng ký: Nhận thông tin, ảnh CCCD, và gửi OTP.
      */
     @Transactional
-    public void requestRegistration(RegisterRequest registerRequest) {
+    public void requestRegistration(String registerRequestJson, MultipartFile frontImage, MultipartFile backImage) throws IOException {
+
+        // Logic kiểm tra mặt trước/sau
+        String side1 = ocrValidationService.identifyIdCardSide(frontImage);
+        String side2 = ocrValidationService.identifyIdCardSide(backImage);
+
+        if (!((side1.equals("FRONT") && side2.equals("BACK")) || (side1.equals("BACK") && side2.equals("FRONT")))) {
+            throw new IllegalArgumentException("Vui lòng tải lên đúng mặt trước và mặt sau của CCCD.");
+        }
+
+        RegisterRequest registerRequest = objectMapper.readValue(registerRequestJson, RegisterRequest.class);
+
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Error: Email is already in use!");
         }
 
-        // Tạo mã OTP ngẫu nhiên gồm 6 chữ số
-        String otp = String.format("%06d", new Random().nextInt(999999));
+        // Lưu ảnh và lấy đường dẫn tương đối
+        String frontImageUrl = storageService.store(frontImage);
+        String backImageUrl = storageService.store(backImage);
 
-        // Băm mật khẩu trước khi lưu tạm
+        // Gán đường dẫn ảnh vào đối tượng request để lưu tạm
+        registerRequest.setIdCardFrontUrl(frontImageUrl);
+        registerRequest.setIdCardBackUrl(backImageUrl);
+
+        // Băm mật khẩu
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
-        try {
-            // Chuyển toàn bộ thông tin đăng ký thành chuỗi JSON để lưu tạm
-            String registrationInfoJson = objectMapper.writeValueAsString(registerRequest);
+        String otp = String.format("%06d", new Random().nextInt(999999));
 
-            // Tìm xem có token cũ cho email này không để xóa/cập nhật
-            tokenRepository.findByEmail(registerRequest.getEmail()).ifPresent(tokenRepository::delete);
+        String registrationInfoJson = objectMapper.writeValueAsString(registerRequest);
 
-            VerificationToken verificationToken = new VerificationToken(otp, registerRequest.getEmail(), registrationInfoJson, 10); // OTP hết hạn sau 10 phút
-            tokenRepository.save(verificationToken);
+        tokenRepository.findByEmail(registerRequest.getEmail()).ifPresent(tokenRepository::delete);
 
-            // Gửi email chứa mã OTP
-            String emailBody = "Mã xác thực đăng ký tài khoản của bạn là: " + otp + ". Mã này sẽ hết hạn sau 10 phút.";
-            emailService.sendEmail(registerRequest.getEmail(), "Xác thực đăng ký tài khoản hiến máu", emailBody);
+        VerificationToken verificationToken = new VerificationToken(otp, registerRequest.getEmail(), registrationInfoJson, 10); // OTP hết hạn sau 10 phút
+        tokenRepository.save(verificationToken);
 
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error processing registration data.", e);
-        }
+        String emailBody = "Mã xác thực đăng ký tài khoản của bạn là: " + otp + ". Mã này sẽ hết hạn sau 10 phút.";
+        emailService.sendEmail(registerRequest.getEmail(), "Xác thực đăng ký tài khoản hiến máu", emailBody);
     }
 
     /**
-     * Bước 2: User gửi OTP lên để xác thực và hoàn tất đăng ký.
+     * Bước 2: User xác thực OTP để hoàn tất đăng ký.
      */
     @Transactional
     public User verifyAndCompleteRegistration(VerifyRequest verifyRequest) {
@@ -83,43 +99,59 @@ public class AuthService {
             tokenRepository.delete(token);
             throw new IllegalStateException("OTP has expired. Please register again.");
         }
-
         if (!token.getToken().equals(verifyRequest.getOtp())) {
             throw new IllegalArgumentException("Invalid OTP code.");
         }
 
         try {
-            // Lấy lại thông tin đăng ký từ chuỗi JSON
             RegisterRequest registrationInfo = objectMapper.readValue(token.getUserRegistrationInfo(), RegisterRequest.class);
 
-            // Tạo User mới từ thông tin đã lưu
             User user = new User();
             user.setFullName(registrationInfo.getFullName());
             user.setEmail(registrationInfo.getEmail());
             user.setUsername(registrationInfo.getEmail());
-            user.setPasswordHash(registrationInfo.getPassword()); // Mật khẩu đã được băm
+            user.setPasswordHash(registrationInfo.getPassword());
             user.setPhone(registrationInfo.getPhone());
             user.setAddress(registrationInfo.getAddress());
             user.setDateOfBirth(registrationInfo.getDateOfBirth());
+            user.setLatitude(registrationInfo.getLatitude());
+            user.setLongitude(registrationInfo.getLongitude());
             user.setStatus(UserStatus.ACTIVE);
-            user.setEmailVerified(true); // Đánh dấu email đã được xác thực
+            user.setEmailVerified(true);
 
-            Role userRole = roleRepository.findByName("Member")
-                    .orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found."));
+            // Gán URL ảnh CCCD đã được lưu trong thông tin tạm thời
+            user.setIdCardFrontUrl(registrationInfo.getIdCardFrontUrl());
+            user.setIdCardBackUrl(registrationInfo.getIdCardBackUrl());
+
+            Role userRole = roleRepository.findByName("Member").orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found."));
             user.setRole(userRole);
 
+            if (registrationInfo.getBloodTypeId() != null) {
+                bloodTypeRepository.findById(registrationInfo.getBloodTypeId()).ifPresent(user::setBloodType);
+            }
+
             User savedUser = userRepository.save(user);
-
-            // Xóa token sau khi đã sử dụng
             tokenRepository.delete(token);
-
             return savedUser;
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error reading registration data.", e);
         }
     }
 
-    // Phương thức đăng nhập giữ nguyên
+    @Transactional
+    public void resendOtp(ResendOtpRequest resendRequest) {
+        VerificationToken token = tokenRepository.findByEmail(resendRequest.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("No pending registration found for this email."));
+
+        String newOtp = String.format("%06d", new Random().nextInt(999999));
+        token.setToken(newOtp);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(10));
+        tokenRepository.save(token);
+
+        String emailBody = "Mã xác thực mới của bạn là: " + newOtp + ".";
+        emailService.sendEmail(resendRequest.getEmail(), "Yêu cầu gửi lại mã OTP", emailBody);
+    }
+
     public AuthResponse loginUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -128,27 +160,5 @@ public class AuthService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequest.getEmail()));
         return new AuthResponse(jwt, user.getId(), user.getEmail(), user.getFullName(), user.getRole().getName());
-    }
-
-    /**
-     * Bước mới: Gửi lại mã OTP cho một email đã đăng ký tạm thời.
-     */
-    @Transactional
-    public void resendOtp(ResendOtpRequest resendRequest) {
-        // 1. Tìm token hiện có của email này
-        VerificationToken verificationToken = tokenRepository.findByEmail(resendRequest.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("No pending registration found for this email. Please start over."));
-
-        // 2. Tạo mã OTP mới
-        String newOtp = String.format("%06d", new Random().nextInt(999999));
-
-        // 3. Cập nhật token và thời gian hết hạn mới (10 phút)
-        verificationToken.setToken(newOtp);
-        verificationToken.setExpiryDate(LocalDateTime.now().plusMinutes(10));
-        tokenRepository.save(verificationToken);
-
-        // 4. Gửi lại email chứa mã OTP mới
-        String emailBody = "Mã xác thực mới của bạn là: " + newOtp + ". Mã này sẽ hết hạn sau 10 phút.";
-        emailService.sendEmail(resendRequest.getEmail(), "Yêu cầu gửi lại mã OTP", emailBody);
     }
 }

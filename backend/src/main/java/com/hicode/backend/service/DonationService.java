@@ -1,7 +1,11 @@
 package com.hicode.backend.service;
 
 import com.hicode.backend.dto.*;
-import com.hicode.backend.dto.admin.*;
+import com.hicode.backend.dto.HealthCheckRequest;
+import com.hicode.backend.dto.admin.BloodTestResultRequest;
+import com.hicode.backend.dto.admin.CollectionInfoRequest;
+import com.hicode.backend.dto.admin.DonationProcessResponse;
+import com.hicode.backend.dto.admin.UpdateDonationStatusRequest;
 import com.hicode.backend.model.entity.*;
 import com.hicode.backend.model.enums.*;
 import com.hicode.backend.repository.DonationProcessRepository;
@@ -12,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +55,7 @@ public class DonationService {
     @Transactional(readOnly = true)
     public List<DonationProcessResponse> getMyDonationHistory() {
         User currentUser = userService.getCurrentUser();
-        List<DonationProcess> processes = donationProcessRepository.findByDonorIdWithAppointment(currentUser.getId());
+        List<DonationProcess> processes = donationProcessRepository.findByDonorIdWithDetails(currentUser.getId());
         return processes.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -61,7 +64,7 @@ public class DonationService {
      */
     @Transactional(readOnly = true)
     public List<DonationProcessResponse> getAllDonationRequests() {
-        List<DonationProcess> processes = donationProcessRepository.findAllWithAppointment();
+        List<DonationProcess> processes = donationProcessRepository.findAllWithDetails();
         return processes.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -84,32 +87,24 @@ public class DonationService {
     }
 
     /**
-     * Ghi nhận kết quả khám sàng lọc.
+     * Staff/Admin ghi nhận kết quả khám sàng lọc.
      */
     @Transactional
     public DonationProcessResponse recordHealthCheck(Long processId, HealthCheckRequest request) {
         DonationProcess process = findProcessById(processId);
         if (process.getStatus() != DonationStatus.APPOINTMENT_SCHEDULED) {
-            throw new IllegalStateException("Cannot record health check for a process that is not in scheduled state.");
+            throw new IllegalStateException("Cannot record health check for a process that is not in a scheduled state.");
         }
 
-        HealthCheck healthCheck = new HealthCheck();
+        HealthCheck healthCheck = process.getHealthCheck() != null ? process.getHealthCheck() : new HealthCheck();
 
-        // BeanUtils sẽ tự động sao chép các trường mới (weight, heartRate, temperature)
-        // vì chúng có cùng tên ở cả DTO và Entity.
         BeanUtils.copyProperties(request, healthCheck);
-
         healthCheck.setDonationProcess(process);
         healthCheckRepository.save(healthCheck);
 
-        // Cập nhật trạng thái của quy trình chính
-        if (request.getIsEligible()) {
-            process.setStatus(DonationStatus.HEALTH_CHECK_PASSED);
-            process.setNote("Health check passed. Ready for blood collection.");
-        } else {
-            process.setStatus(DonationStatus.HEALTH_CHECK_FAILED);
-            process.setNote("Health check failed. " + request.getNotes());
-        }
+        process.setHealthCheck(healthCheck); // Đảm bảo mối quan hệ hai chiều
+        process.setStatus(request.getIsEligible() ? DonationStatus.HEALTH_CHECK_PASSED : DonationStatus.HEALTH_CHECK_FAILED);
+        process.setNote("Health check recorded. Result: " + (request.getIsEligible() ? "Passed." : "Failed. " + request.getNotes()));
 
         DonationProcess updatedProcess = donationProcessRepository.save(process);
         return mapToResponse(updatedProcess);
@@ -141,14 +136,11 @@ public class DonationService {
         }
 
         if (request.getIsSafe()) {
-            // Thêm vào kho máu
             inventoryService.addUnitToInventory(process, request.getBloodUnitId());
 
-            // Cập nhật trạng thái quy trình
             process.setStatus(DonationStatus.COMPLETED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " passed tests and added to inventory.");
 
-            // Cập nhật trạng thái người hiến máu
             User donor = process.getDonor();
             donor.setIsReadyToDonate(false);
             donor.setLastDonationDate(LocalDate.now());
@@ -168,15 +160,27 @@ public class DonationService {
     }
 
     // Hàm helper để chuyển đổi Entity sang DTO
-    private DonationProcessResponse mapToResponse(DonationProcess entity) {
+    public DonationProcessResponse mapToResponse(DonationProcess entity) {
         DonationProcessResponse response = new DonationProcessResponse();
-        BeanUtils.copyProperties(entity, response, "donor", "donationAppointment");
+        BeanUtils.copyProperties(entity, response, "donor", "donationAppointment", "healthCheck");
+
         if (entity.getDonor() != null) {
             response.setDonor(userService.mapToUserResponse(entity.getDonor()));
         }
         if (entity.getDonationAppointment() != null) {
             response.setAppointment(appointmentService.mapToResponse(entity.getDonationAppointment()));
         }
+        if (entity.getHealthCheck() != null) {
+            response.setHealthCheck(mapToHealthCheckResponse(entity.getHealthCheck()));
+        }
+        return response;
+    }
+
+    // Hàm helper để map HealthCheck sang DTO
+    private HealthCheckResponse mapToHealthCheckResponse(HealthCheck entity) {
+        if (entity == null) return null;
+        HealthCheckResponse response = new HealthCheckResponse();
+        BeanUtils.copyProperties(entity, response);
         return response;
     }
 }

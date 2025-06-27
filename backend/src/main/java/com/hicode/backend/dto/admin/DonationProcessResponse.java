@@ -1,5 +1,6 @@
 package com.hicode.backend.dto.admin;
 
+import com.hicode.backend.dto.HealthCheckResponse;
 import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.model.enums.DonationStatus;
 import lombok.Getter;
@@ -17,4 +18,5 @@ public class DonationProcessResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private AppointmentResponse appointment;
+    private HealthCheckResponse healthCheck;
 }

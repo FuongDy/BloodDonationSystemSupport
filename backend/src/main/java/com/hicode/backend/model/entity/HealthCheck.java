@@ -1,5 +1,6 @@
 package com.hicode.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class HealthCheck {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id", nullable = false, unique = true)
+    @JsonBackReference("process-healthcheck") // <-- THÊM ANNOTATION NÀY
     private DonationProcess donationProcess;
 
     @Column(nullable = false)
