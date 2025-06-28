@@ -49,38 +49,46 @@ public class AuthService {
     @Transactional
     public void requestRegistration(String registerRequestJson, MultipartFile frontImage, MultipartFile backImage) throws IOException {
 
-        // Logic kiểm tra mặt trước/sau
-        String side1 = ocrValidationService.identifyIdCardSide(frontImage);
-        String side2 = ocrValidationService.identifyIdCardSide(backImage);
-
-        if (!((side1.equals("FRONT") && side2.equals("BACK")) || (side1.equals("BACK") && side2.equals("FRONT")))) {
-            throw new IllegalArgumentException("Vui lòng tải lên đúng mặt trước và mặt sau của CCCD.");
-        }
-
         RegisterRequest registerRequest = objectMapper.readValue(registerRequestJson, RegisterRequest.class);
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Error: Email is already in use!");
         }
 
-        // Lưu ảnh và lấy đường dẫn tương đối
+        // --- PHẦN LOGIC ĐÃ CẬP NHẬT ---
+        // 1. Kiểm tra tường minh từng file
+        String frontImageSide = ocrValidationService.identifyIdCardSide(frontImage);
+        if (!"FRONT".equals(frontImageSide)) {
+            throw new IllegalArgumentException("Ảnh mặt trước không hợp lệ. Vui lòng tải lên đúng ảnh mặt trước của CCCD.");
+        }
+
+        String backImageSide = ocrValidationService.identifyIdCardSide(backImage);
+        if (!"BACK".equals(backImageSide)) {
+            throw new IllegalArgumentException("Ảnh mặt sau không hợp lệ. Vui lòng tải lên đúng ảnh mặt sau của CCCD.");
+        }
+        // --- KẾT THÚC ---
+
+        // Nếu hợp lệ, tiếp tục lưu trữ và gửi OTP như cũ
         String frontImageUrl = storageService.store(frontImage);
         String backImageUrl = storageService.store(backImage);
 
-        // Gán đường dẫn ảnh vào đối tượng request để lưu tạm
         registerRequest.setIdCardFrontUrl(frontImageUrl);
         registerRequest.setIdCardBackUrl(backImageUrl);
 
-        // Băm mật khẩu
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
         String otp = String.format("%06d", new Random().nextInt(999999));
 
         String registrationInfoJson = objectMapper.writeValueAsString(registerRequest);
 
-        tokenRepository.findByEmail(registerRequest.getEmail()).ifPresent(tokenRepository::delete);
+        VerificationToken verificationToken = tokenRepository.findByEmail(registerRequest.getEmail())
+                .orElse(new VerificationToken());
 
-        VerificationToken verificationToken = new VerificationToken(otp, registerRequest.getEmail(), registrationInfoJson, 10); // OTP hết hạn sau 10 phút
+        verificationToken.setEmail(registerRequest.getEmail());
+        verificationToken.setToken(otp);
+        verificationToken.setUserRegistrationInfo(registrationInfoJson);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusMinutes(10));
+
         tokenRepository.save(verificationToken);
 
         String emailBody = "Mã xác thực đăng ký tài khoản của bạn là: " + otp + ". Mã này sẽ hết hạn sau 10 phút.";
