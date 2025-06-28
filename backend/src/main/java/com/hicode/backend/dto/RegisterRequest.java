@@ -20,7 +20,7 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password need to longer than 6")
+    @Size(min = 6, max = 100)
     private String password;
 
     @NotBlank(message = "Phone number is required")
@@ -33,13 +33,18 @@ public class RegisterRequest {
 
     @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     private Double latitude;
     private Double longitude;
     private Integer bloodTypeId;
 
+    // Các trường để lưu tạm thông tin từ OCR và file upload
+    private String idCardNumber;
+    private String hometown;
+    private String nationality;
+    private String gender;
     private String idCardFrontUrl;
     private String idCardBackUrl;
-
 }

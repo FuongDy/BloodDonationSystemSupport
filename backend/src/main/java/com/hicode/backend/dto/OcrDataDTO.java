@@ -16,10 +16,12 @@ public class OcrDataDTO {
     private String address;
     private String sex;
     private String nationality;
-    private String doe;
+    private String doe; // Date of Expiry
     private String features;
     @JsonProperty("issue_date")
     private String issueDate;
+    @JsonProperty("issue_loc")
+    private String issueLoc;
     private String type;
 
     @JsonProperty("address_entities")

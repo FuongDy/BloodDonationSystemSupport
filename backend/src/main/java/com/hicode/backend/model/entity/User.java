@@ -103,6 +103,18 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private IdCardVerification idCardVerification;
+
+    @Column(name = "id_card_number", length = 20, unique = true)
+    private String idCardNumber; // Số CCCD
+
+    @Column(name = "hometown", columnDefinition = "NVARCHAR(255)")
+    private String hometown; // Quê quán
+
+    @Column(name = "nationality", columnDefinition = "NVARCHAR(100)")
+    private String nationality; // Quốc tịch
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = this.updatedAt = LocalDateTime.now();

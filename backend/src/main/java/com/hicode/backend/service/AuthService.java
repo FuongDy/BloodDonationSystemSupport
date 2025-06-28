@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Random;
 
@@ -55,30 +57,30 @@ public class AuthService {
             throw new IllegalArgumentException("Error: Email is already in use!");
         }
 
-        // --- PHẦN LOGIC ĐÃ CẬP NHẬT ---
-        // 1. Kiểm tra tường minh từng file
-        String frontImageSide = ocrValidationService.identifyIdCardSide(frontImage);
-        if (!"FRONT".equals(frontImageSide)) {
-            throw new IllegalArgumentException("Ảnh mặt trước không hợp lệ. Vui lòng tải lên đúng ảnh mặt trước của CCCD.");
-        }
+        // Bước 1: Gọi OCR để đối chiếu và trích xuất dữ liệu
+        OcrDataDTO ocrData = ocrValidationService.verifyAndExtractIdCardData(frontImage, backImage, registerRequest);
 
-        String backImageSide = ocrValidationService.identifyIdCardSide(backImage);
-        if (!"BACK".equals(backImageSide)) {
-            throw new IllegalArgumentException("Ảnh mặt sau không hợp lệ. Vui lòng tải lên đúng ảnh mặt sau của CCCD.");
-        }
-        // --- KẾT THÚC ---
+        // Bước 2: Tự động cập nhật/chuẩn hóa thông tin từ OCR
+        registerRequest.setIdCardNumber(ocrData.getId());
+        registerRequest.setHometown(ocrData.getHome());
+        registerRequest.setNationality(ocrData.getNationality());
+        registerRequest.setGender(ocrData.getSex());
+        // Chuẩn hóa lại tên và ngày sinh để khớp 100% với CCCD
+        registerRequest.setFullName(ocrData.getName());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        registerRequest.setDateOfBirth(LocalDate.parse(ocrData.getDob(), formatter));
 
-        // Nếu hợp lệ, tiếp tục lưu trữ và gửi OTP như cũ
+        // Bước 3: Lưu ảnh và cập nhật đường dẫn
         String frontImageUrl = storageService.store(frontImage);
         String backImageUrl = storageService.store(backImage);
-
         registerRequest.setIdCardFrontUrl(frontImageUrl);
         registerRequest.setIdCardBackUrl(backImageUrl);
 
+        // Bước 4: Mã hóa mật khẩu
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
+        // Bước 5: Tạo và gửi OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
-
         String registrationInfoJson = objectMapper.writeValueAsString(registerRequest);
 
         VerificationToken verificationToken = tokenRepository.findByEmail(registerRequest.getEmail())
@@ -91,8 +93,8 @@ public class AuthService {
 
         tokenRepository.save(verificationToken);
 
-        String emailBody = "Mã xác thực đăng ký tài khoản của bạn là: " + otp + ". Mã này sẽ hết hạn sau 10 phút.";
-        emailService.sendEmail(registerRequest.getEmail(), "Xác thực đăng ký tài khoản hiến máu", emailBody);
+        String emailBody = "Mã xác thực đăng ký tài khoản của bạn là: " + otp;
+        emailService.sendEmail(registerRequest.getEmail(), "Xác thực đăng ký tài khoản", emailBody);
     }
 
     /**
@@ -115,6 +117,8 @@ public class AuthService {
             RegisterRequest registrationInfo = objectMapper.readValue(token.getUserRegistrationInfo(), RegisterRequest.class);
 
             User user = new User();
+            user.setIdCardNumber(registrationInfo.getIdCardNumber()); // Gán số CCCD
+            user.setHometown(registrationInfo.getHometown());       // Gán quê quán
             user.setFullName(registrationInfo.getFullName());
             user.setEmail(registrationInfo.getEmail());
             user.setUsername(registrationInfo.getEmail());
@@ -130,6 +134,12 @@ public class AuthService {
             // Gán URL ảnh CCCD đã được lưu trong thông tin tạm thời
             user.setIdCardFrontUrl(registrationInfo.getIdCardFrontUrl());
             user.setIdCardBackUrl(registrationInfo.getIdCardBackUrl());
+
+            IdCardVerification verification = new IdCardVerification();
+            verification.setUser(user);
+            verification.setStatus(VerificationStatus.VERIFIED);
+            verification.setVerifiedAt(LocalDateTime.now());
+            user.setIdCardVerification(verification);
 
             Role userRole = roleRepository.findByName("Member").orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found."));
             user.setRole(userRole);

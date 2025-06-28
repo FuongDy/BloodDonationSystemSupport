@@ -22,7 +22,7 @@ public class AuthController {
      * API Bước 1: Nhận thông tin đăng ký (JSON) và ảnh CCCD, sau đó gửi OTP.
      */
     @PostMapping(value = "/register", consumes = {"multipart/form-data"})
-    public ResponseEntity<String> registerAndRequestOtp(
+    public ResponseEntity<String> requestRegistration(
             @RequestParam("registrationData") String registerRequestJson,
             @RequestParam("frontImage") MultipartFile frontImage,
             @RequestParam("backImage") MultipartFile backImage) {
