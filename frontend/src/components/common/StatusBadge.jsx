@@ -17,8 +17,8 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
             return 'Hoạt động';
           case USER_STATUSES.SUSPENDED:
             return 'Tạm khóa';
-          case USER_STATUSES.PENDING:
-            return 'Chờ duyệt';
+          case USER_STATUSES.DEACTIVATED:
+            return 'Đã vô hiệu hóa';
           default:
             return status;
         }
@@ -33,6 +33,8 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
             return 'Chờ lịch hẹn';
           case DONATION_STATUS.APPOINTMENT_SCHEDULED:
             return 'Đã lên lịch';
+          case DONATION_STATUS.RESCHEDULE_REQUESTED:
+            return 'Yêu cầu đổi lịch';
           case DONATION_STATUS.HEALTH_CHECK_PASSED:
             return 'Khám đạt';
           case DONATION_STATUS.HEALTH_CHECK_FAILED:
@@ -55,12 +57,8 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
         switch (status) {
           case REQUEST_STATUS.PENDING:
             return 'Chờ xử lý';
-          case REQUEST_STATUS.APPROVED:
-            return 'Đã duyệt';
           case REQUEST_STATUS.FULFILLED:
             return 'Đã hoàn thành';
-          case REQUEST_STATUS.REJECTED:
-            return 'Từ chối';
           case REQUEST_STATUS.CANCELLED:
             return 'Đã hủy';
           default:

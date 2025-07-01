@@ -17,25 +17,20 @@ const AdminContentWrapper = ({
   totalPages,
   totalElements,
   onPageChange,
-  paginationLoading = false
+  paginationLoading = false,
 }) => {
   if (isLoading && !hasData) {
     return <AdminLoadingState message={loadingMessage} />;
   }
 
   if (!hasData) {
-    return (
-      <AdminEmptyState 
-        message={emptyMessage}
-        icon={emptyIcon}
-      />
-    );
+    return <AdminEmptyState message={emptyMessage} icon={emptyIcon} />;
   }
 
   return (
     <>
       {children}
-      
+
       {showPagination && (
         <AdminPaginationInfo
           currentPage={currentPage}

@@ -2,16 +2,18 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProfileSidebar from '../components/profile/ProfileSidebar.jsx';
-
-// Import các page components trực tiếp để tránh lỗi lazy loading
 import UserProfileViewPage from './profile/UserProfileViewPage.jsx';
 import UserProfileEditPage from './profile/UserProfileEditPage.jsx';
 
 // Placeholder components for sidebar routes
 const ProfileSecurityPage = () => (
   <div className='bg-white shadow-xl rounded-lg p-6 md:p-8'>
-    <h2 className='text-2xl font-bold text-gray-800 mb-4'>Bảo mật & Đăng nhập</h2>
-    <p className='text-gray-600'>Quản lý mật khẩu và cài đặt bảo mật tài khoản...</p>
+    <h2 className='text-2xl font-bold text-gray-800 mb-4'>
+      Bảo mật & Đăng nhập
+    </h2>
+    <p className='text-gray-600'>
+      Quản lý mật khẩu và cài đặt bảo mật tài khoản...
+    </p>
   </div>
 );
 
@@ -25,7 +27,9 @@ const ProfileDonationSchedulePage = () => (
 const ProfileDonationHistoryPage = () => (
   <div className='bg-white shadow-xl rounded-lg p-6 md:p-8'>
     <h2 className='text-2xl font-bold text-gray-800 mb-4'>Lịch sử hiến máu</h2>
-    <p className='text-gray-600'>Xem lịch sử các lần hiến máu đã thực hiện...</p>
+    <p className='text-gray-600'>
+      Xem lịch sử các lần hiến máu đã thực hiện...
+    </p>
   </div>
 );
 
@@ -59,9 +63,15 @@ const UserProfilePage = () => {
               <Route path='/' element={<UserProfileViewPage />} />
               <Route path='/edit' element={<UserProfileEditPage />} />
               <Route path='/security' element={<ProfileSecurityPage />} />
-              <Route path='/schedule' element={<ProfileDonationSchedulePage />} />
+              <Route
+                path='/schedule'
+                element={<ProfileDonationSchedulePage />}
+              />
               <Route path='/history' element={<ProfileDonationHistoryPage />} />
-              <Route path='/notifications' element={<ProfileNotificationsPage />} />
+              <Route
+                path='/notifications'
+                element={<ProfileNotificationsPage />}
+              />
               <Route path='/settings' element={<ProfileSettingsPage />} />
             </Routes>
           </div>

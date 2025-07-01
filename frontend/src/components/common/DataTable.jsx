@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
-import Button from './Button';
 import Pagination from './Pagination';
 import EmptyState from './EmptyState';
 import LoadingSpinner from './LoadingSpinner';

@@ -3,13 +3,13 @@ import React from 'react';
 import Button from '../common/Button';
 import InputField from '../common/InputField';
 
-const BloodRequestForm = ({ 
-  formData, 
-  bloodTypes, 
-  onInputChange, 
-  onSubmit, 
+const BloodRequestForm = ({
+  formData,
+  bloodTypes,
+  onInputChange,
+  onSubmit,
   onCancel,
-  isLoading = false 
+  isLoading = false,
 }) => {
   return (
     <form onSubmit={onSubmit} className='space-y-4'>
@@ -22,7 +22,7 @@ const BloodRequestForm = ({
           required
           disabled={isLoading}
         />
-        
+
         <InputField
           label='Bệnh viện'
           name='hospital'
@@ -54,8 +54,7 @@ const BloodRequestForm = ({
             {bloodTypes
               .filter(
                 (bt, index, self) =>
-                  index ===
-                  self.findIndex(t => t.bloodGroup === bt.bloodGroup)
+                  index === self.findIndex(t => t.bloodGroup === bt.bloodGroup)
               )
               .map(bt => (
                 <option key={bt.id} value={bt.id}>
@@ -79,7 +78,8 @@ const BloodRequestForm = ({
       <div>
         <label className='block text-sm font-medium text-gray-700 mb-1'>
           Mức độ khẩn cấp
-        </label>        <select
+        </label>{' '}
+        <select
           name='urgency'
           value={formData.urgency}
           onChange={onInputChange}
@@ -101,11 +101,7 @@ const BloodRequestForm = ({
         >
           Hủy
         </Button>
-        <Button 
-          type='submit' 
-          disabled={isLoading}
-          isLoading={isLoading}
-        >
+        <Button type='submit' disabled={isLoading} isLoading={isLoading}>
           Tạo yêu cầu
         </Button>
       </div>

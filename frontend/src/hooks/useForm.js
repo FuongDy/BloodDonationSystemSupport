@@ -24,11 +24,19 @@ const useForm = (initialState = {}, validate = () => ({})) => {
   const handleSubmit = useCallback(
     callback => async event => {
       if (event) event.preventDefault();
-      const validationErrors = validate(values);
-      setErrors(validationErrors);
-      if (Object.keys(validationErrors).length === 0) {
-        setIsSubmitting(true);
-        await callback(values);
+
+      try {
+        const validationErrors = validate(values);
+        setErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length === 0) {
+          setIsSubmitting(true);
+          await callback(values);
+        }
+      } catch (error) {
+        console.error('Form submission error:', error);
+        // Don't throw here, let the callback handle the error
+      } finally {
         setIsSubmitting(false);
       }
     },
@@ -43,7 +51,7 @@ const useForm = (initialState = {}, validate = () => ({})) => {
 
   return {
     values,
-    setValues, // Cho phép set value từ bên ngoài nếu cần (ví dụ khi fetch data cho form edit)
+    setValues,
     errors,
     setErrors,
     isSubmitting,

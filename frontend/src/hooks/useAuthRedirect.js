@@ -26,7 +26,7 @@ export const useAuthRedirect = () => {
   return {
     requireAuth,
     requireAuthForAction,
-    isAuthenticated
+    isAuthenticated,
   };
 };
 

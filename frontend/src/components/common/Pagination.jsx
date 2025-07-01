@@ -5,26 +5,34 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
-import Button from './Button'; //
+import Button from './Button';
 
-// /**
-//  * Component phân trang tái sử dụng.
-//  * @param {object} props
-//  * @param {number} props.currentPage - Trang hiện tại (bắt đầu từ 0).
-//  * @param {number} props.totalPages - Tổng số trang.
-//  * @param {function(number): void} props.onPageChange - Callback khi trang thay đổi.
-//  * @param {boolean} [props.isLoading=false] - Trạng thái loading để vô hiệu hóa nút.
-//  * @param {number} [props.maxVisiblePages=5] - Số lượng trang tối đa hiển thị cùng lúc.
-//  */
+/**
+ * Component phân trang tái sử dụng.
+ * @param {object} props
+ * @param {number} props.currentPage - Trang hiện tại (bắt đầu từ 0).
+ * @param {number} props.totalPages - Tổng số trang.
+ * @param {function(number): void} props.onPageChange - Callback khi trang thay đổi.
+ * @param {boolean} [props.isLoading=false] - Trạng thái loading để vô hiệu hóa nút.
+ * @param {number} [props.maxVisiblePages=5] - Số lượng trang tối đa hiển thị cùng lúc.
+ */
 const Pagination = ({
-  currentPage,
-  totalPages,
+  currentPage = 0,
+  totalPages = 0,
   onPageChange,
   isLoading = false,
   maxVisiblePages = 5,
 }) => {
-  if (totalPages <= 1) {
-    return null; // Không hiển thị phân trang nếu chỉ có 1 trang hoặc ít hơn
+  // Validate props
+  if (!onPageChange || typeof onPageChange !== 'function') {
+    console.warn(
+      'Pagination: onPageChange prop is required and must be a function'
+    );
+    return null;
+  }
+
+  if (totalPages <= 1 || currentPage < 0 || currentPage >= totalPages) {
+    return null;
   }
 
   const getPageNumbers = () => {

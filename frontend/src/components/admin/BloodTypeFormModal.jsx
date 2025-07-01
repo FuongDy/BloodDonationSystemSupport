@@ -4,7 +4,7 @@ import Modal from '../common/Modal';
 import Button from '../common/Button';
 import InputField from '../common/InputField';
 import bloodTypeService from '../../services/bloodTypeService';
-import toast from 'react-hot-toast';
+import { useApi } from '../../hooks/useApi';
 import { useAuth } from '../../hooks/useAuth'; // Import useAuth hook
 
 const componentTypeOptions = [
@@ -21,9 +21,9 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
     componentType: 'Whole Blood',
     description: '',
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { user } = useAuth(); // Lấy user từ useAuth
+  const { execute, isLoading } = useApi();
 
   useEffect(() => {
     if (bloodType) {
@@ -60,27 +60,23 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    
     // Kiểm tra quyền trước khi gửi form
     if (user?.role !== 'Admin') {
-      //
-      toast.error('Bạn không có quyền thực hiện thao tác này.');
+      await execute(
+        () => Promise.reject(new Error('Bạn không có quyền thực hiện thao tác này.')),
+        { showToast: true }
+      );
       return;
-    }
-
-    if (bloodType?.id) {
-      await bloodTypeService.update(bloodType.id, dataToSend);
-    } else {
-      await bloodTypeService.create(dataToSend);
     }
 
     if (!validateForm()) {
-      toast.error('Vui lòng kiểm tra lại thông tin.');
+      await execute(
+        () => Promise.reject(new Error('Vui lòng kiểm tra lại thông tin.')),
+        { showToast: true }
+      );
       return;
     }
-    setIsLoading(true);
-    const toastId = toast.loading(
-      bloodType ? 'Đang cập nhật...' : 'Đang tạo...'
-    );
 
     const dataToSend = {
       ...formData,
@@ -88,26 +84,26 @@ const BloodTypeFormModal = ({ isOpen, onClose, onSaveSuccess, bloodType }) => {
         formData.description.trim() === '' ? null : formData.description.trim(),
     };
 
-    try {
-      if (bloodType?.id) {
-        const updateRequestData = {
-          description: dataToSend.description,
-        };
-        await bloodTypeService.update(bloodType.id, updateRequestData);
-      } else {
-        await bloodTypeService.create(dataToSend);
+    await execute(
+      () => {
+        if (bloodType?.id) {
+          const updateRequestData = {
+            description: dataToSend.description,
+          };
+          return bloodTypeService.update(bloodType.id, updateRequestData);
+        } else {
+          return bloodTypeService.create(dataToSend);
+        }
+      },
+      {
+        showToast: true,
+        loadingMessage: bloodType ? 'Đang cập nhật...' : 'Đang tạo...',
+        successMessage: bloodType ? 'Cập nhật thành công!' : 'Tạo thành công!',
+        onSuccess: () => {
+          onSaveSuccess();
+        }
       }
-      toast.success(bloodType ? 'Cập nhật thành công!' : 'Tạo thành công!', {
-        id: toastId,
-      });
-      onSaveSuccess();
-    } catch (error) {
-      toast.error(`Lỗi: ${error.message || 'Đã có lỗi xảy ra.'}`, {
-        id: toastId,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   // Vô hiệu hóa các input và nút nếu người dùng không phải Admin

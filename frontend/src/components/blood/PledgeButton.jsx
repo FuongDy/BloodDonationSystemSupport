@@ -12,15 +12,18 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { requireAuth } = useAuthRedirect();
-// Check if the user has already pledged for this request
 
-// Ensure request and pledges are defined
+  // Check if user has already pledged
   const hasUserPledged = request.pledges?.some(
     pledge => pledge.donor?.id === user?.id
   );
 
   const handlePledge = async () => {
-    const canProceed = requireAuth(null, 'Vui lòng đăng nhập để đăng ký hiến máu.');
+    // Use requireAuth to handle authentication check and redirect
+    const canProceed = requireAuth(
+      null,
+      'Vui lòng đăng nhập để đăng ký hiến máu.'
+    );
     if (!canProceed) return;
 
     if (hasUserPledged) {
@@ -32,7 +35,8 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
     try {
       await bloodRequestService.pledgeForRequest(request.id);
       toast.success(
-        'Đăng ký hiến máu thành công! Cảm ơn bạn đã tham gia cứu người.'
+        'Đăng ký hiến máu thành công! Vui lòng đến bệnh viện trong 24-48 giờ để hoàn thành hiến máu.',
+        { duration: 6000 }
       );
       onPledgeSuccess?.();
     } catch (error) {
@@ -45,26 +49,27 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
       setIsLoading(false);
     }
   };
-
-  const pledgeCount = request.pledges?.length || 0;
-  const isUrgent = request.priority === 'URGENT';
-  const isEmergency = request.priority === 'EMERGENCY';
+  const pledgeCount = request.pledgeCount || request.pledges?.length || 0;
+  const requiredPledges =
+    (request.quantityInUnits || request.quantityNeeded || 1) + 1; // N+1 rule
+  const isUrgent = request.urgency === 'URGENT';
+  const isCritical = request.urgency === 'CRITICAL';
 
   return (
     <div className='space-y-3'>
+      {' '}
       {/* Pledge count display */}
       <div className='flex items-center justify-between text-sm'>
         <div className='flex items-center text-gray-600'>
           <Users className='w-4 h-4 mr-1' />
-          <span>{pledgeCount} người đã đăng ký hiến</span>
+          <span>
+            {pledgeCount}/{requiredPledges} người đã đăng ký hiến
+          </span>
         </div>
-        {request.quantityNeeded && (
-          <div className='text-gray-500'>
-            Cần: {request.quantityNeeded} đơn vị
-          </div>
-        )}
+        <div className='text-gray-500'>
+          Cần: {request.quantityInUnits || request.quantityNeeded || 1} đơn vị
+        </div>
       </div>
-
       {/* Pledge button */}
       <Button
         onClick={handlePledge}
@@ -72,7 +77,7 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
         variant={
           hasUserPledged
             ? 'outline'
-            : isEmergency
+            : isCritical
               ? 'danger'
               : isUrgent
                 ? 'warning'
@@ -89,13 +94,11 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
             ? 'Đã đăng ký hiến máu'
             : 'Đăng ký hiến máu'}
       </Button>
-
       {!isAuthenticated && (
         <p className='text-xs text-gray-500 text-center'>
           Vui lòng đăng nhập để đăng ký hiến máu
         </p>
       )}
-
       {hasUserPledged && (
         <p className='text-xs text-green-600 text-center'>
           ✓ Cảm ơn bạn đã đăng ký hiến máu cho yêu cầu này

@@ -1,23 +1,21 @@
 // src/pages/LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  Eye, 
-  EyeOff, 
-  LogIn as LogInIcon, 
-  Heart, 
-  Shield, 
-  Users, 
+import {
+  Eye,
+  EyeOff,
+  LogIn as LogInIcon,
+  Heart,
+  Shield,
+  Users,
   Mail,
   Lock,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { useAuth } from '../hooks/useAuth';
 import { useAppStore } from '../store/appStore';
-import Button from '../components/common/Button';
-import InputField from '../components/common/InputField';
 import { userLoginSchema } from '../utils/validationSchemas';
 import { handleApiError } from '../utils/errorHandler';
 
@@ -79,9 +77,9 @@ const LoginPage = () => {
     // Clear validation error cho field hiện tại
     if (validationErrors[name]) {
       setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }        // Validate field hiện tại
-        try {
-            await userLoginSchema.validateAt(name, { [name]: value });
+    } // Validate field hiện tại
+    try {
+      await userLoginSchema.validateAt(name, { [name]: value });
     } catch (validationError) {
       setValidationErrors(prev => ({
         ...prev,
@@ -95,9 +93,10 @@ const LoginPage = () => {
    * @param {Event} e - Form submit event
    */
   const handleSubmit = async e => {
-    e.preventDefault();        try {
-            // Validate toàn bộ form
-            await userLoginSchema.validate(credentials, { abortEarly: false });
+    e.preventDefault();
+    try {
+      // Validate toàn bộ form
+      await userLoginSchema.validate(credentials, { abortEarly: false });
       setValidationErrors({});
 
       setLoading(true);
@@ -107,13 +106,14 @@ const LoginPage = () => {
         // Xử lý validation errors
         const errors = {};
         error.inner.forEach(err => {
-          errors[err.path] = err.message;
+          errors[err.path] = error.message;
         });
         setValidationErrors(errors);
-        toast.error('Vui lòng kiểm tra lại thông tin đăng nhập.');            } else {
-                // Xử lý API errors
-                handleApiError(error);
-            }
+        toast.error('Vui lòng kiểm tra lại thông tin đăng nhập.');
+      } else {
+        // Xử lý API errors
+        handleApiError(error);
+      }
     } finally {
       setLoading(false);
     }
@@ -128,7 +128,9 @@ const LoginPage = () => {
             <Heart className='w-8 h-8 text-red-600 animate-pulse' />
           </div>
           <div className='w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin mx-auto mb-4'></div>
-          <h3 className='text-lg font-semibold text-gray-900 mb-2'>Đang chuyển hướng...</h3>
+          <h3 className='text-lg font-semibold text-gray-900 mb-2'>
+            Đang chuyển hướng...
+          </h3>
           <p className='text-gray-600 text-sm'>Vui lòng đợi trong giây lát</p>
         </div>
       </div>
@@ -152,26 +154,30 @@ const LoginPage = () => {
                 <Heart className='w-10 h-10 text-white' />
               </div>
             </div>
-            <h1 className='text-4xl font-bold mb-6'>
-              Chào mừng trở lại!
-            </h1>
+            <h1 className='text-4xl font-bold mb-6'>Chào mừng trở lại!</h1>
             <p className='text-xl text-red-100 mb-8 font-light'>
               Tiếp tục hành trình ý nghĩa cứu người của bạn
             </p>
-            
+
             {/* Features */}
             <div className='space-y-4'>
               <div className='flex items-center space-x-3'>
                 <Shield className='w-5 h-5 text-red-200' />
-                <span className='text-red-100'>Bảo mật thông tin tuyệt đối</span>
+                <span className='text-red-100'>
+                  Bảo mật thông tin tuyệt đối
+                </span>
               </div>
               <div className='flex items-center space-x-3'>
                 <Users className='w-5 h-5 text-red-200' />
-                <span className='text-red-100'>Cộng đồng hiến máu lớn nhất VN</span>
+                <span className='text-red-100'>
+                  Cộng đồng hiến máu lớn nhất VN
+                </span>
               </div>
               <div className='flex items-center space-x-3'>
                 <Heart className='w-5 h-5 text-red-200' />
-                <span className='text-red-100'>Mỗi giọt máu cứu một cuộc đời</span>
+                <span className='text-red-100'>
+                  Mỗi giọt máu cứu một cuộc đời
+                </span>
               </div>
             </div>
           </div>
@@ -223,8 +229,8 @@ const LoginPage = () => {
                       required
                       disabled={authLoading}
                       className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors ${
-                        validationErrors.email 
-                          ? 'border-red-300 bg-red-50' 
+                        validationErrors.email
+                          ? 'border-red-300 bg-red-50'
                           : 'border-gray-300 bg-white'
                       } ${authLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
@@ -253,8 +259,8 @@ const LoginPage = () => {
                       required
                       disabled={authLoading}
                       className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors ${
-                        validationErrors.password 
-                          ? 'border-red-300 bg-red-50' 
+                        validationErrors.password
+                          ? 'border-red-300 bg-red-50'
                           : 'border-gray-300 bg-white'
                       } ${authLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
@@ -264,7 +270,11 @@ const LoginPage = () => {
                       disabled={authLoading}
                       className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
                     >
-                      {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                      {showPassword ? (
+                        <EyeOff className='w-5 h-5' />
+                      ) : (
+                        <Eye className='w-5 h-5' />
+                      )}
                     </button>
                     {validationErrors.password && (
                       <p className='mt-1 text-xs text-red-600'>
@@ -281,7 +291,9 @@ const LoginPage = () => {
                       type='checkbox'
                       className='w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500'
                     />
-                    <span className='ml-2 text-sm text-gray-600'>Ghi nhớ đăng nhập</span>
+                    <span className='ml-2 text-sm text-gray-600'>
+                      Ghi nhớ đăng nhập
+                    </span>
                   </label>
                   <Link
                     to='/forgot-password'

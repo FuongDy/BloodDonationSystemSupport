@@ -22,7 +22,7 @@ class ErrorBoundary extends React.Component {
 
   /**
    * Update state so the next render will show the fallback UI
-   * @param {Error} _error - The error that was thrown
+   * @param {Error} error - The error that was thrown
    * @returns {Object} - New state object
    */
   static getDerivedStateFromError(_error) {
@@ -39,7 +39,10 @@ class ErrorBoundary extends React.Component {
    */
   componentDidCatch(error, errorInfo) {
     // Log error to console in development
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+    if (
+      typeof window !== 'undefined' &&
+      window.location?.hostname === 'localhost'
+    ) {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
 
@@ -57,22 +60,22 @@ class ErrorBoundary extends React.Component {
     this.setState({
       error,
       errorInfo,
-    });
-
-    // Report error to external service in production
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    }); // Report error to external service in production
+    if (
+      typeof window !== 'undefined' &&
+      window.location?.hostname !== 'localhost'
+    ) {
       this.reportErrorToService(error, errorInfo);
     }
   }
 
   /**
    * Report error to external monitoring service
-   * @param {Error} _error - The error that was thrown
-   * @param {Object} _errorInfo - Component stack trace
-   */
-  reportErrorToService(_error, _errorInfo) {
+   * @param {Error} error - The error that was thrown
+   * @param {Object} errorInfo - Component stack trace
+   */ reportErrorToService(_error, _errorInfo) {
     // Implementation for error reporting service (e.g., Sentry, LogRocket)
-    // console.log('Reporting error to service:', { error, errorInfo });
+    // TODO: Implement error reporting to external service
   }
 
   /**
@@ -101,19 +104,139 @@ class ErrorBoundary extends React.Component {
     window.location.href = '/';
   };
 
+  /**
+   * Render error icon
+   */
+  renderErrorIcon = () => (
+    <div className='flex justify-center mb-6'>
+      <div className='bg-red-100 rounded-full p-4'>
+        <AlertTriangle className='w-8 h-8 text-red-600' />
+      </div>
+    </div>
+  );
+
+  /**
+   * Render error message
+   */
+  renderErrorMessage = () => {
+    const { level = 'component' } = this.props;
+    return (
+      <>
+        <h1 className='text-2xl font-bold text-gray-900 mb-4'>
+          {level === 'app' ? 'Ứng dụng gặp sự cố' : 'Đã có lỗi xảy ra'}
+        </h1>
+        <p className='text-gray-600 mb-6'>
+          {level === 'app'
+            ? 'Xin lỗi, ứng dụng đã gặp sự cố không mong muốn. Vui lòng thử lại hoặc liên hệ hỗ trợ kỹ thuật.'
+            : 'Một phần của trang web gặp sự cố. Vui lòng thử lại hoặc làm mới trang.'}
+        </p>
+      </>
+    );
+  };
+
+  /**
+   * Render error details for development
+   */
+  renderErrorDetails = () => {
+    const { showDetails = false } = this.props;
+    const { error, errorInfo } = this.state;
+
+    if (
+      !showDetails ||
+      !error ||
+      typeof window === 'undefined' ||
+      window.location?.hostname !== 'localhost'
+    ) {
+      return null;
+    }
+
+    return (
+      <details className='mb-6 text-left'>
+        <summary className='cursor-pointer text-sm font-medium text-gray-700 mb-2'>
+          Chi tiết lỗi (Development)
+        </summary>
+        <div className='bg-gray-100 rounded p-3 text-xs font-mono'>
+          <div className='mb-2'>
+            <strong>Error:</strong> {error.message}
+          </div>
+          {errorInfo && (
+            <div>
+              <strong>Component Stack:</strong>
+              <pre className='whitespace-pre-wrap text-red-600'>
+                {errorInfo.componentStack}
+              </pre>
+            </div>
+          )}
+        </div>
+      </details>
+    );
+  };
+
+  /**
+   * Render action buttons
+   */
+  renderActionButtons = () => {
+    const { level = 'component' } = this.props;
+    return (
+      <div className='space-y-3'>
+        <Button
+          onClick={this.resetErrorBoundary}
+          variant='primary'
+          className='w-full'
+        >
+          <RefreshCw className='w-4 h-4 mr-2' />
+          Thử lại
+        </Button>
+
+        {level === 'app' && (
+          <Button
+            onClick={this.reloadPage}
+            variant='outline'
+            className='w-full'
+          >
+            <RefreshCw className='w-4 h-4 mr-2' />
+            Tải lại trang
+          </Button>
+        )}
+
+        <Button onClick={this.goHome} variant='outline' className='w-full'>
+          <Home className='w-4 h-4 mr-2' />
+          Về trang chủ
+        </Button>
+      </div>
+    );
+  };
+
+  /**
+   * Render support information
+   */
+  renderSupportInfo = () => (
+    <div className='mt-6 pt-6 border-t border-gray-200'>
+      <p className='text-sm text-gray-500'>
+        Nếu vấn đề vẫn tiếp tục, vui lòng liên hệ{' '}
+        <a
+          href='mailto:support@blooddonation.com'
+          className='text-red-600 hover:underline'
+        >
+          hỗ trợ kỹ thuật
+        </a>
+      </p>
+      {this.state.errorId && (
+        <p className='text-xs text-gray-400 mt-2'>
+          Mã lỗi: {this.state.errorId}
+        </p>
+      )}
+    </div>
+  );
+
   render() {
-    const { hasError, error, errorInfo } = this.state;
-    const {
-      fallback,
-      showDetails = false,
-      level = 'component',
-      children,
-    } = this.props;
+    const { hasError } = this.state;
+    const { fallback, children } = this.props;
 
     if (hasError) {
       // Custom fallback UI
       if (fallback) {
-        return fallback(error, this.resetErrorBoundary);
+        return fallback(this.state.error, this.resetErrorBoundary);
       }
 
       // Default fallback UI based on error level
@@ -122,97 +245,19 @@ class ErrorBoundary extends React.Component {
           <div className='max-w-md w-full'>
             <div className='bg-white rounded-lg shadow-lg p-8 text-center'>
               {/* Error Icon */}
-              <div className='flex justify-center mb-6'>
-                <div className='bg-red-100 rounded-full p-4'>
-                  <AlertTriangle className='w-8 h-8 text-red-600' />
-                </div>
-              </div>
+              {this.renderErrorIcon()}
 
               {/* Error Message */}
-              <h1 className='text-2xl font-bold text-gray-900 mb-4'>
-                {level === 'app' ? 'Ứng dụng gặp sự cố' : 'Đã có lỗi xảy ra'}
-              </h1>
-
-              <p className='text-gray-600 mb-6'>
-                {level === 'app'
-                  ? 'Xin lỗi, ứng dụng đã gặp sự cố không mong muốn. Vui lòng thử lại hoặc liên hệ hỗ trợ kỹ thuật.'
-                  : 'Một phần của trang web gặp sự cố. Vui lòng thử lại hoặc làm mới trang.'}
-              </p>
+              {this.renderErrorMessage()}
 
               {/* Error Details (Development Mode) */}
-              {showDetails &&
-                error &&
-                typeof process !== 'undefined' &&
-                process.env?.NODE_ENV === 'development' && (
-                  <details className='mb-6 text-left'>
-                    <summary className='cursor-pointer text-sm font-medium text-gray-700 mb-2'>
-                      Chi tiết lỗi (Development)
-                    </summary>
-                    <div className='bg-gray-100 rounded p-3 text-xs font-mono'>
-                      <div className='mb-2'>
-                        <strong>Error:</strong> {error.message}
-                      </div>
-                      {errorInfo && (
-                        <div>
-                          <strong>Component Stack:</strong>
-                          <pre className='whitespace-pre-wrap text-red-600'>
-                            {errorInfo.componentStack}
-                          </pre>
-                        </div>
-                      )}
-                    </div>
-                  </details>
-                )}
+              {this.renderErrorDetails()}
 
               {/* Action Buttons */}
-              <div className='space-y-3'>
-                <Button
-                  onClick={this.resetErrorBoundary}
-                  variant='primary'
-                  className='w-full'
-                >
-                  <RefreshCw className='w-4 h-4 mr-2' />
-                  Thử lại
-                </Button>
-
-                {level === 'app' && (
-                  <Button
-                    onClick={this.reloadPage}
-                    variant='outline'
-                    className='w-full'
-                  >
-                    <RefreshCw className='w-4 h-4 mr-2' />
-                    Tải lại trang
-                  </Button>
-                )}
-
-                <Button
-                  onClick={this.goHome}
-                  variant='outline'
-                  className='w-full'
-                >
-                  <Home className='w-4 h-4 mr-2' />
-                  Về trang chủ
-                </Button>
-              </div>
+              {this.renderActionButtons()}
 
               {/* Support Information */}
-              <div className='mt-6 pt-6 border-t border-gray-200'>
-                <p className='text-sm text-gray-500'>
-                  Nếu vấn đề vẫn tiếp tục, vui lòng liên hệ{' '}
-                  <a
-                    href='mailto:support@blooddonation.com'
-                    className='text-red-600 hover:underline'
-                  >
-                    hỗ trợ kỹ thuật
-                  </a>
-                </p>
-                {this.state.errorId && (
-                  <p className='text-xs text-gray-400 mt-2'>
-                    Mã lỗi: {this.state.errorId}
-                  </p>
-                )}
-              </div>
+              {this.renderSupportInfo()}
             </div>
           </div>
         </div>
@@ -242,12 +287,11 @@ export const withErrorBoundary = (Component, errorBoundaryProps = {}) => {
 };
 
 /**
- * Hook to handle errors in functional components
+ * Hook to throw errors in functional components that will be caught by ErrorBoundary
  * @returns {Function} - Function to throw errors that will be caught by ErrorBoundary
  */
-export const useErrorHandler = () => {
+export const useErrorThrower = () => {
   const [, setState] = React.useState();
-
   return React.useCallback(error => {
     setState(() => {
       throw error;

@@ -10,7 +10,7 @@ const BloodRequestCard = ({
   onPledgeSuccess,
   showPledgeButton = true,
 }) => {
-  const formatDate = dateString => {
+  const _formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'long',
@@ -113,14 +113,14 @@ const BloodRequestCard = ({
           {request.neededBy && (
             <div className='flex items-center text-sm text-gray-600'>
               <Clock className='w-4 h-4 mr-2' />
-              <span>Thời hạn: {formatDate(request.neededBy)}</span>
+              <span>Thời hạn: {_formatDate(request.neededBy)}</span>
             </div>
           )}
 
           {request.createdAt && (
             <div className='flex items-center text-sm text-gray-500'>
               <Clock className='w-4 h-4 mr-2' />
-              <span>Đăng lúc: {formatDate(request.createdAt)}</span>
+              <span>Đăng lúc: {_formatDate(request.createdAt)}</span>
             </div>
           )}
         </div>

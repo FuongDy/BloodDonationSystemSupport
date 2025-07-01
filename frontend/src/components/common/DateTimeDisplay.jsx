@@ -1,18 +1,19 @@
 // src/components/common/DateTimeDisplay.jsx
 import React from 'react';
+import { formatDate } from '../../utils/formatters';
 
-const DateTimeDisplay = ({ 
-  date, 
+const DateTimeDisplay = ({
+  date,
   format = 'full',
   locale = 'vi-VN',
   className = '',
-  fallback = 'N/A'
+  fallback = 'N/A',
 }) => {
   if (!date) return <span className={className}>{fallback}</span>;
 
-  const formatDate = (dateString, formatType) => {
+  const _formatDate = (dateString, formatType) => {
     const dateObj = new Date(dateString);
-    
+
     if (isNaN(dateObj.getTime())) {
       return fallback;
     }
@@ -45,23 +46,24 @@ const DateTimeDisplay = ({
     if (formatType === 'relative') {
       const now = new Date();
       const diffInSeconds = Math.floor((now - dateObj) / 1000);
-      
+
       if (diffInSeconds < 60) return 'Vừa xong';
-      if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} phút trước`;
-      if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} giờ trước`;
-      if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} ngày trước`;
-      
+      if (diffInSeconds < 3600)
+        return `${Math.floor(diffInSeconds / 60)} phút trước`;
+      if (diffInSeconds < 86400)
+        return `${Math.floor(diffInSeconds / 3600)} giờ trước`;
+      if (diffInSeconds < 2592000)
+        return `${Math.floor(diffInSeconds / 86400)} ngày trước`;
+
       return dateObj.toLocaleDateString(locale, formatOptions.short);
     }
 
-    return dateObj.toLocaleDateString(locale, formatOptions[formatType] || formatOptions.full);
+    return dateObj.toLocaleDateString(
+      locale,
+      formatOptions[formatType] || formatOptions.full
+    );
   };
-
-  return (
-    <span className={className}>
-      {formatDate(date, format)}
-    </span>
-  );
+  return <span className={className}>{_formatDate(date, format)}</span>;
 };
 
 export default DateTimeDisplay;

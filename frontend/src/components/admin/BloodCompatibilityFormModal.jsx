@@ -5,26 +5,27 @@ import Button from '../common/Button';
 import InputField from '../common/InputField';
 import bloodCompatibilityService from '../../services/bloodCompatibilityService';
 import bloodTypeService from '../../services/bloodTypeService';
-import toast from 'react-hot-toast';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { useAuth } from '../../hooks/useAuth'; // Import useAuth hook
+import { useAuth } from '../../hooks/useAuth';
+import { useApi } from '../../hooks/useApi';
 
 const BloodCompatibilityFormModal = ({
   isOpen,
   onClose,
   onSaveSuccess,
   rule,
-}) => {  const [formData, setFormData] = useState({
+}) => {
+  const [formData, setFormData] = useState({
     donorBloodTypeId: '',
     recipientBloodTypeId: '',
     isCompatible: true,
     notes: '',
   });
   const [bloodTypes, setBloodTypes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const { user } = useAuth(); // Lấy user từ useAuth
+  const { user } = useAuth();
+  const { execute, isLoading } = useApi();
 
   const fetchDropdownData = useCallback(async () => {
     setIsDataLoading(true);
@@ -32,11 +33,14 @@ const BloodCompatibilityFormModal = ({
       const typesData = await bloodTypeService.getAll();
       setBloodTypes(typesData || []);
     } catch (error) {
-      toast.error('Lỗi khi tải danh sách loại máu: ' + error.message);
+      await execute(
+        () => Promise.reject(error),
+        { showToast: true, errorMessage: `Lỗi khi tải dữ liệu: ${error.message}` }
+      );
     } finally {
       setIsDataLoading(false);
     }
-  }, []);
+  }, [execute]);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,7 +48,8 @@ const BloodCompatibilityFormModal = ({
     }
   }, [isOpen, fetchDropdownData]);
 
-  useEffect(() => {    if (rule) {
+  useEffect(() => {
+    if (rule) {
       setFormData({
         donorBloodTypeId: rule.donorBloodType?.id || '',
         recipientBloodTypeId: rule.recipientBloodType?.id || '',
@@ -76,60 +81,69 @@ const BloodCompatibilityFormModal = ({
     if (!formData.donorBloodTypeId)
       newErrors.donorBloodTypeId = 'Vui lòng chọn loại máu người cho.';
     if (!formData.recipientBloodTypeId)
-      newErrors.recipientBloodTypeId = 'Vui lòng chọn loại máu người nhận.';    // Validation rules removed as compatibilityScore is no longer needed
+      newErrors.recipientBloodTypeId = 'Vui lòng chọn loại máu người nhận.'; // Validation rules removed as compatibilityScore is no longer needed
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    // Kiểm tra quyền trước khi gửi form
+
+    // Enhanced permission check
     if (user?.role !== 'Admin') {
-      //
-      toast.error('Bạn không có quyền thực hiện thao tác này.');
+      await execute(
+        () => Promise.reject(new Error('Bạn không có quyền thực hiện thao tác này.')),
+        { showToast: true }
+      );
       return;
     }
 
     if (!validateForm()) {
-      toast.error('Vui lòng kiểm tra lại các trường thông tin.');
+      await execute(
+        () => Promise.reject(new Error('Vui lòng kiểm tra lại các trường thông tin.')),
+        { showToast: true }
+      );
       return;
     }
-    setIsLoading(true);
-    const toastId = toast.loading(rule ? 'Đang cập nhật...' : 'Đang tạo...');    const dataToSend = {
+
+    const dataToSend = {
       donorBloodTypeId: parseInt(formData.donorBloodTypeId),
       recipientBloodTypeId: parseInt(formData.recipientBloodTypeId),
       isCompatible: formData.isCompatible,
       notes: formData.notes.trim() === '' ? null : formData.notes.trim(),
     };
 
-    try {
-      if (rule?.id) {
-        await bloodCompatibilityService.update(rule.id, dataToSend);
-      } else {
-        await bloodCompatibilityService.create(dataToSend);
+    await execute(
+      () => {
+        if (rule?.id) {
+          return bloodCompatibilityService.update(rule.id, dataToSend);
+        } else {
+          return bloodCompatibilityService.create(dataToSend);
+        }
+      },
+      {
+        showToast: true,
+        loadingMessage: rule ? 'Đang cập nhật...' : 'Đang tạo...',
+        successMessage: rule ? 'Cập nhật thành công!' : 'Tạo thành công!',
+        onSuccess: () => {
+          if (onSaveSuccess && typeof onSaveSuccess === 'function') {
+            onSaveSuccess();
+          }
+        }
       }
-      toast.success(rule ? 'Cập nhật thành công!' : 'Tạo thành công!', {
-        id: toastId,
-      });
-      onSaveSuccess();
-    } catch (error) {
-      toast.error(`Lỗi: ${error.message || 'Đã có lỗi xảy ra'}`, {
-        id: toastId,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   // Vô hiệu hóa các input và nút nếu người dùng không phải Admin
-  const isReadOnly = user?.role !== 'Admin'; //
+  const isReadOnly = user?.role !== 'Admin';
+  const combinedLoading = isLoading || isDataLoading;
 
   const modalFooter = (
     <>
       <Button
         variant='secondary'
         onClick={onClose}
-        disabled={isLoading || isDataLoading}
+        disabled={combinedLoading}
       >
         Hủy
       </Button>
@@ -137,7 +151,7 @@ const BloodCompatibilityFormModal = ({
         variant='primary'
         type='submit'
         form='bloodCompatibilityForm'
-        disabled={isLoading || isDataLoading || isReadOnly}
+        disabled={combinedLoading || isReadOnly}
         isLoading={isLoading}
       >
         {rule ? 'Lưu thay đổi' : 'Tạo mới'}
@@ -176,7 +190,7 @@ const BloodCompatibilityFormModal = ({
                 id='donorBloodTypeId'
                 value={formData.donorBloodTypeId}
                 onChange={handleChange}
-                disabled={isLoading || isReadOnly}
+                disabled={combinedLoading || isReadOnly}
                 required
                 className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm ${errors.donorBloodTypeId ? 'border-red-500' : 'border-gray-300'}`}
               >
@@ -207,7 +221,7 @@ const BloodCompatibilityFormModal = ({
                 id='recipientBloodTypeId'
                 value={formData.recipientBloodTypeId}
                 onChange={handleChange}
-                disabled={isLoading || isReadOnly}
+                disabled={combinedLoading || isReadOnly}
                 required
                 className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm ${errors.recipientBloodTypeId ? 'border-red-500' : 'border-gray-300'}`}
               >
@@ -225,14 +239,16 @@ const BloodCompatibilityFormModal = ({
                 </p>
               )}
             </div>
-          </div>          <div className='flex items-center space-x-8 pt-2'>
+          </div>{' '}
+          <div className='flex items-center space-x-8 pt-2'>
             <div className='flex items-center'>
               <input
                 id='isCompatible'
                 name='isCompatible'
                 type='checkbox'
-                checked={formData.isCompatible}                onChange={handleChange}
-                disabled={isLoading || isReadOnly}
+                checked={formData.isCompatible}
+                onChange={handleChange}
+                disabled={combinedLoading || isReadOnly}
                 className='h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded'
               />
               <label
@@ -250,7 +266,7 @@ const BloodCompatibilityFormModal = ({
             rows={2}
             value={formData.notes}
             onChange={handleChange}
-            disabled={isLoading || isReadOnly}
+            disabled={combinedLoading || isReadOnly}
             error={errors.notes}
           />
         </form>

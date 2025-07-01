@@ -45,6 +45,15 @@ public class BloodRequestController {
         return ResponseEntity.ok(bloodRequestService.searchActiveRequests());
     }
 
+    @GetMapping("/search/completed")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<Page<BloodRequestResponse>> getCompletedRequests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(bloodRequestService.getCompletedRequests(pageable));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BloodRequestResponse> getRequestDetails(@PathVariable Long id) {

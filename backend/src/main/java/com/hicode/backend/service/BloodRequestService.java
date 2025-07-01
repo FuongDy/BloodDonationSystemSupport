@@ -85,6 +85,15 @@ public class BloodRequestService {
     }
 
     /**
+     * Lấy danh sách các yêu cầu đã hoàn thành (FULFILLED) có phân trang cho Staff/Admin.
+     */
+    @Transactional(readOnly = true)
+    public Page<BloodRequestResponse> getCompletedRequests(Pageable pageable) {
+        Page<BloodRequest> requestPage = bloodRequestRepository.findByStatus(RequestStatus.FULFILLED, pageable);
+        return requestPage.map(this::mapToResponse);
+    }
+
+    /**
      * Cho phép một Member đăng ký hiến tặng cho một yêu cầu cụ thể.
      */
     @Transactional

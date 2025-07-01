@@ -3,15 +3,26 @@ import React from 'react';
 import { Edit3, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import Button from '../common/Button';
 
-const BloodCompatibilityTable = ({ 
-  rules, 
-  onEdit, 
-  onDelete, 
+const BloodCompatibilityTable = ({
+  rules,
+  onEdit,
+  onDelete,
   formatBloodTypeDisplay,
-  user 
+  user,
 }) => {
-  return (    <div className='bg-white shadow-md rounded-lg overflow-x-auto'>
-      <table className='min-w-full divide-y divide-gray-200'><thead className='bg-gray-50'><tr>{['ID','Loại máu cho','Loại máu nhận','Tương thích','Ghi chú','Hành động'].map(header => (
+  return (
+    <div className='bg-white shadow-md rounded-lg overflow-x-auto'>
+      <table className='min-w-full divide-y divide-gray-200'>
+        <thead className='bg-gray-50'>
+          <tr>
+            {[
+              'ID',
+              'Loại máu cho',
+              'Loại máu nhận',
+              'Tương thích',
+              'Ghi chú',
+              'Hành động',
+            ].map(header => (
               <th
                 key={header}
                 scope='col'
@@ -19,25 +30,32 @@ const BloodCompatibilityTable = ({
               >
                 {header}
               </th>
-            ))}</tr></thead><tbody className='bg-white divide-y divide-gray-200'>
+            ))}
+          </tr>
+        </thead>
+        <tbody className='bg-white divide-y divide-gray-200'>
           {rules.map(rule => (
-            <tr key={rule.id} className='hover:bg-gray-50'><td className='px-4 py-4 whitespace-nowrap text-sm text-gray-900'>
+            <tr key={rule.id} className='hover:bg-gray-50'>
+              <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-900'>
                 {rule.id}
-              </td><td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700'>
+              </td>
+              <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700'>
                 {formatBloodTypeDisplay(rule.donorBloodType)}
-              </td><td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700'>
+              </td>
+              <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-700'>
                 {formatBloodTypeDisplay(rule.recipientBloodType)}
-              </td><td className='px-4 py-4 whitespace-nowrap text-sm text-center'>
+              </td>
+              <td className='px-4 py-4 whitespace-nowrap text-sm text-center'>
                 {rule.isCompatible ? (
-                  <CheckCircle
-                    className='text-green-500 mx-auto'
-                    size={20}
-                  />
+                  <CheckCircle className='text-green-500 mx-auto' size={20} />
                 ) : (
-                  <XCircle className='text-red-500 mx-auto' size={20} />                )}
-              </td><td className='px-4 py-4 text-sm text-gray-500 max-w-xs truncate'>
+                  <XCircle className='text-red-500 mx-auto' size={20} />
+                )}
+              </td>
+              <td className='px-4 py-4 text-sm text-gray-500 max-w-xs truncate'>
                 {rule.notes || '-'}
-              </td><td className='px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2'>
+              </td>
+              <td className='px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2'>
                 {user?.role === 'Admin' && (
                   <>
                     <Button
@@ -56,9 +74,13 @@ const BloodCompatibilityTable = ({
                       <Trash2 size={16} className='mr-1' />
                       Xóa
                     </Button>
-                  </>                )}
-              </td></tr>))}
-        </tbody></table>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 package com.hicode.backend.service;
 
 import com.hicode.backend.dto.*;
-import com.hicode.backend.dto.HealthCheckRequest;
+import com.hicode.backend.dto.admin.HealthCheckRequest;
 import com.hicode.backend.dto.admin.BloodTestResultRequest;
 import com.hicode.backend.dto.admin.CollectionInfoRequest;
 import com.hicode.backend.dto.admin.DonationProcessResponse;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,8 @@ public class DonationService {
     private AppointmentService appointmentService;
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private EmailService emailService; // Inject EmailService
 
     /**
      * User đăng ký một quy trình hiến máu mới.
@@ -146,12 +149,62 @@ public class DonationService {
             donor.setLastDonationDate(LocalDate.now());
             userRepository.save(donor);
 
+            // **NEW: Send email with test results**
+            sendTestResultEmail(process, request);
+
+
         } else {
             process.setStatus(DonationStatus.TESTING_FAILED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " failed testing. Reason: " + request.getNotes());
+            // **NEW: Send email with test results even if it failed**
+            sendTestResultEmail(process, request);
         }
         return mapToResponse(donationProcessRepository.save(process));
     }
+
+    /**
+     * **NEW METHOD**
+     * Prepares and sends the blood test result email to the donor.
+     * @param process The donation process containing donor and appointment info.
+     * @param result The result of the blood test.
+     */
+    private void sendTestResultEmail(DonationProcess process, BloodTestResultRequest result) {
+        User donor = process.getDonor();
+        DonationAppointment appointment = process.getDonationAppointment();
+
+        // Prepare email variables
+        String recipientEmail = donor.getEmail();
+        String subject = "Kết quả xét nghiệm máu của bạn";
+
+        // Format the date from the appointment
+        String donationDate = "không xác định";
+        String location = "không xác định";
+        if (appointment != null) {
+            donationDate = appointment.getAppointmentDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            location = appointment.getLocation();
+        }
+
+        String bloodGroup = donor.getBloodType() != null ? donor.getBloodType().getBloodGroup() : "chưa xác định";
+
+        String resultText;
+        if (result.getIsSafe()) {
+            resultText = "KQ 血液：Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.";
+        } else {
+            resultText = "KQ 血液：Máu của bạn không đạt tiêu chuẩn an toàn. Lý do: " + result.getNotes() + ". Vui lòng liên hệ cơ sở y tế để được tư vấn chi tiết.";
+        }
+
+        String emailBody = String.format(
+                "Trân trọng cảm ơn quý vị đã tham gia Hiến máu vào ngày %s tại %s.\n\n" +
+                        "%s\n\n" +
+                        "Kính mong quý vị sẽ tiếp tục tham gia Hiến máu trong các chương trình tiếp theo. LH: 0328223509",
+                donationDate,
+                location,
+                resultText
+        );
+
+        emailService.sendEmail(recipientEmail, subject, emailBody);
+    }
+
 
     // Hàm helper để tìm quy trình theo ID
     private DonationProcess findProcessById(Long processId) {

@@ -21,6 +21,10 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
     @Query("SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy WHERE br.status = :status")
     List<BloodRequest> findByStatusWithDetails(@Param("status") RequestStatus status);
 
+    // Tìm các yêu cầu theo trạng thái có phân trang
+    @Query("SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy WHERE br.status = :status")
+    Page<BloodRequest> findByStatus(@Param("status") RequestStatus status, Pageable pageable);
+
     @Override
     @Query(value = "SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy",
             countQuery = "SELECT count(br) FROM BloodRequest br")
