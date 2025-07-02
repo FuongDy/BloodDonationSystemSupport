@@ -44,6 +44,10 @@ const useNearbyDonors = () => {
 
     const handleSearch = useCallback(
         (params) => {
+            // Nếu params là event (có preventDefault), bỏ qua
+            if (params && typeof params.preventDefault === 'function') {
+                return;
+            }
             setSearchParams((prev) => ({...prev, ...params }));
         }, []
     );

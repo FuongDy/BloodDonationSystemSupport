@@ -19,7 +19,9 @@ export const appointmentService = {
     try {
       const response = await apiClient.put(
         `/appointments/${appointmentId}/request-reschedule`,
-        rescheduleData
+        {
+          reason: rescheduleData.reason
+        }
       );
       return response.data;
     } catch (error) {
