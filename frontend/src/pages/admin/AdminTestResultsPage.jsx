@@ -180,7 +180,7 @@ const AdminTestResultsPage = () => {
         </div>
 
         {/* Success Rate */}
-        {(passedTests + failedTests) > 0 && (
+        {/* {(passedTests + failedTests) > 0 && (
           <div className='bg-white rounded-lg shadow p-4 mb-6'>
             <h3 className='text-lg font-semibold mb-2'>Tỷ lệ thành công</h3>
             <div className='flex items-center'>
@@ -197,7 +197,7 @@ const AdminTestResultsPage = () => {
               </span>
             </div>
           </div>
-        )}
+        )} */}
 
         <AdminContentWrapper
           isLoading={isLoading}
