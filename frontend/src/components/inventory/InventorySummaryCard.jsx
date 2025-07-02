@@ -1,36 +1,22 @@
 // src/components/inventory/InventorySummaryCard.jsx
 import React from 'react';
-import { TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { Droplet, Package } from 'lucide-react';
 import InfoRow from '../common/InfoRow';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 const InventorySummaryCard = ({ summary, className = '' }) => {
-  const getTrendIcon = trend => {
-    if (trend > 0) return <TrendingUp className='w-5 h-5 text-green-500' />;
-    if (trend < 0) return <TrendingDown className='w-5 h-5 text-red-500' />;
-    return <Clock className='w-5 h-5 text-gray-500' />;
-  };
-
   const statItems = [
     {
-      label: 'Tổng số đơn vị',
-      value: summary.totalUnits,
+      label: 'Số đơn vị',
+      value: summary.unitCount,
       valueClassName: 'text-xl font-bold text-gray-900',
+      icon: Package,
     },
     {
-      label: 'Có sẵn',
-      value: summary.availableUnits,
-      valueClassName: 'text-lg font-semibold text-green-600',
-    },
-    {
-      label: 'Sắp hết hạn',
-      value: summary.expiringSoon || 0,
-      valueClassName: 'text-lg font-semibold text-yellow-600',
-    },
-    {
-      label: 'Đã hết hạn',
-      value: summary.expiredUnits || 0,
-      valueClassName: 'text-lg font-semibold text-red-600',
+      label: 'Tổng thể tích',
+      value: `${summary.totalVolumeMl} ml`,
+      valueClassName: 'text-lg font-semibold text-blue-600',
+      icon: Droplet,
     },
   ];
 
@@ -39,9 +25,12 @@ const InventorySummaryCard = ({ summary, className = '' }) => {
       <CardHeader className='pb-3'>
         <div className='flex items-center justify-between'>
           <CardTitle className='text-lg text-gray-900'>
-            {summary.bloodType?.name || 'N/A'}
+            {summary.bloodType?.bloodGroup || 'N/A'}
           </CardTitle>
-          {getTrendIcon(summary.trend)}
+          <div className='flex items-center text-sm text-gray-500'>
+            <Droplet className='w-4 h-4 mr-1' />
+            {summary.bloodType?.componentType || 'N/A'}
+          </div>
         </div>
       </CardHeader>
 
@@ -52,8 +41,17 @@ const InventorySummaryCard = ({ summary, className = '' }) => {
             label={item.label}
             value={item.value}
             valueClassName={item.valueClassName}
+            icon={item.icon}
           />
         ))}
+        
+        {summary.bloodType?.description && (
+          <InfoRow
+            label='Mô tả'
+            value={summary.bloodType.description}
+            valueClassName='text-sm text-gray-600'
+          />
+        )}
       </CardContent>
     </Card>
   );

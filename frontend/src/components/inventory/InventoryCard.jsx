@@ -8,11 +8,19 @@ import { Card, CardContent, CardHeader } from '../ui/Card';
 
 const InventoryCard = ({ item, className = '' }) => {
   const isExpiringSoon = expiryDate => {
+    if (!expiryDate) return false;
     const today = new Date();
     const expiry = new Date(expiryDate);
     const diffTime = expiry - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays <= 7 && diffDays > 0;
+  };
+
+  const isExpired = expiryDate => {
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    return expiry < today;
   };
 
   return (
@@ -23,9 +31,9 @@ const InventoryCard = ({ item, className = '' }) => {
             <Droplet className='w-8 h-8 text-red-500 mr-3' />
             <div>
               <h3 className='text-lg font-semibold text-gray-900'>
-                {item.bloodType?.name || 'N/A'}
+                {item.bloodType?.bloodGroup || 'N/A'}
               </h3>
-              <p className='text-sm text-gray-500'>Đơn vị: {item.unitId}</p>
+              <p className='text-sm text-gray-500'>Đơn vị: {item.id}</p>
             </div>
           </div>
           <StatusBadge
@@ -45,24 +53,34 @@ const InventoryCard = ({ item, className = '' }) => {
         <InfoRow
           label='Ngày hết hạn'
           value={
-            <span
-              className={
-                isExpiringSoon(item.expiryDate)
-                  ? 'text-red-600 font-medium'
-                  : ''
-              }
-            >
+            <div className='flex items-center'>
               <DateTimeDisplay date={item.expiryDate} format='date' />
               {isExpiringSoon(item.expiryDate) && (
-                <span className='ml-1 text-xs'>(Sắp hết hạn)</span>
+                <span className='ml-2 text-orange-600 text-xs'>⚠️ Sắp hết hạn</span>
               )}
-            </span>
+              {isExpired(item.expiryDate) && (
+                <span className='ml-2 text-red-600 text-xs'>❌ Đã hết hạn</span>
+              )}
+            </div>
           }
         />
 
-        <InfoRow label='Dung tích' value={`${item.volume || 450}ml`} />
+        <InfoRow
+          label='Thể tích'
+          value={`${item.volumeMl || 'N/A'} ml`}
+        />
 
-        {item.location && <InfoRow label='Vị trí' value={item.location} />}
+        <InfoRow
+          label='Người hiến'
+          value={item.donorName || 'N/A'}
+        />
+
+        {item.storageLocation && (
+          <InfoRow
+            label='Vị trí lưu trữ'
+            value={item.storageLocation}
+          />
+        )}
       </CardContent>
     </Card>
   );

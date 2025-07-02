@@ -1,9 +1,9 @@
 // src/components/inventory/BloodUnitCard.jsx
 import React from 'react';
-import { AlertTriangle, Calendar, User, Droplet } from 'lucide-react';
+import { Droplet, User, Calendar, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import StatusBadge from '../common/StatusBadge';
 import InfoRow from '../common/InfoRow';
+import StatusBadge from '../common/StatusBadge';
 import DateTimeDisplay from '../common/DateTimeDisplay';
 
 const BloodUnitCard = ({ unit, className = '' }) => {
@@ -13,28 +13,31 @@ const BloodUnitCard = ({ unit, className = '' }) => {
     return <div>Unit data is missing</div>;
   }
 
-  const isExpiring = () => {
+  const isExpiringToon = () => {
     if (!unit.expiryDate) return false;
     const today = new Date();
     const expiry = new Date(unit.expiryDate);
-    const daysToExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-    return daysToExpiry <= 7; // Cảnh báo khi còn 7 ngày hết hạn
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 7 && diffDays > 0;
   };
 
-  const getDaysToExpiry = () => {
-    if (!unit.expiryDate) return null;
+  const isExpired = () => {
+    if (!unit.expiryDate) return false;
     const today = new Date();
     const expiry = new Date(unit.expiryDate);
-    const daysToExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-    return daysToExpiry; // Add missing return statement
+    return expiry < today;
   };
 
-  const daysToExpiry = getDaysToExpiry();
-  const isExpiringToon = isExpiring();
+  const getExpiryStatus = () => {
+    if (isExpired()) return 'expired';
+    if (isExpiringToon()) return 'expiring';
+    return 'valid';
+  };
 
   return (
     <Card
-      className={`${className} ${isExpiringToon ? 'border-orange-200 bg-orange-50' : ''}`}
+      className={`${className} ${isExpiringToon() ? 'border-orange-200 bg-orange-50' : ''} ${isExpired() ? 'border-red-200 bg-red-50' : ''}`}
     >
       <CardHeader className='pb-3'>
         <div className='flex items-center justify-between'>
@@ -44,10 +47,16 @@ const BloodUnitCard = ({ unit, className = '' }) => {
           </CardTitle>
           <div className='flex items-center space-x-2'>
             <StatusBadge status={unit.status} type='inventory' />
-            {isExpiringToon && (
+            {isExpiringToon() && (
               <div className='flex items-center text-orange-600 text-sm'>
                 <AlertTriangle className='w-4 h-4 mr-1' />
                 Sắp hết hạn
+              </div>
+            )}
+            {isExpired() && (
+              <div className='flex items-center text-red-600 text-sm'>
+                <AlertTriangle className='w-4 h-4 mr-1' />
+                Đã hết hạn
               </div>
             )}
           </div>
@@ -55,9 +64,15 @@ const BloodUnitCard = ({ unit, className = '' }) => {
       </CardHeader>
 
       <CardContent className='space-y-3'>
-        <InfoRow label='Nhóm máu' value={unit.bloodType?.bloodGroup || 'N/A'} />
+        <InfoRow 
+          label='Nhóm máu' 
+          value={unit.bloodType?.bloodGroup || 'N/A'} 
+        />
 
-        <InfoRow label='Thể tích' value={`${unit.volumeMl || 'N/A'} ml`} />
+        <InfoRow 
+          label='Thể tích' 
+          value={`${unit.volumeMl || 'N/A'} ml`} 
+        />
 
         <InfoRow
           label='Người hiến'
@@ -72,24 +87,15 @@ const BloodUnitCard = ({ unit, className = '' }) => {
         />
 
         <InfoRow
-          label='Hạn sử dụng'
+          label='Ngày hết hạn'
           value={
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center'>
               <DateTimeDisplay date={unit.expiryDate} />
-              {daysToExpiry !== null && (
-                <span
-                  className={`text-sm ${
-                    daysToExpiry <= 3
-                      ? 'text-red-600'
-                      : daysToExpiry <= 7
-                        ? 'text-orange-600'
-                        : 'text-gray-600'
-                  }`}
-                >
-                  (
-                  {daysToExpiry > 0 ? `còn ${daysToExpiry} ngày` : 'đã hết hạn'}
-                  )
-                </span>
+              {getExpiryStatus() === 'expiring' && (
+                <span className='ml-2 text-orange-600 text-xs'>⚠️ Sắp hết hạn</span>
+              )}
+              {getExpiryStatus() === 'expired' && (
+                <span className='ml-2 text-red-600 text-xs'>❌ Đã hết hạn</span>
               )}
             </div>
           }
@@ -104,7 +110,10 @@ const BloodUnitCard = ({ unit, className = '' }) => {
         )}
 
         {unit.storageLocation && (
-          <InfoRow label='Vị trí lưu trữ' value={unit.storageLocation} />
+          <InfoRow
+            label='Vị trí lưu trữ'
+            value={unit.storageLocation}
+          />
         )}
       </CardContent>
     </Card>

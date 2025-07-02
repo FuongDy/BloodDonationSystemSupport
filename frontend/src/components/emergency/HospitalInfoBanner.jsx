@@ -15,7 +15,7 @@ const HospitalInfoBanner = () => {
           <p className='text-blue-700 mt-1'>{HOSPITAL_INFO.FULL_ADDRESS}</p>
           <p className='text-sm text-blue-600 mt-2'>
             💡 <strong>Lưu ý:</strong> Sau khi cam kết, vui lòng đến bệnh
-            viện trong vòng 24-48 giờ để hoàn thành quá trình hiến máu.
+            viện trong vòng 24 giờ để hoàn thành quá trình hiến máu.
           </p>
         </div>
       </div>
