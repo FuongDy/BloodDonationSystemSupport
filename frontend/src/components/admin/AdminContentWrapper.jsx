@@ -11,7 +11,6 @@ const AdminContentWrapper = ({
   emptyMessage,
   emptyIcon,
   children,
-  // Pagination props
   showPagination = false,
   currentPage,
   totalPages,
@@ -22,15 +21,12 @@ const AdminContentWrapper = ({
   if (isLoading && !hasData) {
     return <AdminLoadingState message={loadingMessage} />;
   }
-
   if (!hasData) {
     return <AdminEmptyState message={emptyMessage} icon={emptyIcon} />;
   }
-
   return (
     <>
       {children}
-
       {showPagination && (
         <AdminPaginationInfo
           currentPage={currentPage}

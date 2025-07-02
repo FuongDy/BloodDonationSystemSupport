@@ -11,13 +11,8 @@ import {
   MessageSquareWarning,
   History,
   Warehouse,
-  Calendar,
   FileText,
   UserCog,
-  HeartHandshake,
-  Stethoscope,
-  TestTube,
-  Activity,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -58,47 +53,11 @@ const AdminLayout = () => {
     },
     // Donation Process Management - Separated into individual pages
     {
-      path: '/admin/donation-requests',
-      icon: HeartHandshake,
-      label: 'Quản lý đơn yêu cầu hiến máu',
+      path: '/admin/donation-process-management',
+      icon: UserCog,
+      label: 'Quy trình hiến máu',
       roles: ['Admin', 'Staff'],
     },
-    {
-      path: '/admin/appointment-management',
-      icon: Calendar,
-      label: 'Quản lý cuộc hẹn hiến máu',
-      roles: ['Admin', 'Staff'],
-    },
-    {
-      path: '/admin/health-checks',
-      icon: Stethoscope,
-      label: 'Quản lý khám sức khỏe',
-      roles: ['Admin', 'Staff'],
-    },
-    {
-      path: '/admin/blood-collection',
-      icon: Activity,
-      label: 'Quản lý thu thập máu',
-      roles: ['Admin', 'Staff'],
-    },
-    {
-      path: '/admin/test-results',
-      icon: TestTube,
-      label: 'Quản lý kết quả xét nghiệm',
-      roles: ['Admin', 'Staff'],
-    },
-    // {
-    //   path: '/admin/blood-requests',
-    //   icon: ClipboardList,
-    //   label: 'Quản lý yêu cầu máu',
-    //   roles: ['Admin', 'Staff'],
-    // },
-    // {
-    //   path: '/admin/donation-process',
-    //   icon: UserCog,
-    //   label: 'Quy trình hiến máu',
-    //   roles: ['Admin', 'Staff'],
-    // },
     {
       path: '/admin/donation-history',
       icon: History,

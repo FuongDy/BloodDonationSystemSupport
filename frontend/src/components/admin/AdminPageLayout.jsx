@@ -11,23 +11,19 @@ const AdminPageLayout = ({
   searchPlaceholder,
   showSearch = false,
   className = 'p-6',
-}) => {
-  return (
-    <div className={className}>
-      <PageHeader title={title} actions={headerActions} />
-
-      {showSearch && onSearch && (
-        <div className='mb-4'>
-          <SearchBar
-            onSearch={onSearch}
-            placeholder={searchPlaceholder || 'Tìm kiếm...'}
-          />
-        </div>
-      )}
-
-      {children}
-    </div>
-  );
-};
+}) => (
+  <div className={className}>
+    <PageHeader title={title} actions={headerActions} />
+    {showSearch && onSearch && (
+      <div className='mb-4'>
+        <SearchBar
+          onSearch={onSearch}
+          placeholder={searchPlaceholder || 'Tìm kiếm...'}
+        />
+      </div>
+    )}
+    {children}
+  </div>
+);
 
 export default AdminPageLayout;
