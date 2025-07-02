@@ -54,7 +54,7 @@ const NearbyDonorsPage = () => {
       triggerSearch();
       setHasSearched(true);
     } else {
-      alert("Vui lòng chọn một địa chỉ hợp lệ để tìm kiếm.");
+      toast.error("Vui lòng chọn một địa chỉ hợp lệ để tìm kiếm.");
     }
   };
 

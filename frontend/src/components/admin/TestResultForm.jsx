@@ -1,19 +1,51 @@
 // src/components/admin/TestResultForm.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TestTube, CheckCircle, XCircle } from 'lucide-react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import InputField from '../common/InputField';
 import donationService from '../../services/donationService';
+import bloodTypeService from '../../services/bloodTypeService';
 import toast from 'react-hot-toast';
 
 const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    isSafe: true,
     bloodUnitId: '',
+    isSafe: true,
     notes: '',
+    bloodTypeId: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bloodTypes, setBloodTypes] = useState([]);
+  const [isLoadingBloodTypes, setIsLoadingBloodTypes] = useState(false);
+
+  // Helper function to remove duplicate blood types
+  const getUniqueBloodTypes = (bloodTypes) => {
+    if (!bloodTypes || bloodTypes.length === 0) return [];
+    
+    return bloodTypes.filter((bloodType, index, self) => 
+      index === self.findIndex(bt => bt.bloodGroup === bloodType.bloodGroup)
+    );
+  };
+
+  // Fetch blood types on component mount
+  useEffect(() => {
+    const fetchBloodTypes = async () => {
+      setIsLoadingBloodTypes(true);
+      try {
+        const response = await bloodTypeService.getAll();
+        const uniqueBloodTypes = getUniqueBloodTypes(response);
+        setBloodTypes(uniqueBloodTypes);
+      } catch (error) {
+        console.error('Error fetching blood types:', error);
+        toast.error('Không thể tải danh sách nhóm máu');
+      } finally {
+        setIsLoadingBloodTypes(false);
+      }
+    };
+
+    fetchBloodTypes();
+  }, []);
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -36,13 +68,26 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
       return;
     }
 
+    if (!formData.bloodTypeId.trim()) {
+      toast.error('Vui lòng chọn nhóm máu');
+      return;
+    }
+
+    // Validate that selected blood type exists
+    const selectedBloodType = bloodTypes.find(bt => bt.id.toString() === formData.bloodTypeId);
+    if (!selectedBloodType) {
+      toast.error('Nhóm máu đã chọn không hợp lệ');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // Prepare data to match backend expectations
+      // Prepare data to match backend BloodTestResultRequest expectations
       const testResultData = {
-        bloodUnitId: processId.toString(),
+        bloodUnitId: formData.bloodUnitId.trim(),
         isSafe: formData.isSafe,
         notes: formData.notes || null,
+        bloodTypeId: formData.bloodTypeId.trim(),
       };
 
       await donationService.recordBloodTestResult(processId, testResultData);
@@ -52,9 +97,10 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
 
       // Reset form
       setFormData({
-        isSafe: true,
         bloodUnitId: '',
+        isSafe: true,
         notes: '',
+        bloodTypeId: '',
       });
     } catch (error) {
       console.error('Error recording test result:', error);
@@ -82,12 +128,43 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
           label='Mã đơn vị máu'
           type='text'
           name='bloodUnitId'
-          value={processId}
-          readOnly
+          value={formData.bloodUnitId}
+          onChange={handleChange}
           required
-          disabled
-          placeholder='ID đơn yêu cầu máu'
+          placeholder='Nhập mã đơn vị máu (VD: BU001)'
         />
+
+        <div>
+          <label className='block text-sm font-medium text-gray-700 mb-2'>
+            Nhóm máu
+          </label>
+          <select
+            name='bloodTypeId'
+            value={formData.bloodTypeId}
+            onChange={handleChange}
+            disabled={isSubmitting || isLoadingBloodTypes}
+            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            required
+          >
+            <option value=''>
+              {isLoadingBloodTypes ? 'Đang tải...' : '-- Chọn nhóm máu --'}
+            </option>
+            {bloodTypes.length > 0 ? (
+              bloodTypes.map(bt => (
+                <option key={bt.id} value={bt.id}>
+                  {bt.bloodGroup} {bt.componentType ? `(${bt.componentType})` : ''}
+                </option>
+              ))
+            ) : (
+              <option value='' disabled>
+                Không có nhóm máu nào
+              </option>
+            )}
+          </select>
+          {isLoadingBloodTypes && (
+            <p className='text-sm text-gray-500 mt-1'>Đang tải danh sách nhóm máu...</p>
+          )}
+        </div>
 
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-3'>
@@ -129,21 +206,6 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
 
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-2'>
-            Chi tiết kết quả xét nghiệm
-          </label>
-          <textarea
-            name='testResults'
-            value={formData.testResults}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            rows={3}
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-            placeholder='VD: HIV (-), HBV (-), HCV (-), Syphilis (-)'
-          />
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-2'>
             Ghi chú thêm
           </label>
           <textarea
@@ -151,7 +213,7 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
             value={formData.notes}
             onChange={handleChange}
             disabled={isSubmitting}
-            rows={2}
+            rows={3}
             className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
             placeholder='Nhập ghi chú thêm về kết quả xét nghiệm...'
           />

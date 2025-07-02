@@ -41,19 +41,21 @@ const RescheduleAppointmentModal = ({
           </div>
         </div>
 
+        <div className='bg-blue-50 p-3 rounded-lg border border-blue-200'>
+          <div className='text-sm text-blue-700'>
+            <strong>Lưu ý:</strong> Khi yêu cầu đổi lịch, lịch hẹn hiện tại sẽ bị hủy và thông báo sẽ được gửi tới người hiến máu. 
+            Bạn sẽ cần tạo lịch hẹn mới sau khi yêu cầu được xử lý.
+          </div>
+        </div>
+
         <InputField
           label='Lý do đổi lịch'
           value={rescheduleForm.reason}
           onChange={e => handleInputChange('reason', e.target.value)}
           placeholder='Nhập lý do cần đổi lịch...'
           required
-        />
-
-        <InputField
-          label='Đề xuất thời gian mới (tùy chọn)'
-          type='datetime-local'
-          value={rescheduleForm.suggestedDateTime}
-          onChange={e => handleInputChange('suggestedDateTime', e.target.value)}
+          multiline
+          rows={3}
         />
 
         <div className='flex justify-end space-x-2 pt-4'>

@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Upload, X, Eye, EyeOff } from 'lucide-react';
 
 const IdCardUploadSection = ({
-  formData,
   validationErrors,
   authLoading,
   isFetchingBloodTypes,
@@ -19,13 +18,13 @@ const IdCardUploadSection = ({
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Vui lòng chọn file ảnh hợp lệ (JPG, PNG, etc.)');
+      toast.error('Vui lòng chọn file ảnh hợp lệ (JPG, PNG, etc.)');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('File ảnh không được lớn hơn 5MB');
+      toast.error('File ảnh không được lớn hơn 5MB');
       return;
     }
 
