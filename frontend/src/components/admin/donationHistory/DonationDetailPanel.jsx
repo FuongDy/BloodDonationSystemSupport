@@ -27,7 +27,15 @@ const DonationDetailPanel = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Chi tiết hiến máu</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Chi tiết hiến máu</CardTitle>
+          {selectedDonation.donor?.bloodGroup && (
+            <span className="ml-4 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+              Nhóm máu: {selectedDonation.donor.bloodGroup}
+            </span>
+          )}
+        </div>
+        <div className="text-xs text-gray-400 mt-1">ID: {selectedDonation.id}</div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
@@ -71,10 +79,10 @@ const DonationDetailPanel = ({
           </div>
         )}
 
-        <DonationStatusActions
+        {/* <DonationStatusActions
           selectedDonation={selectedDonation}
           onStatusUpdate={onStatusUpdate}
-        />
+        /> */}
       </CardContent>
     </Card>
   );

@@ -75,6 +75,8 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
             return 'Đã sử dụng';
           case INVENTORY_STATUS.RESERVED:
             return 'Đã đặt chỗ';
+          case INVENTORY_STATUS.DISPOSED:
+            return 'Đã tiêu hủy';
           default:
             return status;
         }
