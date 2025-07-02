@@ -139,6 +139,15 @@ export const THEMES = {
     SYSTEM: 'system',
 };
 
+// Inventory Status
+export const INVENTORY_STATUS = {
+    AVAILABLE: 'AVAILABLE',
+    EXPIRED: 'EXPIRED',
+    USED: 'USED',
+    RESERVED: 'RESERVED',
+    DISPOSED: 'DISPOSED',
+};
+
 // Status Colors
 export const STATUS_COLORS = {
     [USER_STATUSES.ACTIVE]: 'success',
@@ -159,6 +168,11 @@ export const STATUS_COLORS = {
     [REQUEST_STATUS.FULFILLED]: 'success',
     [REQUEST_STATUS.PENDING]: 'warning',
     [REQUEST_STATUS.CANCELLED]: 'error',
+    [INVENTORY_STATUS.AVAILABLE]: 'success',
+    [INVENTORY_STATUS.EXPIRED]: 'error',
+    [INVENTORY_STATUS.USED]: 'warning',
+    [INVENTORY_STATUS.RESERVED]: 'info',
+    [INVENTORY_STATUS.DISPOSED]: 'error',
 };
 
 // Error Messages
@@ -180,14 +194,6 @@ export const SUCCESS_MESSAGES = {
     PROFILE_UPDATED: 'Cập nhật hồ sơ thành công!',
     DATA_SAVED: 'Lưu dữ liệu thành công!',
     DATA_DELETED: 'Xóa dữ liệu thành công!',
-};
-
-// Inventory Status
-export const INVENTORY_STATUS = {
-    AVAILABLE: 'AVAILABLE',
-    EXPIRED: 'EXPIRED',
-    USED: 'USED',
-    RESERVED: 'RESERVED',
 };
 
 // Hospital Information

@@ -9,7 +9,6 @@ const AdminTableActions = ({ actions = [], isLoading = false }) => {
       {actions.map((action, index) => {
         const ActionComponent = action.component || Button;
         const commonProps = {
-          key: index,
           variant: action.variant || 'secondary',
           disabled: action.disabled || isLoading,
           className: action.className || '',
@@ -19,7 +18,7 @@ const AdminTableActions = ({ actions = [], isLoading = false }) => {
         // Handle different action types
         if (action.component === Link) {
           return (
-            <ActionComponent {...commonProps} to={action.to}>
+            <ActionComponent key={index} {...commonProps} to={action.to}>
               {action.icon && <action.icon className='mr-2 h-4 w-4' />}
               {action.label}
             </ActionComponent>
@@ -27,7 +26,7 @@ const AdminTableActions = ({ actions = [], isLoading = false }) => {
         }
 
         return (
-          <ActionComponent {...commonProps}>
+          <ActionComponent key={index} {...commonProps}>
             {action.icon && <action.icon className='mr-2 h-4 w-4' />}
             {action.label}
           </ActionComponent>
