@@ -1,22 +1,11 @@
 // src/components/admin/AdminLoadingState.jsx
 import React from 'react';
-import LoadingSpinner from '../common/LoadingSpinner';
 
-const AdminLoadingState = ({ 
-  message = 'Đang tải...', 
-  className = 'flex justify-center items-center py-10',
-  spinnerSize = '12' 
-}) => {
-  return (
-    <div className={className}>
-      <div className="text-center">
-        <LoadingSpinner size={spinnerSize} />
-        {message && (
-          <p className="mt-2 text-gray-600">{message}</p>
-        )}
-      </div>
-    </div>
-  );
-};
+const AdminLoadingState = ({ message = 'Đang tải dữ liệu...' }) => (
+  <div className='text-center text-gray-400 py-8 animate-pulse'>
+    <div className='w-12 h-12 mx-auto mb-4 rounded-full bg-gray-200' />
+    <p>{message}</p>
+  </div>
+);
 
 export default AdminLoadingState;

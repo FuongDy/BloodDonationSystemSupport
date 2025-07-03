@@ -42,6 +42,10 @@ public class DonationProcess {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "donationProcess", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("process-healthcheck")
+    private HealthCheck healthCheck;
+
     @PrePersist
     protected void onCreate() { this.createdAt = this.updatedAt = LocalDateTime.now(); }
     @PreUpdate

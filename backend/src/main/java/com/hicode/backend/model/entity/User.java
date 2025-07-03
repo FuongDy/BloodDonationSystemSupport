@@ -45,6 +45,15 @@ public class User {
     @Column(columnDefinition = "NVARCHAR(MAX)", nullable = false)
     private String address;
 
+    @Column(name = "id_card_front_url", length = 255)
+    private String idCardFrontUrl; // URL ảnh CCCD mặt trước
+
+    @Column(name = "id_card_back_url", length = 255)
+    private String idCardBackUrl; // URL ảnh CCCD mặt sau
+
+    @Column(name = "id_card_verified", columnDefinition = "BIT DEFAULT 0")
+    private Boolean idCardVerified = false; // Trạng thái đã đối chiếu thông tin
+
     private Double latitude;
     private Double longitude;
 
@@ -93,6 +102,18 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private IdCardVerification idCardVerification;
+
+    @Column(name = "id_card_number", length = 20, unique = true)
+    private String idCardNumber; // Số CCCD
+
+    @Column(name = "hometown", columnDefinition = "NVARCHAR(255)")
+    private String hometown; // Quê quán
+
+    @Column(name = "nationality", columnDefinition = "NVARCHAR(100)")
+    private String nationality; // Quốc tịch
 
     @PrePersist
     protected void onCreate() {

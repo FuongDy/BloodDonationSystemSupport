@@ -20,21 +20,23 @@ public class RegisterRequest {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password need to longer than 6")
+    @Size(min = 6, max = 100)
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    @Size(min = 9, max = 15, message = "Phone number must be between 9 and 15 characters")
+    @Size(min = 9, max = 15)
     private String phone;
 
     @NotBlank(message = "Address is required")
-    @Size(min = 10, max = 255, message = "Address must be between 10 and 255 characters")
+    @Size(min = 10, max = 255)
     private String address;
 
     @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
+    private Double latitude;
+    private Double longitude;
     private Integer bloodTypeId;
 }

@@ -1,6 +1,5 @@
 // src/components/admin/AdminPaginationInfo.jsx
 import React from 'react';
-import Pagination from '../common/Pagination';
 
 const AdminPaginationInfo = ({
   currentPage,
@@ -8,26 +7,28 @@ const AdminPaginationInfo = ({
   totalElements,
   onPageChange,
   isLoading = false,
-  className = 'mt-6 flex flex-col sm:flex-row justify-between items-center gap-4'
-}) => {
-  if (totalPages <= 1) return null;
-
-  return (
-    <div className={className}>
-      <div className='text-sm text-gray-700'>
-        Trang{' '}
-        <span className='font-medium'>{currentPage + 1}</span> /{' '}
-        <span className='font-medium'>{totalPages}</span> (
-        {totalElements} kết quả)
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-        isLoading={isLoading}
-      />
+}) => (
+  <div className='flex items-center justify-between mt-4 text-sm text-gray-600'>
+    <div>
+      Trang {currentPage} / {totalPages} ({totalElements} bản ghi)
     </div>
-  );
-};
+    <div className='space-x-2'>
+      <button
+        className='px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50'
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1 || isLoading}
+      >
+        Trước
+      </button>
+      <button
+        className='px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50'
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages || isLoading}
+      >
+        Sau
+      </button>
+    </div>
+  </div>
+);
 
 export default AdminPaginationInfo;

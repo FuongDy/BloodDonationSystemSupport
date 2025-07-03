@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// src/main/java/com/hicode/backend/config/SecurityConfig.java
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -51,8 +53,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-types", "/api/blood-types/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-compatibility/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/blog-posts", "/api/blog-posts/**").permitAll() // <-- DÒNG MỚI
+                        .requestMatchers(HttpMethod.GET, "/api/blog-posts", "/api/blog-posts/**").permitAll()
                         .requestMatchers("/api/inventory/**").hasAnyRole("STAFF", "ADMIN")
+                        // THÊM DÒNG MỚI NÀY
+                        .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 );
