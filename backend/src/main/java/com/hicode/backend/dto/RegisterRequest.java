@@ -39,12 +39,4 @@ public class RegisterRequest {
     private Double latitude;
     private Double longitude;
     private Integer bloodTypeId;
-
-    // Các trường để lưu tạm thông tin từ OCR và file upload
-    private String idCardNumber;
-    private String hometown;
-    private String nationality;
-    private String gender;
-    private String idCardFrontUrl;
-    private String idCardBackUrl;
 }

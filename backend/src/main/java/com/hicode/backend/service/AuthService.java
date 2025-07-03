@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hicode.backend.dto.*;
-import com.hicode.backend.model.entity.*;
-import com.hicode.backend.model.enums.*;
+import com.hicode.backend.model.entity.Role;
+import com.hicode.backend.model.entity.User;
+import com.hicode.backend.model.entity.VerificationToken;
+import com.hicode.backend.model.enums.UserStatus;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
@@ -20,13 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -39,47 +37,25 @@ public class AuthService {
     @Autowired private JwtTokenProvider tokenProvider;
     @Autowired private VerificationTokenRepository tokenRepository;
     @Autowired private EmailService emailService;
-    @Autowired private StorageService storageService;
     @Autowired private BloodTypeRepository bloodTypeRepository;
-    @Autowired private OcrValidationService ocrValidationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
-     * Bước 1 của quy trình đăng ký: Nhận thông tin, ảnh CCCD, và gửi OTP.
+     * Bước 1 của quy trình đăng ký: Nhận thông tin cơ bản và gửi OTP.
+     * Đã loại bỏ việc tải lên ảnh và xác thực OCR.
      */
     @Transactional
-    public void requestRegistration(String registerRequestJson, MultipartFile frontImage, MultipartFile backImage) throws IOException {
-
-        RegisterRequest registerRequest = objectMapper.readValue(registerRequestJson, RegisterRequest.class);
+    public void requestRegistration(RegisterRequest registerRequest) throws IOException {
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new IllegalArgumentException("Error: Email is already in use!");
         }
 
-        // Bước 1: Gọi OCR để đối chiếu và trích xuất dữ liệu
-        OcrDataDTO ocrData = ocrValidationService.verifyAndExtractIdCardData(frontImage, backImage, registerRequest);
-
-        // Bước 2: Tự động cập nhật/chuẩn hóa thông tin từ OCR
-        registerRequest.setIdCardNumber(ocrData.getId());
-        registerRequest.setHometown(ocrData.getHome());
-        registerRequest.setNationality(ocrData.getNationality());
-        registerRequest.setGender(ocrData.getSex());
-        // Chuẩn hóa lại tên và ngày sinh để khớp 100% với CCCD
-        registerRequest.setFullName(ocrData.getName());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        registerRequest.setDateOfBirth(LocalDate.parse(ocrData.getDob(), formatter));
-
-        // Bước 3: Lưu ảnh và cập nhật đường dẫn
-        String frontImageUrl = storageService.store(frontImage);
-        String backImageUrl = storageService.store(backImage);
-        registerRequest.setIdCardFrontUrl(frontImageUrl);
-        registerRequest.setIdCardBackUrl(backImageUrl);
-
-        // Bước 4: Mã hóa mật khẩu
+        // Mã hóa mật khẩu
         registerRequest.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 
-        // Bước 5: Tạo và gửi OTP
+        // Tạo và gửi OTP, lưu thông tin đăng ký tạm thời
         String otp = String.format("%06d", new Random().nextInt(999999));
         String registrationInfoJson = objectMapper.writeValueAsString(registerRequest);
 
@@ -99,6 +75,7 @@ public class AuthService {
 
     /**
      * Bước 2: User xác thực OTP để hoàn tất đăng ký.
+     * Đã loại bỏ việc gán các thông tin liên quan đến CCCD.
      */
     @Transactional
     public User verifyAndCompleteRegistration(VerifyRequest verifyRequest) {
@@ -117,11 +94,9 @@ public class AuthService {
             RegisterRequest registrationInfo = objectMapper.readValue(token.getUserRegistrationInfo(), RegisterRequest.class);
 
             User user = new User();
-            user.setIdCardNumber(registrationInfo.getIdCardNumber()); // Gán số CCCD
-            user.setHometown(registrationInfo.getHometown());       // Gán quê quán
             user.setFullName(registrationInfo.getFullName());
             user.setEmail(registrationInfo.getEmail());
-            user.setUsername(registrationInfo.getEmail());
+            user.setUsername(registrationInfo.getEmail()); // Dùng email làm username
             user.setPasswordHash(registrationInfo.getPassword());
             user.setPhone(registrationInfo.getPhone());
             user.setAddress(registrationInfo.getAddress());
@@ -130,16 +105,7 @@ public class AuthService {
             user.setLongitude(registrationInfo.getLongitude());
             user.setStatus(UserStatus.ACTIVE);
             user.setEmailVerified(true);
-
-            // Gán URL ảnh CCCD đã được lưu trong thông tin tạm thời
-            user.setIdCardFrontUrl(registrationInfo.getIdCardFrontUrl());
-            user.setIdCardBackUrl(registrationInfo.getIdCardBackUrl());
-
-            IdCardVerification verification = new IdCardVerification();
-            verification.setUser(user);
-            verification.setStatus(VerificationStatus.VERIFIED);
-            verification.setVerifiedAt(LocalDateTime.now());
-            user.setIdCardVerification(verification);
+            user.setIdCardVerified(false); // Mặc định là chưa xác thực CCCD
 
             Role userRole = roleRepository.findByName("Member").orElseThrow(() -> new RuntimeException("Error: Role 'Member' not found."));
             user.setRole(userRole);

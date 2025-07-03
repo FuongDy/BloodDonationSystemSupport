@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hicode.backend.dto.FptOcrResponse;
 import com.hicode.backend.dto.OcrDataDTO;
 import com.hicode.backend.dto.RegisterRequest;
+import com.hicode.backend.model.entity.User;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -196,6 +197,43 @@ public class OcrValidationService {
                 LocalDate ocrDob = LocalDate.parse(frontData.getDob(), formatter);
                 if (!ocrDob.equals(userData.getDateOfBirth())) {
                     mismatches.add("Ngày sinh không khớp (CCCD: " + frontData.getDob() + ")");
+                }
+            } catch (Exception e) {
+                mismatches.add("Không thể đọc định dạng ngày sinh trên CCCD.");
+            }
+        }
+
+        if (!mismatches.isEmpty()) {
+            throw new IllegalArgumentException("Thông tin không khớp: " + String.join("; ", mismatches));
+        }
+
+        // Nếu mọi thứ đều khớp, trả về dữ liệu đã được OCR
+        return frontData;
+    }
+
+    public OcrDataDTO verifyAndExtractIdCardDataAgainstUser(MultipartFile frontImage, User user) {
+        OcrDataDTO frontData = extractDataFromImage(frontImage);
+
+        if (frontData == null || (frontData.getType() != null && frontData.getType().contains("back"))) {
+            throw new IllegalArgumentException("Ảnh mặt trước CCCD không hợp lệ hoặc không thể đọc được.");
+        }
+
+        List<String> mismatches = new ArrayList<>();
+
+        // 1. Đối chiếu Họ và tên
+        if (frontData.getName() == null || !isNameSimilar(frontData.getName(), user.getFullName())) {
+            mismatches.add("Họ và tên không khớp (CCCD: " + frontData.getName() + ", Hồ sơ: " + user.getFullName() + ")");
+        }
+
+        // 2. Đối chiếu Ngày sinh
+        if (frontData.getDob() == null) {
+            mismatches.add("Không đọc được Ngày sinh trên CCCD.");
+        } else {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                LocalDate ocrDob = LocalDate.parse(frontData.getDob(), formatter);
+                if (!ocrDob.equals(user.getDateOfBirth())) {
+                    mismatches.add("Ngày sinh không khớp (CCCD: " + frontData.getDob() + ", Hồ sơ: " + user.getDateOfBirth() + ")");
                 }
             } catch (Exception e) {
                 mismatches.add("Không thể đọc định dạng ngày sinh trên CCCD.");

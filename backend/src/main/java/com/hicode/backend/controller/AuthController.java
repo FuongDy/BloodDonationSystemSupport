@@ -1,15 +1,11 @@
 package com.hicode.backend.controller;
 
-import com.hicode.backend.dto.AuthResponse;
-import com.hicode.backend.dto.LoginRequest;
-import com.hicode.backend.dto.ResendOtpRequest;
-import com.hicode.backend.dto.VerifyRequest;
+import com.hicode.backend.dto.*;
 import com.hicode.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,13 +17,14 @@ public class AuthController {
     /**
      * API Bước 1: Nhận thông tin đăng ký (JSON) và ảnh CCCD, sau đó gửi OTP.
      */
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    /**
+     * API Bước 1: Sửa lại để chỉ nhận JSON và gửi OTP.
+     */
+    @PostMapping("/register")
     public ResponseEntity<String> requestRegistration(
-            @RequestParam("registrationData") String registerRequestJson,
-            @RequestParam("frontImage") MultipartFile frontImage,
-            @RequestParam("backImage") MultipartFile backImage) {
+            @Valid @RequestBody RegisterRequest registerRequest) {
         try {
-            authService.requestRegistration(registerRequestJson, frontImage, backImage);
+            authService.requestRegistration(registerRequest);
             return ResponseEntity.ok("Verification OTP has been sent to your email. Please check and verify.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
