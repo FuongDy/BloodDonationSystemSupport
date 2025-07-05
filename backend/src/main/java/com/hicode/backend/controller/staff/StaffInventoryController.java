@@ -1,19 +1,16 @@
-package com.hicode.backend.controller;
+// TẠO FILE MỚI: src/main/java/com/hicode/backend/controller/StaffInventoryController.java
+package com.hicode.backend.controller.staff;
 
 import com.hicode.backend.dto.admin.BloodUnitResponse;
 import com.hicode.backend.dto.admin.InventorySummary;
 import com.hicode.backend.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/staff/inventory")
-@PreAuthorize("hasRole('STAFF')")
 public class StaffInventoryController {
 
     @Autowired
