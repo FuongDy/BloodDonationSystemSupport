@@ -12,7 +12,7 @@ import DonationStatusActions from './DonationStatusActions';
 
 const DonationDetailPanel = ({ 
   selectedDonation, 
-  onStatusUpdate 
+  onStatusUpdate: _onStatusUpdate 
 }) => {
   if (!selectedDonation) {
     return (
