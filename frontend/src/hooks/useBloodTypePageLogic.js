@@ -69,6 +69,7 @@ export const useBloodTypePageLogic = () => {
 
     const handleDelete = async(id, description) => {
         const displayName = description || `ID: ${id}`;
+        // eslint-disable-next-line no-alert
         const confirmed = window.confirm(`Bạn có chắc chắn muốn xóa loại máu "${displayName}" không?`);
 
         if (confirmed) {
