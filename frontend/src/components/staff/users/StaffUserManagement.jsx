@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../../hooks/useAuth';
 import LoadingSpinner from '../../common/LoadingSpinner';
 import RoleBadge from '../../common/RoleBadge';
+import staffService from '../../../services/staffService';
 
 const StaffUserManagement = () => {
   const { user, isAuthenticated } = useAuth();
@@ -25,6 +26,39 @@ const StaffUserManagement = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
+
+  // Fetch users from API
+  const fetchUsers = useCallback(async (page = 0, size = 10) => {
+    try {
+      setIsLoading(true);
+      const response = await staffService.getAllUsers({ page, size });
+      
+      if (response.data.content) {
+        setUsers(response.data.content);
+        setCurrentPage(response.data.number);
+        setTotalPages(response.data.totalPages);
+        setTotalElements(response.data.totalElements);
+      } else {
+        // Fallback to mock data if API fails
+        setUsers(mockUsersData);
+        setTotalPages(1);
+        setTotalElements(mockUsersData.length);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Không thể tải danh sách người dùng. Hiển thị dữ liệu mẫu.');
+      // Use mock data as fallback
+      setUsers(mockUsersData);
+      setTotalPages(1);
+      setTotalElements(mockUsersData.length);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers(0, 10);
+  }, [fetchUsers]);
 
   // Mock data - comprehensive user list for development
   const mockUsersData = [
@@ -118,53 +152,11 @@ const StaffUserManagement = () => {
     }
   ];
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      console.log('Loading users with Staff permissions (using mock data)');
-      
-      // Filter users based on search term
-      let filteredUsers = mockUsersData;
-      if (searchTerm.trim()) {
-        const keyword = searchTerm.toLowerCase();
-        filteredUsers = mockUsersData.filter(user => 
-          user.fullName.toLowerCase().includes(keyword) ||
-          user.email.toLowerCase().includes(keyword) ||
-          user.phoneNumber.includes(keyword) ||
-          user.role.toLowerCase().includes(keyword)
-        );
-      }
-      
-      // Apply pagination
-      const pageSize = 10;
-      const startIndex = currentPage * pageSize;
-      const endIndex = startIndex + pageSize;
-      const pagedUsers = filteredUsers.slice(startIndex, endIndex);
-      
-      setUsers(pagedUsers);
-      setTotalPages(Math.ceil(filteredUsers.length / pageSize));
-      setTotalElements(filteredUsers.length);
-      
-      console.log(`Loaded ${pagedUsers.length} users from mock data`);
-      
-    } catch (error) {
-      console.error('Error loading users:', error);
-      toast.error('Lỗi khi tải danh sách người dùng');
-      setUsers([]);
-      setTotalPages(0);
-      setTotalElements(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, searchTerm]);
+  // Moved fetchUsers function to top - using API with mock fallback
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchUsers(currentPage, 10);
+  }, [fetchUsers, currentPage]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
