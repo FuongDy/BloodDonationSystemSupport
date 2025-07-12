@@ -1,7 +1,7 @@
 // src/components/emergency/EmergencyRequestCard.jsx
 import React from 'react';
-import { AlertTriangle, Clock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { AlertTriangle, Clock, Bed } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import UrgencyBadge from '../common/UrgencyBadge';
 import DateTimeDisplay from '../common/DateTimeDisplay';
 import PledgeButton from '../blood/PledgeButton';
@@ -50,6 +50,29 @@ const EmergencyRequestCard = ({ request, onPledgeSuccess }) => {
               {request.quantityInUnits} đơn vị
             </span>
           </div>
+          {/* Thông tin phòng và giường */}
+          {(request.roomNumber || request.bedNumber) && (
+            <div className='pt-2 border-t border-gray-100'>
+              <div className='grid grid-cols-2 gap-2'>
+                {request.roomNumber && (
+                  <div className='flex justify-between'>
+                    <span className='text-sm font-medium text-gray-600'>Phòng:</span>
+                    <span className='text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium'>
+                      Phòng {request.roomNumber}
+                    </span>
+                  </div>
+                )}
+                {request.bedNumber && (
+                  <div className='flex justify-between'>
+                    <span className='text-sm font-medium text-gray-600'>Giường:</span>
+                    <span className='text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium'>
+                      Giường {request.bedNumber}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Progress Bar */}

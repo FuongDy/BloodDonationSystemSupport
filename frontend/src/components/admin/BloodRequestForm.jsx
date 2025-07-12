@@ -2,6 +2,7 @@
 import React from 'react';
 import Button from '../common/Button';
 import InputField from '../common/InputField';
+import RoomBedSelector from '../staff/RoomBedSelector';
 
 const BloodRequestForm = ({
   formData,
@@ -10,6 +11,9 @@ const BloodRequestForm = ({
   onSubmit,
   onCancel,
   isLoading = false,
+  onRoomChange,
+  onBedChange,
+  formErrors = {},
 }) => {
   return (
     <form onSubmit={onSubmit} className='space-y-4'>
@@ -91,6 +95,16 @@ const BloodRequestForm = ({
           <option value='NORMAL'>Bình thường</option>
         </select>
       </div>
+
+      {/* Room and Bed Selection */}
+      <RoomBedSelector
+        selectedRoom={formData.roomNumber}
+        selectedBed={formData.bedNumber}
+        onRoomChange={onRoomChange}
+        onBedChange={onBedChange}
+        disabled={isLoading}
+        error={formErrors.roomNumber || formErrors.bedNumber}
+      />
 
       <div className='flex justify-end space-x-3 pt-4'>
         <Button

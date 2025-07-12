@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -138,6 +140,30 @@ public class BloodManagementService {
         }
         bloodCompatibilityRepository.deleteById(id);
     }
+
+    /**
+     * PHƯƠNG THỨC MỚI: Tìm các nhóm máu của người hiến (donor) tương thích với nhóm máu của bệnh nhân.
+     */
+    @Transactional(readOnly = true)
+    public List<BloodTypeResponse> findCompatibleDonorTypesForUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        BloodType recipientBloodType = user.getBloodType();
+        if (recipientBloodType == null) {
+            // Nếu bệnh nhân chưa có thông tin nhóm máu, trả về danh sách rỗng
+            return Collections.emptyList();
+        }
+
+        List<BloodTypeCompatibility> compatibilities = bloodCompatibilityRepository
+                .findByRecipientBloodTypeIdAndIsCompatibleTrue(recipientBloodType.getId());
+
+        return compatibilities.stream()
+                .map(BloodTypeCompatibility::getDonorBloodType)
+                .map(this::mapToBloodTypeResponse)
+                .collect(Collectors.toList());
+    }
+
 
     private BloodTypeResponse mapToBloodTypeResponse(BloodType bloodType) {
         if (bloodType == null) return null;

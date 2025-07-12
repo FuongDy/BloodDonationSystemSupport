@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import appointmentService from '../services/appointmentService';
 import donationService from '../services/donationService';
 import { DONATION_STATUS } from '../utils/constants';
+import { formatDateForBackend } from '../utils/dateUtils';
 
 export const useAppointmentManagement = () => {
     const [appointments, setAppointments] = useState([]);
@@ -16,7 +17,7 @@ export const useAppointmentManagement = () => {
     // Form states
     const [appointmentForm, setAppointmentForm] = useState({
         processId: '',
-        appointmentDateTime: '',
+        appointmentDate: '',
         location: 'Bệnh viện Huyết học - FPT',
         notes: '',
         staffId: null,
@@ -53,18 +54,29 @@ export const useAppointmentManagement = () => {
     };
 
     const handleCreateAppointment = async() => {
-        if (!appointmentForm.processId || !appointmentForm.appointmentDateTime) {
+        if (!appointmentForm.processId || !appointmentForm.appointmentDate) {
             toast.error('Vui lòng điền đầy đủ thông tin');
             return;
         }
 
         try {
-            await appointmentService.createAppointment(appointmentForm);
+            // Tạo object phù hợp với backend  
+            const appointmentData = {
+                processId: Number(appointmentForm.processId),
+                appointmentDate: formatDateForBackend(appointmentForm.appointmentDate), // Format: dd-MM-yyyy
+                location: appointmentForm.location,
+                notes: appointmentForm.notes || null,
+                staffId: appointmentForm.staffId || null,
+            };
+
+            console.log('Sending appointment data:', appointmentData);
+
+            await appointmentService.createAppointment(appointmentData);
             toast.success('Tạo lịch hẹn thành công');
             setShowCreateModal(false);
             setAppointmentForm({
                 processId: '',
-                appointmentDateTime: '',
+                appointmentDate: '',
                 location: 'Bệnh viện Huyết học - FPT',
                 notes: '',
                 staffId: null,
@@ -72,7 +84,8 @@ export const useAppointmentManagement = () => {
             fetchData();
         } catch (error) {
             console.error('Error creating appointment:', error);
-            toast.error('Không thể tạo lịch hẹn');
+            const errorMessage = error.message || 'Không thể tạo lịch hẹn';
+            toast.error(errorMessage);
         }
     };
 

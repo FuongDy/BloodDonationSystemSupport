@@ -100,7 +100,7 @@ const register = async userData => {
             email: userData.email,
             phone: userData.phone,
             address: userData.address,
-            dateOfBirth: userData.dateOfBirth, // YYYY-MM-DD format
+            dateOfBirth: userData.dateOfBirth, // dd-MM-yyyy format
             password: userData.password,
             bloodTypeId: userData.bloodTypeId,
             latitude: userData.latitude,

@@ -24,7 +24,7 @@ import java.util.List;
 public class OcrValidationService {
 
     private final String OCR_API_URL = "https://api.fpt.ai/vision/idr/vnm";
-    private final String FPT_API_KEY = "P0jPWEU1ryJ2KYt2D6J4Ik0ooLszQX9o";
+    private final String FPT_API_KEY = "IMjx31LyeWxx691Y3LPxGnl6o3vFlZQL";
 
     public String identifyIdCardSide(MultipartFile image) {
         RestTemplate restTemplate = new RestTemplate();

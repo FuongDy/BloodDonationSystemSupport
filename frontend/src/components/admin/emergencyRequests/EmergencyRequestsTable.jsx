@@ -1,6 +1,6 @@
 // src/components/admin/emergencyRequests/EmergencyRequestsTable.jsx
 import React, { useState } from 'react';
-import { AlertTriangle, User, Clock, Eye } from 'lucide-react';
+import { AlertTriangle, User, Clock, Eye, Bed } from 'lucide-react';
 import Button from '../../common/Button';
 import EmergencyDonorsModal from './EmergencyDonorsModal';
 
@@ -54,6 +54,12 @@ const EmergencyRequestsTable = ({
                 Bệnh viện
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Phòng
+              </th>
+              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Giường
+              </th>
+              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                 Số lượng
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
@@ -95,6 +101,30 @@ const EmergencyRequestsTable = ({
                 </td>
                 <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
                   {request.hospital || 'N/A'}
+                </td>
+                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
+                  {request.roomNumber ? (
+                    <div className='flex items-center'>
+                      <Bed className='w-4 h-4 text-blue-500 mr-2' />
+                      <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
+                        Phòng {request.roomNumber}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className='text-gray-400'>N/A</span>
+                  )}
+                </td>
+                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
+                  {request.bedNumber ? (
+                    <div className='flex items-center'>
+                      <Bed className='w-4 h-4 text-green-500 mr-2' />
+                      <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                        Giường {request.bedNumber}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className='text-gray-400'>N/A</span>
+                  )}
                 </td>
                 <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
                   {request.quantityInUnits || 0} đơn vị

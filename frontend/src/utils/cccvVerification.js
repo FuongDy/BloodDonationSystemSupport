@@ -1,18 +1,21 @@
-// src/utils/cccvVerification.js
 
 /**
  * Check if user has completed CCCD verification
- * @param {Object} user - User object
+ * @param {Object} user - User object from AuthContext
  * @returns {boolean} - True if CCCD is verified, false otherwise
  */
 export const hasValidCCCD = (user) => {
   if (!user) return false;
-  
-  // Check if user has uploaded both front and back images of CCCD
-  return !!(user.cccvFrontImage && user.cccvBackImage) || 
-         !!(user.frontImage && user.backImage) ||
-         !!(user.idCardFrontImage && user.idCardBackImage) ||
-         user.isIdVerified === true;
+
+  // Ưu tiên hàng đầu là trường 'idCardVerified' từ backend
+  if (user.idCardVerified === true) {
+    return true;
+  }
+
+  // Giữ lại logic cũ để tương thích ngược nếu cần
+  return !!(user.cccvFrontImage && user.cccvBackImage) ||
+      !!(user.frontImage && user.backImage) ||
+      !!(user.idCardFrontImage && user.idCardBackImage);
 };
 
 /**
@@ -24,22 +27,23 @@ export const getCCCDVerificationStatus = (user) => {
   if (!user) {
     return {
       isVerified: false,
-      message: "Không thể xác định trạng thái xác minh CCCD",
+      message: "Không thể xác định trạng thái xác minh.",
       type: "error"
     };
   }
 
+  // Sử dụng hasValidCCCD đã được cập nhật
   if (hasValidCCCD(user)) {
     return {
       isVerified: true,
-      message: "CCCD/CMND đã được xác minh",
+      message: "Tài khoản đã được xác minh bằng CCCD/CMND.",
       type: "success"
     };
   }
 
   return {
     isVerified: false,
-    message: "Chưa tải lên CCCD/CMND. Vui lòng cập nhật thông tin để tiếp tục.",
+    message: "Chưa tải lên CCCD/CMND. Vui lòng cập nhật để có thể đặt lịch hiến máu.",
     type: "warning"
   };
 };
@@ -51,7 +55,7 @@ export const getCCCDVerificationStatus = (user) => {
  */
 export const canProceedWithDonation = (user) => {
   const cccvStatus = getCCCDVerificationStatus(user);
-  
+
   if (!cccvStatus.isVerified) {
     return {
       canProceed: false,
@@ -64,7 +68,7 @@ export const canProceedWithDonation = (user) => {
   }
 
   // Add other checks here if needed (age, health conditions, etc.)
-  
+
   return {
     canProceed: true,
     reason: null,

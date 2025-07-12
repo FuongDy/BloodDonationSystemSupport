@@ -1,5 +1,5 @@
 // src/pages/admin/AdminCreateEmergencyRequestPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Save, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -8,6 +8,7 @@ import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import Button from '../../components/common/Button';
 import InputField from '../../components/common/InputField';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import RoomBedSelector from '../../components/staff/RoomBedSelector';
 import bloodRequestService from '../../services/bloodRequestService';
 import bloodTypeService from '../../services/bloodTypeService';
 import { HOSPITAL_INFO } from '../../utils/constants';
@@ -23,6 +24,8 @@ const AdminCreateEmergencyRequestPage = () => {
     hospital: HOSPITAL_INFO.FULL_NAME, // Sử dụng giá trị mặc định từ constants
     quantityInUnits: 1,
     urgency: 'URGENT', // Sử dụng giá trị enum đúng của backend: NORMAL, URGENT, CRITICAL
+    roomNumber: '',
+    bedNumber: '',
     contactPhone: '', // Sẽ không gửi những trường này lên backend
     notes: '',
   });
@@ -79,6 +82,49 @@ const AdminCreateEmergencyRequestPage = () => {
     }
   };
 
+  const handleRoomBedSelect = (roomNumber, bedNumber) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      roomNumber: roomNumber?.toString() || '',
+      bedNumber: bedNumber?.toString() || ''
+    }));
+    
+    // Clear errors for room and bed fields
+    setFormErrors(prev => ({ 
+      ...prev, 
+      roomNumber: '', 
+      bedNumber: '' 
+    }));
+  };
+
+  const handleRoomChange = useCallback((roomNumber) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      roomNumber: roomNumber || '',
+      bedNumber: '' // Reset bed when room changes
+    }));
+    
+    // Clear errors for room and bed fields
+    setFormErrors(prev => ({ 
+      ...prev, 
+      roomNumber: '', 
+      bedNumber: '' 
+    }));
+  }, []);
+
+  const handleBedChange = useCallback((bedNumber) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      bedNumber: bedNumber || ''
+    }));
+    
+    // Clear error for bed field
+    setFormErrors(prev => ({ 
+      ...prev, 
+      bedNumber: '' 
+    }));
+  }, []);
+
   const validateForm = () => {
     const errors = {};
     if (!formData.patientName.trim()) {
@@ -92,6 +138,12 @@ const AdminCreateEmergencyRequestPage = () => {
     }
     if (formData.quantityInUnits < 1) {
       errors.quantityInUnits = 'Số lượng phải ít nhất 1 đơn vị';
+    }
+    if (!formData.roomNumber) {
+      errors.roomNumber = 'Số phòng là bắt buộc';
+    }
+    if (!formData.bedNumber) {
+      errors.bedNumber = 'Số giường là bắt buộc';
     }
     if (!formData.contactPhone.trim()) {
       errors.contactPhone = 'Số điện thoại liên hệ là bắt buộc';
@@ -111,13 +163,15 @@ const AdminCreateEmergencyRequestPage = () => {
     
     try {
       setIsSubmitting(true);
-        // Create a new emergency request - chỉ lấy các trường mà backend yêu cầu
+      // Create a new emergency request - chỉ lấy các trường mà backend yêu cầu
       const requestPayload = {
         patientName: formData.patientName,
         hospital: formData.hospital,
         bloodTypeId: Number(formData.bloodTypeId),
         quantityInUnits: Number(formData.quantityInUnits),
         urgency: formData.urgency, // Đảm bảo đây là một giá trị enum hợp lệ (URGENT hoặc CRITICAL)
+        roomNumber: Number(formData.roomNumber),
+        bedNumber: Number(formData.bedNumber),
       };
       
       await bloodRequestService.createEmergencyRequest(requestPayload);
@@ -288,6 +342,20 @@ const AdminCreateEmergencyRequestPage = () => {
                 error={formErrors.contactPhone}
               />
             </div>
+          </div>
+
+          {/* Room and Bed Selection */}
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Chọn phòng và giường <span className="text-red-500">*</span>
+            </h3>
+            <RoomBedSelector
+              selectedRoom={formData.roomNumber}
+              selectedBed={formData.bedNumber}
+              onRoomChange={handleRoomChange}
+              onBedChange={handleBedChange}
+              error={formErrors.roomNumber || formErrors.bedNumber}
+            />
           </div>
 
           {/* Notes */}

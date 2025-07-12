@@ -19,5 +19,7 @@ public class BloodRequestResponse {
     private RequestStatus status;
     private UserResponse createdBy;
     private int pledgeCount;
+    private Integer roomNumber;
+    private Integer bedNumber;
     private LocalDateTime createdAt;
 }

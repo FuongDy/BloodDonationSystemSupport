@@ -1,8 +1,12 @@
 // src/components/admin/userCreate/UserCreatePersonalInfo.jsx
 import React from 'react';
 import InputField from '../../common/InputField';
+import { formatDateForInput } from '../../../utils/dateUtils';
 
 const UserCreatePersonalInfo = ({ formData, onInputChange, errors, isLoading }) => {
+  // Convert dd-MM-yyyy to YYYY-MM-DD for HTML date input
+  const dateValue = formatDateForInput(formData.dateOfBirth);
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -11,7 +15,7 @@ const UserCreatePersonalInfo = ({ formData, onInputChange, errors, isLoading }) 
           id="dateOfBirth"
           name="dateOfBirth"
           type="date"
-          value={formData.dateOfBirth}
+          value={dateValue}
           onChange={onInputChange}
           required
           error={errors.dateOfBirth}

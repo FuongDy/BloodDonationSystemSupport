@@ -1,6 +1,6 @@
 // src/components/admin/emergency/EmergencyPledgesList.jsx
 import React, { useState, useEffect } from 'react';
-import { Users, Clock, User, Phone, Mail, AlertTriangle, RefreshCw, MapPin, Calendar, Shield, Heart, Activity, FileText, Star } from 'lucide-react';
+import { Users, Clock, User, Phone, Mail, AlertTriangle, RefreshCw, MapPin, Calendar, Shield, Heart, Activity, FileText, Star, Bed } from 'lucide-react';
 import LoadingSpinner from '../../common/LoadingSpinner';
 import Button from '../../common/Button';
 import StatusBadge from '../../common/StatusBadge';
@@ -111,6 +111,25 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
               <span className="font-medium">Tạo lúc:</span>
               <span className="ml-1">{formatDateTime(requestData.createdAt)}</span>
             </div>
+            {/* Thông tin phòng và giường */}
+            {(requestData.roomNumber || requestData.bedNumber) && (
+              <>
+                <div className="flex items-center text-blue-800">
+                  <Bed className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="font-medium">Phòng:</span>
+                  <span className="ml-1">
+                    {requestData.roomNumber ? `Phòng ${requestData.roomNumber}` : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex items-center text-blue-800">
+                  <Bed className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="font-medium">Giường:</span>
+                  <span className="ml-1">
+                    {requestData.bedNumber ? `Giường ${requestData.bedNumber}` : 'N/A'}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
           {requestData.description && (
             <div className="mt-3 p-3 bg-blue-100 rounded-md">

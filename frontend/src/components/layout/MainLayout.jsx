@@ -1,7 +1,7 @@
 // src/components/layout/MainLayout.jsx
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from './Navbar';
+import NavbarWrapper from './NavbarWrapper';
 import Footer from './Footer';
 
 const MainLayout = () => {
@@ -10,7 +10,7 @@ const MainLayout = () => {
 
   return (
     <div className='min-h-screen flex flex-col'>
-      <Navbar />
+      <NavbarWrapper />
       <main className='flex-1 pt-16'>
         <Outlet />
       </main>

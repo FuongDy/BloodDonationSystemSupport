@@ -73,24 +73,17 @@ export const useRegister = () => {
     }, [isAuthenticated, user, navigate, fetchBloodTypes]);
 
     /**
-     * Convert date format từ DD-MM-YYYY sang YYYY-MM-DD cho backend
+     * Validate date format dd-MM-yyyy cho backend
      * @param {string} dateString - Date string in DD-MM-YYYY format
-     * @returns {string} Date string in YYYY-MM-DD format
+     * @returns {string} Date string in DD-MM-YYYY format cho backend
      */
-    const convertDateFormat = (dateString) => {
+    const validateDateFormat = (dateString) => {
         if (!dateString || !dateString.match(/^\d{2}-\d{2}-\d{4}$/)) {
             return null;
         }
 
-        // Convert from DD-MM-YYYY (display format) to YYYY-MM-DD (ISO format for backend)
-        const [day, month, year] = dateString.split('-');
-
-        // Create a proper ISO date string that Spring Boot's LocalDate can parse
-        // Ensure month and day are zero-padded to be valid ISO format
-        const formattedMonth = month.padStart(2, '0');
-        const formattedDay = day.padStart(2, '0');
-
-        return `${year}-${formattedMonth}-${formattedDay}`;
+        // Backend giờ đã chấp nhận dd-MM-yyyy format trực tiếp
+        return dateString;
     };
 
     /**
@@ -181,7 +174,7 @@ export const useRegister = () => {
      * @param {string} convertedDate - Converted date string
      * @returns {Object} Registration data object
      */
-    const prepareRegistrationData = (convertedDate) => {
+    const prepareRegistrationData = (validatedDate) => {
         // Validate address and coordinates
         const trimmedAddress = formData.address.trim();
         if (trimmedAddress.length < 10) {
@@ -193,17 +186,8 @@ export const useRegister = () => {
             return null;
         }
 
-        // Return a string in YYYY-MM-DD format that Spring Boot can parse to LocalDate
-        // Make sure date is in ISO format YYYY-MM-DD, not an array
-        let dateOfBirth = convertedDate;
-        if (Array.isArray(dateOfBirth)) {
-            // If it's still an array [year, month, day], convert to ISO string
-            const [year, month, day] = dateOfBirth;
-            // Make sure month and day are zero-padded
-            const formattedMonth = month.toString().padStart(2, '0');
-            const formattedDay = day.toString().padStart(2, '0');
-            dateOfBirth = `${year}-${formattedMonth}-${formattedDay}`;
-        }
+        // Backend giờ sử dụng dd-MM-yyyy format trực tiếp
+        const dateOfBirth = validatedDate;
 
         const registrationData = {
             fullName: formData.fullName.trim(),
@@ -383,13 +367,13 @@ export const useRegister = () => {
                 throw new Error('INVALID_DATE_FORMAT');
             }
 
-            const convertedDate = convertDateFormat(formData.dateOfBirth);
-            if (!convertedDate) {
+            const validatedDate = validateDateFormat(formData.dateOfBirth);
+            if (!validatedDate) {
                 throw new Error('INVALID_DATE_FORMAT');
             }
 
             // Bước 3: Chuẩn bị dữ liệu cho API
-            const registrationData = prepareRegistrationData(convertedDate);
+            const registrationData = prepareRegistrationData(validatedDate);
             if (!registrationData) return; // Error already handled in prepareRegistrationData
 
             // Bước 4: Gọi API đăng ký (request OTP)

@@ -1,200 +1,110 @@
-// src/services/userService.js
 import apiClient from './apiClient';
 
+/**
+ * Lớp dịch vụ để quản lý các tương tác API liên quan đến người dùng.
+ */
 class UserService {
-  // Admin User Service Methods
-  // Cập nhật hàm getAllUsers để nhận thêm tham số search
+  // =================================================================
+  // CÁC PHƯƠNG THỨC DÀNH CHO QUẢN TRỊ VIÊN (ADMIN)
+  // =================================================================
+
+  /**
+   * Lấy danh sách tất cả người dùng với các tùy chọn phân trang và lọc.
+   * @param {object} options - Tùy chọn cho truy vấn (ví dụ: page, size, role).
+   * @returns {Promise<object>} - Dữ liệu phân trang của người dùng.
+   */
   async getAllUsers(options = {}) {
-    const {
-      page = 0,
-      size = 10,
-      sort = ['id', 'asc'],
-      keyword = '',
-      filters = {},
-    } = options;
-
     try {
-      const sortParams = sort.join(',');
-      const params = {
-        page,
-        size,
-        sort: sortParams,
-        ...(keyword && { keyword }), // Use object shorthand
-        ...filters,
-      };
-      const queryString = new URLSearchParams(params).toString();
-      const response = await apiClient.get(`/admin/users?${queryString}`);
+      const params = new URLSearchParams(options);
+      const response = await apiClient.get(`/admin/users?${params.toString()}`);
       return response.data;
     } catch (error) {
-      console.error(error.message);
-      throw new Error(error.response?.data?.message || 'Failed to fetch users');
+      console.error('Lỗi khi lấy danh sách người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tải danh sách người dùng');
     }
   }
 
-  async createUserByAdmin(userData) {
-    try {
-      const response = await apiClient.post('/admin/users', userData); //
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message ||
-          error.response?.data ||
-          error.message ||
-          'Failed to create user'
-      );
-    }
-  }
+  // =================================================================
+  // CÁC PHƯƠNG THỨC CHO HỒ SƠ CÁ NHÂN CỦA NGƯỜI DÙNG
+  // =================================================================
 
-  async getUserByIdForAdmin(userId) {
-    try {
-      const response = await apiClient.get(`/admin/users/${userId}`); //
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message ||
-          error.response?.data ||
-          error.message ||
-          'Failed to fetch user details'
-      );
-    }
-  }
-
-  async updateUserByAdmin(userId, userData) {
-    try {
-      const response = await apiClient.put(`/admin/users/${userId}`, userData); //
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message ||
-          error.response?.data ||
-          error.message ||
-          'Failed to update user'
-      );
-    }
-  }
-
-  async softDeleteUserByAdmin(userId) {
-    try {
-      const response = await apiClient.delete(`/admin/users/${userId}`); //
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message ||
-          error.response?.data ||
-          error.message ||
-          'Failed to disable user'
-      );
-    }
-  }
-
-  // General User Profile Methods
+  /**
+   * Lấy thông tin hồ sơ của người dùng hiện tại đang đăng nhập.
+   * @returns {Promise<object>} - Đối tượng hồ sơ người dùng.
+   */
   async getCurrentUserProfile() {
     try {
       const response = await apiClient.get('/users/me/profile');
       return response.data;
     } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message || 'Failed to fetch user profile'
-      );
+      console.error('Lỗi khi lấy hồ sơ người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tải hồ sơ người dùng');
     }
   }
 
-  // Alias for getCurrentUserProfile for consistency with UserProfileForm
+  /**
+   * Hàm alias cho `getCurrentUserProfile`, có thể mở rộng với logic cache.
+   * @param {boolean} forceRefresh - Bỏ qua cache và lấy dữ liệu mới (chưa triển khai).
+   * @returns {Promise<object>} - Đối tượng hồ sơ người dùng.
+   */
   async getProfile(forceRefresh = false) {
+    // Hiện tại, luôn gọi API để lấy dữ liệu mới nhất
     return this.getCurrentUserProfile();
   }
 
-  async updateUserProfile(updateData) {
+  /**
+   * Cập nhật thông tin hồ sơ người dùng (chỉ gửi dữ liệu dạng JSON).
+   * @param {object} profileData - Đối tượng chứa các trường thông tin cần cập nhật.
+   * @returns {Promise<object>} - Đối tượng hồ sơ người dùng sau khi đã cập nhật.
+   */
+  async updateUserProfile(profileData) {
     try {
-      const response = await apiClient.put('/users/me/profile', updateData);
+      // Sử dụng phương thức PUT để cập nhật tài nguyên
+      const response = await apiClient.put('/users/me/profile', profileData);
       return response.data;
     } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message || 'Failed to update profile'
-      );
+      console.error('Lỗi khi cập nhật hồ sơ:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể cập nhật hồ sơ');
     }
   }
 
-  async uploadIdCard(frontImage, backImage) {
+  /**
+   * Tải lên ảnh CCCD mặt trước và mặt sau để xác minh.
+   * API này sử dụng Content-Type là 'multipart/form-data'.
+   * @param {FormData} idCardFormData - Đối tượng FormData chứa `frontImage` và `backImage`.
+   * @returns {Promise<object>} - Đối tượng hồ sơ người dùng sau khi đã cập nhật, bao gồm cờ 'idCardVerified'.
+   */
+  async uploadIdCard(idCardFormData) {
     try {
-      const formData = new FormData();
-      formData.append('frontImage', frontImage);
-      formData.append('backImage', backImage);
-      
-      const response = await apiClient.post('/users/me/upload-id-card', formData, {
+      // Sử dụng phương thức POST và chỉ định header đúng cho việc tải tệp
+      const response = await apiClient.post('/users/me/upload-id-card', idCardFormData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return response.data;
     } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message || 'Failed to upload ID card'
-      );
+      console.error('Lỗi khi tải lên CCCD:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tải lên CCCD');
     }
   }
 
-  // Alias for updateUserProfile for consistency with UserProfileForm
-  async updateProfile(updateData) {
-    // Check if updateData is FormData (contains files)
-    if (updateData instanceof FormData) {
-      const hasImages = updateData.has('frontImage') || updateData.has('backImage');
-      
-      if (hasImages) {
-        // Handle both profile update and ID card upload
-        const frontImage = updateData.get('frontImage');
-        const backImage = updateData.get('backImage');
-        
-        // First, update profile data (without images)
-        const profileData = {};
-        for (const [key, value] of updateData.entries()) {
-          if (key !== 'frontImage' && key !== 'backImage') {
-            profileData[key] = value;
-          }
-        }
-        
-        // Update profile first
-        const updatedUser = await this.updateUserProfile(profileData);
-        
-        // Then upload ID card if both images are provided
-        if (frontImage && backImage) {
-          await this.uploadIdCard(frontImage, backImage);
-        }
-        
-        return updatedUser;
-      } else {
-        // No images, just convert FormData to object
-        const profileData = {};
-        for (const [key, value] of updateData.entries()) {
-          profileData[key] = value;
-        }
-        return this.updateUserProfile(profileData);
-      }
-    }
-    
-    return this.updateUserProfile(updateData);
-  }
+  // =================================================================
+  // CÁC PHƯƠNG THỨC TIỆN ÍCH KHÁC
+  // =================================================================
 
-  // Search donors by location
+  /**
+   * Tìm kiếm người hiến máu phù hợp dựa trên vị trí.
+   * @param {object} locationData - Dữ liệu vị trí (kinh độ, vĩ độ).
+   * @returns {Promise<Array<object>>} - Danh sách người hiến máu phù hợp.
+   */
   async searchDonorsByLocation(locationData) {
     try {
-      const response = await apiClient.post(
-        '/users/search/donors-by-location',
-        locationData
-      );
+      const response = await apiClient.post('/users/search/donors-by-location', locationData);
       return response.data;
     } catch (error) {
-      console.error(error.message);
-      throw new Error(
-        error.response?.data?.message || 'Failed to search donors'
-      );
+      console.error('Lỗi khi tìm người hiến máu:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tìm kiếm người hiến máu');
     }
   }
 }

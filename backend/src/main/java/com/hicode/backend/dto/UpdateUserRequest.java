@@ -12,7 +12,10 @@ public class UpdateUserRequest {
     @Size(min = 3, max = 150, message = "Full name must be between 3 and 150 characters")
     private String fullName;
     private String phone;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dateOfBirth;
+    
     private String gender;
     private String address;
     private Double latitude;

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import userService from '../services/userService';
 import bloodTypeService from '../services/bloodTypeService';
 import { useApi } from './useApi';
+import { formatDateForBackend } from '../utils/dateUtils';
 
 export const useAdminUserCreate = () => {
   const navigate = useNavigate();
@@ -63,9 +64,16 @@ export const useAdminUserCreate = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let processedValue = value;
+    
+    // Convert HTML date input (YYYY-MM-DD) to backend format (dd-MM-yyyy)
+    if (name === 'dateOfBirth' && type === 'date' && value) {
+      processedValue = formatDateForBackend(value);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : processedValue,
     }));
     
     // Clear error when user starts typing
@@ -142,6 +150,7 @@ export const useAdminUserCreate = () => {
       ...formData,
       phone: formData.phone.trim(),
       address: formData.address.trim(),
+      dateOfBirth: formatDateForBackend(formData.dateOfBirth),
       bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
     };
     delete requestData.confirmPassword;

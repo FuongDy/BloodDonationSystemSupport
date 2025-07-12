@@ -12,4 +12,9 @@ public interface BloodTypeCompatibilityRepository extends JpaRepository<BloodTyp
             Integer donorBloodTypeId, Integer recipientBloodTypeId
     );
     List<BloodTypeCompatibility> findByDonorBloodTypeIdOrRecipientBloodTypeId(Integer donorId, Integer recipientId);
+
+    /**
+     * PHƯƠNG THỨC MỚI: Tìm tất cả các quy tắc tương thích dựa vào ID của nhóm máu người nhận.
+     */
+    List<BloodTypeCompatibility> findByRecipientBloodTypeIdAndIsCompatibleTrue(Integer recipientBloodTypeId);
 }
