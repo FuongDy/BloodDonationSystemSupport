@@ -51,13 +51,10 @@ const EmergencyRequestsTable = ({
                 Nhóm máu
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                Bệnh viện
+                Mức độ <br/> khẩn cấp
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                Phòng
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                Giường
+                Vị trí
               </th>
               <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                 Số lượng
@@ -87,7 +84,12 @@ const EmergencyRequestsTable = ({
                         {request.patientName || 'N/A'}
                       </div>
                       <div className='text-sm text-gray-500'>
-                        {request.contactPhone || 'N/A'}
+                        {request.contactPhone || 
+                         request.phone || 
+                         request.createdBy?.phone || 
+                         request.createdBy?.emergencyContact || 
+                         request.emergencyContact || 
+                         'N/A'}
                       </div>
                     </div>
                   </div>
@@ -99,48 +101,68 @@ const EmergencyRequestsTable = ({
                       : (request.bloodType || 'N/A')}
                   </span>
                 </td>
-                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                  {request.hospital || 'N/A'}
+                <td className='px-6 py-4 whitespace-nowrap'>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    request.urgency === 'CRITICAL' ? 'bg-red-100 text-red-800' :
+                    request.urgency === 'URGENT' ? 'bg-orange-100 text-orange-800' :
+                    request.urgency === 'NORMAL' ? 'bg-green-100 text-green-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    <AlertTriangle className='w-3 h-3 mr-1' />
+                    {request.urgency === 'CRITICAL' ? 'Rất khẩn cấp' :
+                     request.urgency === 'URGENT' ? 'Khẩn cấp' :
+                     request.urgency === 'NORMAL' ? 'Bình thường' : 'N/A'}
+                  </span>
                 </td>
                 <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                  {request.roomNumber ? (
-                    <div className='flex items-center'>
-                      <Bed className='w-4 h-4 text-blue-500 mr-2' />
-                      <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
-                        Phòng {request.roomNumber}
-                      </span>
+                  <div className='space-y-1'>
+                    {/* Bệnh viện */}
+                    <div className='font-medium text-gray-900'>
+                      {request.hospital || 'N/A'}
                     </div>
-                  ) : (
-                    <span className='text-gray-400'>N/A</span>
-                  )}
-                </td>
-                <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
-                  {request.bedNumber ? (
-                    <div className='flex items-center'>
-                      <Bed className='w-4 h-4 text-green-500 mr-2' />
-                      <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
-                        Giường {request.bedNumber}
-                      </span>
+                    {/* Phòng - Giường */}
+                    <div className='flex items-center space-x-2'>
+                      {request.roomNumber || request.bedNumber ? (
+                        <>
+                          {request.roomNumber && (
+                            <span className='inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800'>
+                              <Bed className='w-3 h-3 mr-1' />
+                              P.{request.roomNumber}
+                            </span>
+                          )}
+                          {request.bedNumber && (
+                            <span className='inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800'>
+                              <Bed className='w-3 h-3 mr-1' />
+                              G.{request.bedNumber}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className='text-xs text-gray-400'>Chưa có thông tin phòng/giường</span>
+                      )}
                     </div>
-                  ) : (
-                    <span className='text-gray-400'>N/A</span>
-                  )}
+                  </div>
                 </td>
                 <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
                   {request.quantityInUnits || 0} đơn vị
                 </td>
                 <td className='px-6 py-4 whitespace-nowrap'>
-                  <div className='flex items-center'>
+                  <div className="text-center">
                     <div className={`text-sm font-medium ${
                       request.pledgeCount >= request.quantityInUnits 
                         ? 'text-green-600' 
                         : 'text-gray-900'
                     }`}>
-                      {request.pledgeCount || 0}
+                      {request.pledgeCount || 0} / {request.quantityInUnits || 0}
                     </div>
                     {request.pledgeCount >= request.quantityInUnits && (
-                      <div className="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Đủ
+                      <div className="text-xs text-green-600 font-medium mt-1">
+                        ✓ Đã đủ người đăng ký
+                      </div>
+                    )}
+                    {request.pledgeCount < request.quantityInUnits && (
+                      <div className="text-xs text-orange-600 mt-1">
+                        Cần thêm {(request.quantityInUnits || 0) - (request.pledgeCount || 0)} người
                       </div>
                     )}
                   </div>
@@ -176,24 +198,43 @@ const EmergencyRequestsTable = ({
                     {request.status === 'PENDING' && (
                       <>
                         <Button
-                          variant={request.pledgeCount >= request.quantityInUnits ? 'primary' : 'outline'}
+                          variant={request.pledgeCount >= request.quantityInUnits ? 'primary' : 'secondary'}
                           size='sm'
                           onClick={() => onStatusUpdate(request.id, 'FULFILLED')}
                           title={request.pledgeCount >= request.quantityInUnits 
-                            ? 'Đã đủ người đăng ký, có thể hoàn thành yêu cầu' 
-                            : 'Đánh dấu yêu cầu đã hoàn thành'
+                            ? 'Đã có đủ người đăng ký hiến máu. Nhấn để đánh dấu hoàn thành yêu cầu này.' 
+                            : 'Đánh dấu yêu cầu đã hoàn thành (dù chưa đủ người đăng ký)'
                           }
                         >
-                          {request.pledgeCount >= request.quantityInUnits ? 'Đánh dấu hoàn thành' : 'Hoàn thành'}
+                          {request.pledgeCount >= request.quantityInUnits ? (
+                            <>
+                              ✓ Hoàn thành
+                            </>
+                          ) : (
+                            'Hoàn thành'
+                          )}
                         </Button>
                         <Button
                           variant='outline'
                           size='sm'
                           onClick={() => onStatusUpdate(request.id, 'CANCELLED')}
+                          title='Hủy yêu cầu này'
                         >
-                          Hủy
+                          Hủy yêu cầu
                         </Button>
                       </>
+                    )}
+                    
+                    {(request.status === 'FULFILLED' || request.status === 'COMPLETED') && (
+                      <div className="text-sm text-green-600 font-medium">
+                        ✓ Đã hoàn thành
+                      </div>
+                    )}
+                    
+                    {request.status === 'CANCELLED' && (
+                      <div className="text-sm text-red-600 font-medium">
+                        ✗ Đã hủy
+                      </div>
                     )}
                   </div>
                 </td>

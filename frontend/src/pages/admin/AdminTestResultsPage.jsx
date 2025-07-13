@@ -1,5 +1,5 @@
 // src/pages/admin/AdminTestResultsPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { TestTube, CheckCircle, XCircle, Users, FlaskConical } from 'lucide-react';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
@@ -7,11 +7,15 @@ import DataTable from '../../components/common/DataTable';
 import StatusBadge from '../../components/common/StatusBadge';
 import Button from '../../components/common/Button';
 import TestResultForm from '../../components/admin/TestResultForm';
+import { TestResultDetailModal } from '../../components/admin/modals';
 import { useTestResults } from '../../hooks/useTestResults';
 import { DONATION_STATUS, STATUS_COLORS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
 
 const AdminTestResultsPage = () => {
+  const [selectedTestResultDetail, setSelectedTestResultDetail] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
   const {
     testResults,
     isLoading,
@@ -21,6 +25,20 @@ const AdminTestResultsPage = () => {
     setSelectedProcess,
     fetchTestResults,
   } = useTestResults();
+
+  const handleViewDetail = (testResult) => {
+    // Ensure we have the correct data structure for the modal
+    const modalData = {
+      ...testResult,
+      // If this is a process with nested testResult, flatten the isSafe value
+      isSafe: testResult.testResult?.isSafe !== undefined ? testResult.testResult.isSafe : testResult.isSafe,
+      // Ensure donor information is available
+      donationProcess: testResult,
+    };
+    
+    setSelectedTestResultDetail(modalData);
+    setShowDetailModal(true);
+  };
 
   const columns = [
     {
@@ -37,7 +55,10 @@ const AdminTestResultsPage = () => {
           <div className='font-medium'>{value?.fullName || 'N/A'}</div>
           <div className='text-sm text-gray-500'>{value?.email}</div>
           <div className='text-sm text-red-600 font-semibold'>
-            {value?.bloodType || 'N/A'}
+            {
+              value?.bloodType ||
+              value?.bloodTypeDescription ||
+              'N/A'}
           </div>
         </div>
       ),
@@ -92,6 +113,15 @@ const AdminTestResultsPage = () => {
             >
               <TestTube className='w-4 h-4 mr-1' />
               Kết quả XN
+            </Button>
+          )}
+          {(process.testResult || process.status === DONATION_STATUS.COMPLETED || process.status === DONATION_STATUS.TESTING_FAILED) && (
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={() => handleViewDetail(process.testResult || process)}
+            >
+              Xem chi tiết
             </Button>
           )}
         </div>
@@ -230,6 +260,13 @@ const AdminTestResultsPage = () => {
             }}
           />
         )}
+
+        {/* Test Result Detail Modal */}
+        <TestResultDetailModal
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          testResult={selectedTestResultDetail}
+        />
       </div>
     </AdminPageLayout>
   );

@@ -130,7 +130,7 @@ const AdminDonationHistoryPage = () => {
                         <td className="px-4 py-2">{donation.id}</td>
                         <td className="px-4 py-2">{donation.donor?.fullName || 'N/A'}</td>
                         <td className="px-4 py-2">{donation.donor?.email || 'N/A'}</td>
-                        <td className="px-4 py-2">{donation.donor?.bloodGroup || 'N/A'}</td>
+                        <td className="px-4 py-2">{donation.donor?.bloodType|| 'N/A'}</td>
                         <td className="px-4 py-2">
                           <StatusBadge status={donation.status} type="donation" />
                         </td>

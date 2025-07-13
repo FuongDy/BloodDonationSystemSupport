@@ -20,12 +20,13 @@ public class UserResponse {
     private Double longitude;
     private String emergencyContact;
     private String bloodTypeDescription;
+    private String bloodType;
     private String medicalConditions;
     private LocalDate lastDonationDate;
     private Boolean isReadyToDonate;
     private String role;
     private String status;
-    private Boolean emailVerified;
+    private Boolean emailVerified; 
     private Boolean phoneVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

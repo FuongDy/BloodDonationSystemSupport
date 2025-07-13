@@ -24,13 +24,13 @@ const InventorySummaryCard = ({ summary, className = '' }) => {
     <Card className={`${className}`}>
       <CardHeader className='pb-3'>
         <div className='flex items-center justify-between'>
-          <CardTitle className='text-lg text-gray-900'>
-            {summary.bloodType?.bloodGroup || 'N/A'}
+          <CardTitle className='text-lg text-red-600 font-semibold'>
+            Nhóm máu {summary.bloodType?.bloodGroup || 'N/A'}
           </CardTitle>
-          <div className='flex items-center text-sm text-gray-500'>
+          {/* <div className='flex items-center text-sm text-gray-500'>
             <Droplet className='w-4 h-4 mr-1' />
             {summary.bloodType?.componentType || 'N/A'}
-          </div>
+          </div> */}
         </div>
       </CardHeader>
 
@@ -45,13 +45,13 @@ const InventorySummaryCard = ({ summary, className = '' }) => {
           />
         ))}
         
-        {summary.bloodType?.description && (
+        {/* {summary.bloodType?.description && (
           <InfoRow
             label='Mô tả'
             value={summary.bloodType.description}
             valueClassName='text-sm text-gray-600'
           />
-        )}
+        )} */}
       </CardContent>
     </Card>
   );

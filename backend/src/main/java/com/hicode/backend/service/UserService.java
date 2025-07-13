@@ -192,6 +192,7 @@ public class UserService {
         }
         if (user.getBloodType() != null) {
             userResponse.setBloodTypeDescription(user.getBloodType().getDescription());
+            userResponse.setBloodType(user.getBloodType().getBloodGroup());
         }
         if (user.getStatus() != null) {
             userResponse.setStatus(user.getStatus().name());

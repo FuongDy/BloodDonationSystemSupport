@@ -39,7 +39,7 @@ const BloodCollectionForm = ({ processId, isOpen, onClose, onSuccess }) => {
 
       await donationService.markBloodAsCollected(processId, collectionData);
       toast.success('Đánh dấu đã lấy máu thành công');
-      onSuccess();
+      onSuccess(collectionData);
       onClose();
 
       // Reset form

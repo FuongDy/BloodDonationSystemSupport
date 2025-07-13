@@ -21,6 +21,7 @@ const AppointmentTable = ({
   appointments, 
   isLoading, 
   onReschedule, 
+  onViewDetail,
   getStatusColor: _getStatusColor, 
   isUpcoming 
 }) => {
@@ -141,7 +142,7 @@ const AppointmentTable = ({
           <Button
             size='sm'
             variant='outline'
-            onClick={() => navigate(`/admin/donation-process/${process.id}`)}
+            onClick={() => onViewDetail && onViewDetail(process.appointment || process)}
           >
             Xem chi tiết
           </Button>

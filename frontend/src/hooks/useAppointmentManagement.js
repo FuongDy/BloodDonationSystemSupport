@@ -5,8 +5,10 @@ import appointmentService from '../services/appointmentService';
 import donationService from '../services/donationService';
 import { DONATION_STATUS } from '../utils/constants';
 import { formatDateForBackend } from '../utils/dateUtils';
+import { useDonationProcess } from '../contexts/DonationProcessContext';
 
 export const useAppointmentManagement = () => {
+    const { navigateToHealthCheck } = useDonationProcess();
     const [appointments, setAppointments] = useState([]);
     const [processes, setProcesses] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +74,7 @@ export const useAppointmentManagement = () => {
             console.log('Sending appointment data:', appointmentData);
 
             await appointmentService.createAppointment(appointmentData);
-            toast.success('Tạo lịch hẹn thành công');
+            toast.success('Tạo lịch hẹn thành công - Chuyển sang khám sức khỏe');
             setShowCreateModal(false);
             setAppointmentForm({
                 processId: '',
@@ -82,6 +84,11 @@ export const useAppointmentManagement = () => {
                 staffId: null,
             });
             fetchData();
+            
+            // Navigate to health check tab after successful appointment creation with a small delay
+            setTimeout(() => {
+                navigateToHealthCheck(appointmentForm.processId);
+            }, 1000);
         } catch (error) {
             console.error('Error creating appointment:', error);
             const errorMessage = error.message || 'Không thể tạo lịch hẹn';

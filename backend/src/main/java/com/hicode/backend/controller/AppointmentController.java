@@ -28,7 +28,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/my-appointments")
-    @PreAuthorize("isAuthenticated()") // Chỉ cần đăng nhập là được
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AppointmentResponse>> getMyAppointments() {
         List<AppointmentResponse> appointments = appointmentService.getMyAppointments();
         return ResponseEntity.ok(appointments);

@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import donationService from '../services/donationService';
 import { DONATION_STATUS } from '../utils/constants';
+import { useDonationProcess } from '../contexts/DonationProcessContext';
 
 export const useDonationRequests = () => {
+  const { navigateToAppointments } = useDonationProcess();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -17,7 +19,7 @@ export const useDonationRequests = () => {
     try {
       const response = await donationService.getAllDonationRequests();
       let data = response.data || [];
-      
+
       // Filter by status
       if (filters.status) {
         data = data.filter(request => request.status === filters.status);
@@ -54,8 +56,13 @@ export const useDonationRequests = () => {
         newStatus: DONATION_STATUS.APPOINTMENT_PENDING,
         note: 'Đơn yêu cầu đã được duyệt, chờ tạo lịch hẹn'
       });
-      toast.success('Duyệt đơn yêu cầu thành công');
+      toast.success('Duyệt đơn yêu cầu thành công - Chuyển sang tạo lịch hẹn');
       fetchRequests();
+      
+      // Navigate to appointments tab after successful approval with a small delay
+      setTimeout(() => {
+        navigateToAppointments(requestId);
+      }, 1000);
     } catch (error) {
       console.error('Error approving request:', error);
       toast.error('Không thể duyệt đơn yêu cầu');

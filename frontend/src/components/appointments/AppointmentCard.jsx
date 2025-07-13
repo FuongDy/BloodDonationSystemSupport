@@ -1,11 +1,10 @@
 // src/components/appointments/AppointmentCard.jsx
 import React from 'react';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import StatusBadge from '../common/StatusBadge';
 import DateTimeDisplay from '../common/DateTimeDisplay';
 
-const AppointmentCard = ({ appointment, getStatusColor, onRequestReschedule }) => {
+const AppointmentCard = ({ appointment, onRequestReschedule }) => {
   return (
     <Card className='hover:shadow-lg transition-shadow'>
       <CardHeader>
@@ -13,10 +12,6 @@ const AppointmentCard = ({ appointment, getStatusColor, onRequestReschedule }) =
           <CardTitle className='text-xl'>
             Lịch hẹn hiến máu #{appointment.id}
           </CardTitle>
-          <StatusBadge
-            status={appointment.status}
-            className={getStatusColor(appointment.status)}
-          />
         </div>
       </CardHeader>
 
@@ -25,9 +20,9 @@ const AppointmentCard = ({ appointment, getStatusColor, onRequestReschedule }) =
           <div className='flex items-center space-x-3'>
             <Calendar className='w-5 h-5 text-blue-500' />
             <div>
-              <p className='font-medium'>Ngày giờ hẹn</p>
+              <p className='font-medium'>Ngày hẹn</p>
               <DateTimeDisplay
-                date={appointment.appointmentDateTime}
+                date={appointment.appointmentDate}
                 format='full'
               />
             </div>
@@ -55,22 +50,14 @@ const AppointmentCard = ({ appointment, getStatusColor, onRequestReschedule }) =
 
         <div className='flex items-center justify-between pt-4 border-t'>
           <div className='flex items-center space-x-2 text-sm text-gray-500'>
-            <Clock className='w-4 h-4' />
-            <span>Tạo lúc: </span>
-            <DateTimeDisplay
-              date={appointment.createdAt}
-              format='short'
-            />
           </div>
 
-          {appointment.status === 'SCHEDULED' && (
-            <button
-              onClick={() => onRequestReschedule(appointment.id)}
-              className='text-blue-600 hover:text-blue-800 font-medium'
-            >
-              Yêu cầu đổi lịch
-            </button>
-          )}
+          {/* <button
+            onClick={() => onRequestReschedule(appointment.id)}
+            className='text-blue-600 hover:text-blue-800 font-medium'
+          >
+            Yêu cầu đổi lịch
+          </button> */}
         </div>
       </CardContent>
     </Card>

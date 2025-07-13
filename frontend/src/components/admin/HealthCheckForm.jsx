@@ -37,18 +37,29 @@ const HealthCheckForm = ({ processId, isOpen, onClose, onSuccess }) => {
         isEligible: formData.isEligible,
       };
 
+      console.log('Submitting health check for process ID:', processId);
+      console.log('Health check data:', healthCheckData);
+
       await donationService.recordHealthCheck(processId, healthCheckData);
       toast.success('Đã ghi nhận kết quả khám sức khỏe');
       if (onSuccess && typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(healthCheckData);
       }
       onClose();
     } catch (error) {
       console.error('Health check error:', error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        'Lỗi khi ghi nhận kết quả khám sức khỏe';
+      console.error('Error response:', error?.response?.data);
+      
+      let errorMessage = 'Lỗi khi ghi nhận kết quả khám sức khỏe';
+      
+      if (error?.response?.status === 409) {
+        errorMessage = 'Không thể thực hiện khám sức khỏe. Trạng thái quy trình không phù hợp (cần có lịch hẹn đã xác nhận).';
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

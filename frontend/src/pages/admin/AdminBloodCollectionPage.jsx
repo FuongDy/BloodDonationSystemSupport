@@ -1,6 +1,6 @@
-// src/pages/admin/AdminBloodCollectionPage.jsx
 import React from 'react';
 import { Heart, Droplets, Users, Award } from 'lucide-react';
+import toast from 'react-hot-toast';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
 import DataTable from '../../components/common/DataTable';
@@ -8,10 +8,13 @@ import StatusBadge from '../../components/common/StatusBadge';
 import Button from '../../components/common/Button';
 import BloodCollectionForm from '../../components/admin/BloodCollectionForm';
 import { useBloodCollection } from '../../hooks/useBloodCollection';
+import { useDonationProcess } from '../../contexts/DonationProcessContext';
 import { DONATION_STATUS, STATUS_COLORS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
 
 const AdminBloodCollectionPage = () => {
+  const { navigateToTestResults } = useDonationProcess();
+  
   const {
     collections,
     isLoading,
@@ -20,6 +23,7 @@ const AdminBloodCollectionPage = () => {
     setShowCollectionModal,
     setSelectedProcess,
     fetchCollections,
+    handleBloodCollection,
   } = useBloodCollection();
 
   const columns = [
@@ -208,9 +212,14 @@ const AdminBloodCollectionPage = () => {
               setShowCollectionModal(false);
               setSelectedProcess(null);
             }}
-            onSuccess={() => {
+            onSuccess={(collectionData) => {
               setShowCollectionModal(false);
               setSelectedProcess(null);
+              // Form already called the API, just handle navigation
+              toast.success('Thu thập máu thành công - Chuyển sang xét nghiệm');
+              setTimeout(() => {
+                navigateToTestResults(selectedProcess?.id);
+              }, 1000);
               fetchCollections();
             }}
           />

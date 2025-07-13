@@ -32,15 +32,19 @@ const AdminDonationRequestsPage = () => {
         {
             key: 'donor',
             title: 'Người hiến',
-            render: value => (
-                <div>
-                    <div className='font-medium'>{value?.fullName || 'N/A'}</div>
-                    <div className='text-sm text-gray-500'>{value?.email}</div>
-                    <div className='text-sm text-red-600 font-semibold'>
-                        {value?.bloodType || 'N/A'}
+            render: value => {
+                return (
+                    <div>
+                        <div className='font-medium'>{value?.fullName || 'N/A'}</div>
+                        <div className='text-sm text-gray-500'>{value?.email}</div>
+                        <div className='text-sm text-red-600 font-semibold'>
+                            {value?.bloodType ||
+                                value?.bloodTypeDescription ||
+                                'N/A'}
+                        </div>
                     </div>
-                </div>
-            ),
+                );
+            },
         },
         {
             key: 'status',

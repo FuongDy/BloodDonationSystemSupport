@@ -40,9 +40,12 @@ const AdminEmergencyRequestsPage = () => {
 
   // Calculate stats
   const totalRequests = filteredRequests?.length || 0;
-  const pendingRequests = filteredRequests?.filter(req => req.status === 'pending')?.length || 0;
-  const approvedRequests = filteredRequests?.filter(req => req.status === 'approved')?.length || 0;
-  const urgentRequests = filteredRequests?.filter(req => req.urgencyLevel === 'critical')?.length || 0;
+  const pendingRequests = filteredRequests?.filter(req => req.status === 'PENDING')?.length || 0;
+  const fulfilledRequests = filteredRequests?.filter(req => req.status === 'FULFILLED' || req.status === 'COMPLETED')?.length || 0;
+  const urgentRequests = filteredRequests?.filter(req => req.urgency === 'CRITICAL' || req.urgencyLevel === 'critical')?.length || 0;
+  const readyToCompleteRequests = filteredRequests?.filter(req => 
+    req.status === 'PENDING' && (req.pledgeCount >= req.quantityInUnits)
+  )?.length || 0;
 
   return (
     <AdminPageLayout>
@@ -61,17 +64,17 @@ const AdminEmergencyRequestsPage = () => {
           {
             icon: <Clock className="w-5 h-5 text-yellow-300" />,
             value: pendingRequests,
-            label: "Đang chờ"
+            label: "Đang chờ xử lý"
           },
           {
             icon: <CheckCircle className="w-5 h-5 text-green-300" />,
-            value: approvedRequests,
-            label: "Đã duyệt"
+            value: fulfilledRequests,
+            label: "Đã hoàn thành"
           },
           {
-            icon: <Users className="w-5 h-5 text-orange-300" />,
-            value: urgentRequests,
-            label: "Rất khẩn cấp"
+            icon: <Users className="w-5 h-5 text-blue-300" />,
+            value: readyToCompleteRequests,
+            label: "Sẵn sàng hoàn thành"
           }
         ]}
       />
