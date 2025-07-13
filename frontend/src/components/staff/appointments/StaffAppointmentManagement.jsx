@@ -1,5 +1,5 @@
 // src/components/staff/appointments/StaffAppointmentManagement.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   Clock,
@@ -15,15 +15,41 @@ import {
   AlertCircle,
   Eye,
   Edit,
-  Trash2
+  Trash2,
+  RefreshCw,
+  User,
+  CalendarDays,
+  Timer
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import staffService from '../../../services/staffService';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import StaffDashboardHeader from '../StaffDashboardHeader';
 
 const StaffAppointmentManagement = () => {
   const [activeTab, setActiveTab] = useState('today');
   const [searchTerm, setSearchTerm] = useState('');
+  const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock data for appointments
-  const appointments = [
+  // New appointment form state
+  const [newAppointment, setNewAppointment] = useState({
+    donorName: '',
+    donorPhone: '',
+    donorEmail: '',
+    bloodType: '',
+    appointmentDate: '',
+    appointmentTime: '',
+    location: '',
+    notes: ''
+  });
+
+  // Mock data for appointments - used as fallback
+  const mockAppointments = [
     {
       id: 'APT001',
       patientName: 'Nguyễn Văn A',
@@ -64,6 +90,73 @@ const StaffAppointmentManagement = () => {
       notes: 'Yêu cầu từ bệnh viện ABC'
     }
   ];
+
+  // Fetch appointments from API
+  const fetchAppointments = async () => {
+    try {
+      setIsLoading(true);
+      const response = await staffService.getAllAppointments();
+      
+      if (response && response.data && response.data.length > 0) {
+        setAppointments(response.data);
+      } else {
+        console.log('Using mock appointment data');
+        setAppointments(mockAppointments);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      toast.error('Không thể tải dữ liệu lịch hẹn. Hiển thị dữ liệu mẫu.');
+      setAppointments(mockAppointments);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Create new appointment
+  const handleCreateAppointment = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      const response = await staffService.createAppointment(newAppointment);
+      
+      if (response && response.data) {
+        toast.success('Tạo lịch hẹn thành công!');
+        setShowCreateModal(false);
+        setNewAppointment({
+          donorName: '',
+          donorPhone: '',
+          donorEmail: '',
+          bloodType: '',
+          appointmentDate: '',
+          appointmentTime: '',
+          location: '',
+          notes: ''
+        });
+        fetchAppointments();
+      }
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      toast.error('Không thể tạo lịch hẹn. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Update appointment status
+  const handleStatusUpdate = async (appointmentId, newStatus) => {
+    try {
+      await staffService.updateAppointmentStatus(appointmentId, newStatus);
+      toast.success('Cập nhật trạng thái thành công!');
+      fetchAppointments();
+    } catch (error) {
+      console.error('Error updating appointment status:', error);
+      toast.error('Không thể cập nhật trạng thái. Vui lòng thử lại.');
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -111,9 +204,9 @@ const StaffAppointmentManagement = () => {
   };
 
   const filteredAppointments = appointments.filter(appointment => {
-    const matchesSearch = appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.phone.includes(searchTerm);
+    const matchesSearch = appointment.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         appointment.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         appointment.phone?.includes(searchTerm);
     
     const today = new Date().toISOString().split('T')[0];
     
@@ -137,21 +230,37 @@ const StaffAppointmentManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-3 bg-blue-100 rounded-xl">
-              <Calendar className="w-8 h-8 text-blue-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Quản lý lịch hẹn</h1>
-              <p className="text-gray-600">Theo dõi và quản lý các cuộc hẹn hiến máu</p>
-            </div>
+      {/* Enhanced Header */}
+      <StaffDashboardHeader 
+        title="Quản lý lịch hẹn"
+        description="Theo dõi và quản lý các cuộc hẹn hiến máu với người dùng"
+        variant="appointments"
+        showTime={true}
+        showWeather={true}
+      />
+
+      {/* Action Bar */}
+      <div className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 shadow-lg">
+        <div className="flex items-center space-x-4">
+          <div className="text-sm text-gray-600">
+            <span className="font-medium">{appointments.length}</span> cuộc hẹn
           </div>
-          <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg">
-            <Plus className="w-5 h-5" />
-            <span>Tạo lịch hẹn mới</span>
+        </div>
+        <div className="flex items-center space-x-3">
+          <button 
+            onClick={fetchAppointments}
+            disabled={isLoading}
+            className="bg-white/80 hover:bg-white/90 border border-blue-200 hover:border-blue-300 text-gray-700 px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Làm mới</span>
+          </button>
+          <button 
+            onClick={() => setShowCreateModal(true)}
+            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Tạo lịch hẹn</span>
           </button>
         </div>
       </div>
@@ -237,6 +346,11 @@ const StaffAppointmentManagement = () => {
 
       {/* Appointments List */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <LoadingSpinner />
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -325,8 +439,9 @@ const StaffAppointmentManagement = () => {
             </tbody>
           </table>
         </div>
+        )}
 
-        {filteredAppointments.length === 0 && (
+        {filteredAppointments.length === 0 && !isLoading && (
           <div className="text-center py-12">
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Không có lịch hẹn</h3>
