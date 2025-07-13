@@ -17,6 +17,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import LoadingSpinner from '../../common/LoadingSpinner';
 import RoleBadge from '../../common/RoleBadge';
 import staffService from '../../../services/staffService';
+import StaffDashboardHeader from '../StaffDashboardHeader';
 
 const StaffUserManagement = () => {
   const { user, isAuthenticated } = useAuth();
@@ -27,23 +28,24 @@ const StaffUserManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  // Fetch users from API
+  // State for donor search
+  const [showDonorSearch, setShowDonorSearch] = useState(false);
+  const [searchLocation, setSearchLocation] = useState({
+    latitude: '',
+    longitude: '',
+    radius: 10,
+    bloodTypeId: ''
+  });
+
+  // Fetch users from API (Staff chỉ có thể search donors by location)
   const fetchUsers = useCallback(async (page = 0, size = 10) => {
     try {
       setIsLoading(true);
-      const response = await staffService.getAllUsers({ page, size });
-      
-      if (response.data.content) {
-        setUsers(response.data.content);
-        setCurrentPage(response.data.number);
-        setTotalPages(response.data.totalPages);
-        setTotalElements(response.data.totalElements);
-      } else {
-        // Fallback to mock data if API fails
-        setUsers(mockUsersData);
-        setTotalPages(1);
-        setTotalElements(mockUsersData.length);
-      }
+      // Staff không có quyền xem all users, chỉ có thể search donors by location
+      // Sử dụng mock data cho demo
+      setUsers(mockUsersData);
+      setTotalPages(1);
+      setTotalElements(mockUsersData.length);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Không thể tải danh sách người dùng. Hiển thị dữ liệu mẫu.');
@@ -55,6 +57,31 @@ const StaffUserManagement = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // Search donors by location
+  const searchDonorsByLocation = async () => {
+    if (!searchLocation.latitude || !searchLocation.longitude) {
+      toast.error('Vui lòng nhập tọa độ vị trí');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await staffService.searchDonorsByLocation(searchLocation);
+      
+      if (response.data) {
+        setUsers(response.data);
+        setTotalElements(response.data.length);
+        setTotalPages(1);
+        toast.success(`Tìm thấy ${response.data.length} người hiến máu trong khu vực`);
+      }
+    } catch (error) {
+      console.error('Error searching donors:', error);
+      toast.error('Không thể tìm kiếm người hiến máu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchUsers(0, 10);
@@ -174,6 +201,14 @@ const StaffUserManagement = () => {
 
   return (
     <div className="space-y-6">
+      {/* Enhanced Header */}
+      <StaffDashboardHeader 
+        title="Quản lý người dùng"
+        description="Tìm kiếm và quản lý thông tin người hiến máu trong hệ thống"
+        variant="users"
+        showTime={true}
+        showWeather={true}
+      />
       {/* Authentication Status */}
       {!isAuthenticated && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4">
@@ -209,10 +244,10 @@ const StaffUserManagement = () => {
         <div className="flex items-start space-x-3">
           <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
           <div>
-            <h3 className="text-sm font-medium text-yellow-800">Chế độ Development</h3>
+            <h3 className="text-sm font-medium text-yellow-800">Chế độ Development - Staff User Management</h3>
             <p className="text-sm text-yellow-700 mt-1">
-              Hiện tại đang sử dụng dữ liệu mẫu do backend chưa có endpoint cho STAFF role. 
-              Tất cả chức năng tìm kiếm, phân trang vẫn hoạt động bình thường.
+              Staff có quyền hạn chế: chỉ có thể tìm kiếm người hiến máu theo vị trí địa lý. 
+              Sử dụng dữ liệu mẫu cho demo. Tính năng tìm kiếm theo vị trí sẽ gọi API /staff/users/search/donors-by-location.
             </p>
           </div>
         </div>
@@ -230,16 +265,93 @@ const StaffUserManagement = () => {
               <p className="text-gray-600">Xem danh sách và thông tin người dùng hệ thống</p>
             </div>
           </div>
-          <button 
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>Làm mới</span>
-          </button>
+          <div className="flex space-x-3">
+            <button 
+              onClick={() => fetchUsers(currentPage)}
+              disabled={isLoading}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Làm mới</span>
+            </button>
+            <button 
+              onClick={() => setShowDonorSearch(!showDonorSearch)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+            >
+              <Search className="w-5 h-5" />
+              <span>Tìm người hiến máu</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Donor Search Form */}
+      {showDonorSearch && (
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Tìm kiếm người hiến máu theo vị trí</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Vĩ độ</label>
+              <input
+                type="number"
+                step="any"
+                placeholder="10.762622"
+                value={searchLocation.latitude}
+                onChange={(e) => setSearchLocation(prev => ({ ...prev, latitude: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kinh độ</label>
+              <input
+                type="number"
+                step="any"
+                placeholder="106.660172"
+                value={searchLocation.longitude}
+                onChange={(e) => setSearchLocation(prev => ({ ...prev, longitude: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Bán kính (km)</label>
+              <input
+                type="number"
+                placeholder="10"
+                value={searchLocation.radius}
+                onChange={(e) => setSearchLocation(prev => ({ ...prev, radius: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nhóm máu (tùy chọn)</label>
+              <select
+                value={searchLocation.bloodTypeId}
+                onChange={(e) => setSearchLocation(prev => ({ ...prev, bloodTypeId: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Tất cả nhóm máu</option>
+                <option value="1">O+</option>
+                <option value="2">O-</option>
+                <option value="3">A+</option>
+                <option value="4">A-</option>
+                <option value="5">B+</option>
+                <option value="6">B-</option>
+                <option value="7">AB+</option>
+                <option value="8">AB-</option>
+              </select>
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={searchDonorsByLocation}
+              disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+            >
+              Tìm kiếm
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Search and Filters */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
