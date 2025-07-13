@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X, Eye, EyeOff } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const IdCardUploadSection = ({
   validationErrors,

@@ -55,4 +55,13 @@ public class BloodTypeController {
         List<UserResponse> users = bloodManagementService.findUsersByBloodTypeId(id);
         return ResponseEntity.ok(users);
     }
+
+    /**
+     * API MỚI: Lấy danh sách các nhóm máu có thể hiến cho một bệnh nhân (user).
+     */
+    @GetMapping("/compatible-for-user/{userId}")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<List<BloodTypeResponse>> getCompatibleDonorTypesForUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(bloodManagementService.findCompatibleDonorTypesForUser(userId));
+    }
 }

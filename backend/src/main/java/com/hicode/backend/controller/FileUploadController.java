@@ -1,6 +1,7 @@
 package com.hicode.backend.controller;
 
 import com.hicode.backend.dto.OcrDataDTO;
+import com.hicode.backend.dto.UserResponse; // THÊM IMPORT
 import com.hicode.backend.model.entity.User;
 import com.hicode.backend.repository.UserRepository;
 import com.hicode.backend.service.OcrValidationService;
@@ -30,30 +31,31 @@ public class FileUploadController {
      */
     @PostMapping("/me/upload-id-card")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> uploadIdCard(
+    // THAY ĐỔI KIỂU TRẢ VỀ TỪ String SANG Object (?) ĐỂ LINH HOẠT
+    public ResponseEntity<?> uploadIdCard(
             @RequestParam("frontImage") MultipartFile frontImage,
             @RequestParam("backImage") MultipartFile backImage) {
 
         try {
             User currentUser = userService.getCurrentUser();
 
-            // 1. Lưu ảnh mặt trước và mặt sau
             String frontImageUrl = storageService.store(frontImage);
             String backImageUrl = storageService.store(backImage);
 
-            // 2. Gọi OCR để xác thực và trích xuất dữ liệu
-            // Hàm này sẽ so sánh dữ liệu OCR với thông tin hiện có của currentUser
             OcrDataDTO ocrData = ocrValidationService.verifyAndExtractIdCardDataAgainstUser(frontImage, currentUser);
 
-            // 3. Cập nhật đường dẫn và thông tin từ OCR vào User
             currentUser.setIdCardFrontUrl(frontImageUrl);
             currentUser.setIdCardBackUrl(backImageUrl);
-            currentUser.setIdCardNumber(ocrData.getId()); // Cập nhật số CCCD từ OCR
-            currentUser.setIdCardVerified(true); // Đánh dấu đã xác thực thành công
+            currentUser.setIdCardNumber(ocrData.getId());
+            currentUser.setIdCardVerified(true);
 
-            userRepository.save(currentUser);
+            User updatedUser = userRepository.save(currentUser);
 
-            return ResponseEntity.ok("ID card images uploaded and verified successfully.");
+            // Ánh xạ người dùng đã cập nhật sang UserResponse
+            UserResponse userResponse = userService.mapToUserResponse(updatedUser);
+
+            // Trả về toàn bộ hồ sơ người dùng đã được cập nhật
+            return ResponseEntity.ok(userResponse);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Verification failed: " + e.getMessage());

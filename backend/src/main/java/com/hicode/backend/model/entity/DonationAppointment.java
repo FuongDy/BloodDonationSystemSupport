@@ -1,9 +1,11 @@
 package com.hicode.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,8 +24,9 @@ public class DonationAppointment {
     @JsonBackReference("process-appointment")
     private DonationProcess donationProcess;
 
-    @Column(nullable = false)
-    private LocalDateTime appointmentDateTime;
+    @Column(name = "appointment_date_time", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate appointmentDate;
 
     @Column(columnDefinition = "NVARCHAR(255)", nullable = false)
     private String location;

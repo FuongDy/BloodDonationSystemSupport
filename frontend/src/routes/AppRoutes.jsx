@@ -37,6 +37,7 @@ import AdminCreateEmergencyRequestPage from '../pages/admin/AdminCreateEmergency
 import AdminBloodInventoryPage from '../pages/admin/AdminBloodInventoryPage';
 import AdminBlogManagementPage from '../pages/admin/AdminBlogManagementPage';
 import AdminAppointmentManagementPage from '../pages/admin/AdminAppointmentManagementPage';
+import AdminReportsPage from '../pages/admin/AdminReportsPage';
 
 // New donation process management pages
 import AdminDonationRequestsPage from '../pages/admin/AdminDonationRequestsPage';
@@ -49,7 +50,14 @@ import AdminDonationProcessManagementPage from '../pages/admin/AdminDonationProc
 import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../components/layout/MainLayout';
 import AdminLayout from '../components/layout/AdminLayout';
+import StaffLayout from '../components/layout/StaffLayout';
 import AdminFindDonorPage from '../pages/admin/AdminFindDonorPage';
+import StaffDashboardPage from '../pages/staff/StaffDashboardPage';
+import StaffUserManagementPage from '../pages/staff/StaffUserManagementPage';
+import StaffDonationsPage from '../pages/staff/StaffDonationsPage';
+import StaffAppointmentsPage from '../pages/staff/StaffAppointmentsPage';
+import StaffInventoryPage from '../pages/staff/StaffInventoryPage';
+import StaffReportsPage from '../pages/staff/StaffReportsPage';
 
 /**
  * Main App Routes - Simplified version without lazy loading
@@ -107,6 +115,7 @@ const AppRoutes = () => (
           <Route path='blood-inventory' element={<AdminBloodInventoryPage />} />
           <Route path='blog-management' element={<AdminBlogManagementPage />} />
           <Route path='appointment-management' element={<AdminAppointmentManagementPage />} />
+          <Route path='reports' element={<AdminReportsPage />} />
           <Route path='find-donor' element={<AdminFindDonorPage />} />
           {/* separated donation process management routes */}
           <Route path='donation-requests' element={<AdminDonationRequestsPage />} />
@@ -117,12 +126,16 @@ const AppRoutes = () => (
         </Route>
       </Route>
 
-      {/* Staff Routes */}
-      <Route element={<ProtectedRoute requiredRoles={['Staff', 'Admin']} />}>
-        <Route path='/staff' element={<AdminLayout />}>
-          <Route path='donation-history' element={<AdminDonationHistoryPage />} />
-          <Route path='emergency-requests' element={<AdminEmergencyRequestsPage />} />
-          <Route path='blood-inventory' element={<AdminBloodInventoryPage />} />
+      {/* Staff Routes - Only for Staff role */}
+      <Route element={<ProtectedRoute requiredRoles={['Staff']} />}>
+        <Route path='/staff' element={<StaffLayout />}>
+          <Route index element={<StaffDashboardPage />} />
+          <Route path='donations' element={<StaffDonationsPage />} />
+          <Route path='appointments' element={<StaffAppointmentsPage />} />
+          <Route path='users' element={<StaffUserManagementPage />} />
+          <Route path='inventory' element={<StaffInventoryPage />} />
+          <Route path='blog-management' element={<AdminBlogManagementPage />} />
+          <Route path='reports' element={<StaffReportsPage />} />
         </Route>
       </Route>
 

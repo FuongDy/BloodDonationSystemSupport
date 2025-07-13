@@ -35,6 +35,12 @@ public class BloodRequest {
     @Column(nullable = false)
     private Integer quantityInUnits;
 
+    @Column
+    private Integer roomNumber;
+
+    @Column
+    private Integer bedNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private UrgencyLevel urgency;

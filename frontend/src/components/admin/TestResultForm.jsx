@@ -10,10 +10,11 @@ import toast from 'react-hot-toast';
 
 const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    bloodUnitId: '',
+    bloodUnitId: processId ? processId.toString() : '',
     isSafe: true,
     notes: '',
     bloodTypeId: '',
+    componentType: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bloodTypes, setBloodTypes] = useState([]);
@@ -27,6 +28,16 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
       index === self.findIndex(bt => bt.bloodGroup === bloodType.bloodGroup)
     );
   };
+
+  // Update bloodUnitId when processId changes
+  useEffect(() => {
+    if (processId) {
+      setFormData(prev => ({
+        ...prev,
+        bloodUnitId: processId.toString(),
+      }));
+    }
+  }, [processId]);
 
   // Fetch blood types on component mount
   useEffect(() => {
@@ -63,13 +74,18 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
       return;
     }
 
-    if (!formData.bloodUnitId.trim()) {
+    if (!formData.bloodUnitId || !formData.bloodUnitId.toString().trim()) {
       toast.error('Vui lòng nhập mã đơn vị máu');
       return;
     }
 
     if (!formData.bloodTypeId.trim()) {
       toast.error('Vui lòng chọn nhóm máu');
+      return;
+    }
+
+    if (!formData.componentType.trim()) {
+      toast.error('Vui lòng chọn thành phần máu');
       return;
     }
 
@@ -84,10 +100,11 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
     try {
       // Prepare data to match backend BloodTestResultRequest expectations
       const testResultData = {
-        bloodUnitId: formData.bloodUnitId.trim(),
+        bloodUnitId: formData.bloodUnitId.toString().trim(),
         isSafe: formData.isSafe,
         notes: formData.notes || null,
         bloodTypeId: formData.bloodTypeId.trim(),
+        componentType: formData.componentType.trim(),
       };
 
       await donationService.recordBloodTestResult(processId, testResultData);
@@ -97,10 +114,11 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
 
       // Reset form
       setFormData({
-        bloodUnitId: '',
+        bloodUnitId: processId ? processId.toString() : '',
         isSafe: true,
         notes: '',
         bloodTypeId: '',
+        componentType: '',
       });
     } catch (error) {
       console.error('Error recording test result:', error);
@@ -131,7 +149,8 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
           value={formData.bloodUnitId}
           onChange={handleChange}
           required
-          placeholder='Nhập mã đơn vị máu (VD: BU001)'
+          placeholder='Mã tự động từ process ID'
+          disabled={true}
         />
 
         <div>
@@ -164,6 +183,27 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
           {isLoadingBloodTypes && (
             <p className='text-sm text-gray-500 mt-1'>Đang tải danh sách nhóm máu...</p>
           )}
+        </div>
+
+        <div>
+          <label className='block text-sm font-medium text-gray-700 mb-2'>
+            Thành phần máu
+          </label>
+          <select
+            name='componentType'
+            value={formData.componentType}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            required
+          >
+            <option value=''>-- Chọn thành phần máu --</option>
+            <option value='Whole Blood'>Máu toàn phần</option>
+            <option value='Red Blood Cells'>Hồng cầu</option>
+            <option value='Plasma'>Huyết tương</option>
+            <option value='Platelets'>Tiểu cầu</option>
+            <option value='White Blood Cells'>Bạch cầu</option>
+          </select>
         </div>
 
         <div>

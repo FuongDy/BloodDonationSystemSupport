@@ -1,7 +1,9 @@
 // src/pages/admin/AdminDonationHistoryPage.jsx
 import React, { useState, useMemo } from 'react';
+import { History, TrendingUp, Users, Heart, Activity } from 'lucide-react';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
+import DashboardHeader from '../../components/admin/DashboardHeader';
 import { useAdminDonationHistory } from '../../hooks/useAdminDonationHistory';
 import {
   DonationDetailPanel,
@@ -43,15 +45,61 @@ const AdminDonationHistoryPage = () => {
     );
   }, [donations, search]);
 
+  // Calculate stats
+  const totalDonations = donations?.length || 0;
+  const completedDonations = donations?.filter(d => d.status === 'completed')?.length || 0;
+  const pendingDonations = donations?.filter(d => d.status === 'pending')?.length || 0;
+  const successRate = totalDonations > 0 ? Math.round((completedDonations / totalDonations) * 100) : 0;
+
   return (
-    <AdminPageLayout
-      title="Quản lý lịch sử hiến máu"
-      description="Theo dõi và quản lý các quy trình hiến máu đã hoàn thành hoặc không đạt xét nghiệm."
-      showSearch
-      onSearch={setSearch}
-      searchPlaceholder="Tìm kiếm theo tên hoặc email người hiến máu..."
-    >
-      <div className="p-6">
+    <AdminPageLayout>
+      {/* Dashboard Header */}
+      <DashboardHeader 
+        title="Quản lý Lịch sử hiến máu"
+        description="Theo dõi và quản lý các quy trình hiến máu đã hoàn thành, bao gồm thông tin người hiến và kết quả xét nghiệm."
+        variant="donation-history"
+        showActivityFeed={false}
+        stats={[
+          {
+            icon: <History className="w-5 h-5 text-amber-300" />,
+            value: totalDonations,
+            label: "Tổng lượt hiến"
+          },
+          {
+            icon: <Heart className="w-5 h-5 text-red-300" />,
+            value: completedDonations,
+            label: "Hoàn thành"
+          },
+          {
+            icon: <Activity className="w-5 h-5 text-blue-300" />,
+            value: pendingDonations,
+            label: "Đang xử lý"
+          },
+          {
+            icon: <TrendingUp className="w-5 h-5 text-green-300" />,
+            value: `${successRate}%`,
+            label: "Tỷ lệ thành công"
+          }
+        ]}
+      />
+
+      <div className="space-y-6">
+        {/* Search */}
+        <div className="flex items-center justify-between">
+          <div className="text-lg font-medium text-gray-700">
+            Danh sách lịch sử hiến máu
+          </div>
+          <div className="w-96">
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên hoặc email người hiến máu..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
         <AdminContentWrapper
           isLoading={isLoading}
           hasData={filteredDonations.length > 0}

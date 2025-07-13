@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Search, Users, MapPin, Heart } from 'lucide-react';
 import DonorSearchControls from '../../components/nearby/DonorSearchControls';
 import DonorList from '../../components/nearby/DonorList';
 import useNearbyDonors from '../../hooks/useNearbyDonors';
 import PageHeader from '../../components/common/PageHeader';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import EmptyState from '../../components/common/EmptyState';
+import DashboardHeader from '../../components/admin/DashboardHeader';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import bloodTypeService from '../../services/bloodTypeService';
 import toast from 'react-hot-toast';
 
@@ -45,15 +48,46 @@ const AdminFindDonorPage = () => {
     }
   };
 
+  // Calculate stats
+  const totalDonors = donors?.length || 0;
+  const availableDonors = donors?.filter(donor => donor.isAvailable)?.length || 0;
+  const verifiedDonors = donors?.filter(donor => donor.isVerified)?.length || 0;
+  const avgDistance = donors?.length > 0 ? 
+    Math.round(donors.reduce((sum, donor) => sum + (donor.distance || 0), 0) / donors.length * 10) / 10 : 0;
+
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <PageHeader
-            title="Tìm kiếm người hiến máu gần đây"
-            description="Tìm kiếm và liên hệ với người hiến máu phù hợp theo vị trí, nhóm máu, bán kính..."
-          />
-        </div>
+    <AdminPageLayout>
+      {/* Dashboard Header */}
+      <DashboardHeader 
+        title="Tìm người hiến máu"
+        description="Tìm kiếm và liên hệ với những người hiến máu phù hợp theo vị trí địa lý, nhóm máu và độ ưu tiên."
+        variant="find-donor"
+        showActivityFeed={false}
+        stats={[
+          {
+            icon: <Search className="w-5 h-5 text-pink-300" />,
+            value: totalDonors,
+            label: "Tìm thấy"
+          },
+          {
+            icon: <Users className="w-5 h-5 text-purple-300" />,
+            value: availableDonors,
+            label: "Sẵn sàng hiến"
+          },
+          {
+            icon: <Heart className="w-5 h-5 text-red-300" />,
+            value: verifiedDonors,
+            label: "Đã xác thực"
+          },
+          {
+            icon: <MapPin className="w-5 h-5 text-blue-300" />,
+            value: `${avgDistance}km`,
+            label: "Khoảng cách TB"
+          }
+        ]}
+      />
+
+      <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4">
             <DonorSearchControls
@@ -81,7 +115,7 @@ const AdminFindDonorPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </AdminPageLayout>
   );
 };
 

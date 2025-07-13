@@ -1,5 +1,6 @@
 package com.hicode.backend.controller;
 
+import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.dto.admin.BloodRequestResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
 import com.hicode.backend.model.entity.DonationPledge;
@@ -73,5 +74,14 @@ public class BloodRequestController {
             @PathVariable Long id,
             @RequestParam RequestStatus newStatus) {
         return ResponseEntity.ok(bloodRequestService.updateStatus(id, newStatus));
+    }
+
+    /**
+     * API MỚI: Lấy danh sách chi tiết những người đã đăng ký hiến máu cho một yêu cầu.
+     */
+    @GetMapping("/{requestId}/pledges")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<List<UserResponse>> getPledgesForRequest(@PathVariable Long requestId) {
+        return ResponseEntity.ok(bloodRequestService.getPledgedUsersForRequest(requestId));
     }
 }

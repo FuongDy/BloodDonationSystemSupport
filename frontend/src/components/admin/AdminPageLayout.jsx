@@ -13,7 +13,7 @@ const AdminPageLayout = ({
   className = 'p-6',
 }) => (
   <div className={className}>
-    <PageHeader title={title} actions={headerActions} />
+    {title && <PageHeader title={title} actions={headerActions} />}
     {showSearch && onSearch && (
       <div className='mb-4'>
         <SearchBar

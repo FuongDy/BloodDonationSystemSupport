@@ -163,7 +163,6 @@ public class DonationService {
     }
 
     /**
-     * **NEW METHOD**
      * Prepares and sends the blood test result email to the donor.
      * @param process The donation process containing donor and appointment info.
      * @param result The result of the blood test.
@@ -172,15 +171,14 @@ public class DonationService {
         User donor = process.getDonor();
         DonationAppointment appointment = process.getDonationAppointment();
 
-        // Prepare email variables
         String recipientEmail = donor.getEmail();
         String subject = "Kết quả xét nghiệm máu của bạn";
 
-        // Format the date from the appointment
         String donationDate = "không xác định";
         String location = "không xác định";
         if (appointment != null) {
-            donationDate = appointment.getAppointmentDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            // SỬA Ở ĐÂY
+            donationDate = appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             location = appointment.getLocation();
         }
 
@@ -188,9 +186,9 @@ public class DonationService {
 
         String resultText;
         if (result.getIsSafe()) {
-            resultText = "KQ 血液：Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.";
+            resultText = "KQ: Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.";
         } else {
-            resultText = "KQ 血液：Máu của bạn không đạt tiêu chuẩn an toàn. Lý do: " + result.getNotes() + ". Vui lòng liên hệ cơ sở y tế để được tư vấn chi tiết.";
+            resultText = "KQ: Máu của bạn không đạt tiêu chuẩn an toàn. Lý do: " + result.getNotes() + ". Vui lòng liên hệ cơ sở y tế để được tư vấn chi tiết.";
         }
 
         String emailBody = String.format(

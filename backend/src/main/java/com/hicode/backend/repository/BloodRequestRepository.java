@@ -9,19 +9,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long> {
 
-    // Lấy tất cả yêu cầu với các thông tin liên quan (fetch join)
     @Query("SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy")
     List<BloodRequest> findAllWithDetails();
 
-    // Tìm các yêu cầu đang hoạt động với các thông tin liên quan
     @Query("SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy WHERE br.status = :status")
     List<BloodRequest> findByStatusWithDetails(@Param("status") RequestStatus status);
 
-    // Tìm các yêu cầu theo trạng thái có phân trang
     @Query("SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy WHERE br.status = :status")
     Page<BloodRequest> findByStatus(@Param("status") RequestStatus status, Pageable pageable);
 
@@ -29,4 +27,13 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
     @Query(value = "SELECT br FROM BloodRequest br JOIN FETCH br.bloodType JOIN FETCH br.createdBy",
             countQuery = "SELECT count(br) FROM BloodRequest br")
     Page<BloodRequest> findAll(Pageable pageable);
+
+    @Query("SELECT br FROM BloodRequest br LEFT JOIN FETCH br.pledges WHERE br.id = :id")
+    Optional<BloodRequest> findByIdWithPledges(@Param("id") Long id);
+
+    long countByRoomNumberAndStatus(Integer roomNumber, RequestStatus status);
+
+    boolean existsByRoomNumberAndBedNumberAndStatus(Integer roomNumber, Integer bedNumber, RequestStatus status);
+
+    List<BloodRequest> findByStatus(RequestStatus status);
 }

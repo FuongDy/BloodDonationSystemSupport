@@ -1,11 +1,10 @@
 // src/pages/admin/AdminBloodInventoryPage.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { RefreshCw, TrendingUp, Droplet, Clock, Search, Filter, Eye, AlertTriangle } from 'lucide-react';
+import { RefreshCw, TrendingUp, Droplet, Clock, Search, Filter, Eye, AlertTriangle, Warehouse, Package, TrendingDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import inventoryService from '../../services/inventoryService';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import PageHeader from '../../components/common/PageHeader';
 import TabNavigation from '../../components/common/TabNavigation';
 import BloodUnitCard from '../../components/inventory/BloodUnitCard';
 import InventorySummaryCard from '../../components/inventory/InventorySummaryCard';
@@ -15,6 +14,8 @@ import StatusBadge from '../../components/common/StatusBadge';
 import Button from '../../components/common/Button';
 import InputField from '../../components/common/InputField';
 import Select from '../../components/common/Select';
+import DashboardHeader from '../../components/admin/DashboardHeader';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import { INVENTORY_STATUS, BLOOD_GROUPS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
 
@@ -36,6 +37,7 @@ const AdminBloodInventoryPage = () => {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Sử dụng admin endpoints vì đây là trang admin
       const [inventoryData, summaryData, recentData] = await Promise.all([
         inventoryService.getAllInventory(),
         inventoryService.getInventorySummary(),
@@ -45,7 +47,8 @@ const AdminBloodInventoryPage = () => {
       setInventory(inventoryData);
       setSummary(summaryData);
       setRecentAdditions(recentData);
-    } catch {
+    } catch (error) {
+      console.error('Error fetching inventory data:', error);
       toast.error('Không thể tải dữ liệu kho máu.');
     } finally {
       setIsLoading(false);
@@ -281,11 +284,11 @@ const AdminBloodInventoryPage = () => {
 
   if (isLoading) {
     return (
-      <div className='p-6'>
+      <AdminPageLayout>
         <div className='flex justify-center items-center py-20'>
           <LoadingSpinner size='12' />
         </div>
-      </div>
+      </AdminPageLayout>
     );
   }
 
@@ -451,22 +454,48 @@ const AdminBloodInventoryPage = () => {
   };
 
   return (
-    <div className='p-6'>
-      <PageHeader
-        title='Quản lý Kho Máu'
-        description='Theo dõi và quản lý tồn kho máu'
-        actions={headerActions}
+    <AdminPageLayout>
+      {/* Dashboard Header */}
+      <DashboardHeader 
+        title="Quản lý Kho máu"
+        description="Theo dõi và quản lý toàn bộ tồn kho máu, bao gồm thông tin về số lượng, thời hạn sử dụng và trạng thái."
+        variant="inventory"
+        showActivityFeed={false}
+        stats={[
+          {
+            icon: <Warehouse className="w-5 h-5 text-emerald-300" />,
+            value: inventory?.length || 0,
+            label: "Tổng đơn vị"
+          },
+          {
+            icon: <Package className="w-5 h-5 text-green-300" />,
+            value: inventory?.filter(unit => unit.status === 'AVAILABLE')?.length || 0,
+            label: "Sẵn sàng sử dụng"
+          },
+          {
+            icon: <Clock className="w-5 h-5 text-yellow-300" />,
+            value: inventory?.filter(unit => getExpiryStatus(unit.expiryDate) === 'expiring')?.length || 0,
+            label: "Sắp hết hạn"
+          },
+          {
+            icon: <TrendingDown className="w-5 h-5 text-red-300" />,
+            value: inventory?.filter(unit => getExpiryStatus(unit.expiryDate) === 'expired')?.length || 0,
+            label: "Đã hết hạn"
+          }
+        ]}
       />
 
-      <TabNavigation
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        className='mb-8'
-      />
+      <div className="space-y-6">
+        <TabNavigation
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          className='mb-8'
+        />
 
-      {renderTabContent()}
-    </div>
+        {renderTabContent()}
+      </div>
+    </AdminPageLayout>
   );
 };
 

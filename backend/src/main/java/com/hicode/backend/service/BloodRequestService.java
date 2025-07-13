@@ -1,5 +1,6 @@
 package com.hicode.backend.service;
 
+import com.hicode.backend.dto.UserResponse;
 import com.hicode.backend.dto.admin.BloodRequestResponse;
 import com.hicode.backend.dto.admin.BloodTypeResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,12 +33,12 @@ public class BloodRequestService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
 
-    /**
-     * Staff/Admin tạo một yêu cầu cần máu mới.
-     * Trả về DTO thay vì Entity.
-     */
     @Transactional
     public BloodRequestResponse createRequest(CreateBloodRequestRequest request) {
+        // === LOGIC KIỂM TRA MỚI ===
+        checkBedAvailability(request.getRoomNumber(), request.getBedNumber());
+        // ==========================
+
         User currentStaff = userService.getCurrentUser();
         BloodType bloodType = bloodTypeRepository.findById(request.getBloodTypeId())
                 .orElseThrow(() -> new EntityNotFoundException("BloodType not found with id: " + request.getBloodTypeId()));
@@ -49,6 +51,8 @@ public class BloodRequestService {
         newRequest.setUrgency(request.getUrgency());
         newRequest.setCreatedBy(currentStaff);
         newRequest.setStatus(RequestStatus.PENDING);
+        newRequest.setRoomNumber(request.getRoomNumber());
+        newRequest.setBedNumber(request.getBedNumber()); // Lưu số giường
 
         BloodRequest savedRequest = bloodRequestRepository.save(newRequest);
         sendNotificationToAvailableDonors(savedRequest);
@@ -56,46 +60,42 @@ public class BloodRequestService {
         return mapToResponse(savedRequest);
     }
 
-    /**
-     * Lấy danh sách các yêu cầu đang hoạt động (PENDING) cho Member xem.
-     */
+    private void checkBedAvailability(Integer roomNumber, Integer bedNumber) {
+        boolean isOccupied = bloodRequestRepository.existsByRoomNumberAndBedNumberAndStatus(
+                roomNumber, bedNumber, RequestStatus.PENDING
+        );
+        if (isOccupied) {
+            throw new IllegalStateException(
+                    String.format("Bed %d in Room %d is already occupied.", bedNumber, roomNumber)
+            );
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<BloodRequestResponse> searchActiveRequests() {
         List<BloodRequest> requests = bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
         return requests.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    /**
-     * Lấy chi tiết một yêu cầu máu theo ID.
-     */
     @Transactional(readOnly = true)
     public BloodRequestResponse getRequestById(Long id) {
-        BloodRequest request = bloodRequestRepository.findById(id)
+        BloodRequest request = bloodRequestRepository.findByIdWithPledges(id)
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + id));
         return mapToResponse(request);
     }
 
-    /**
-     * Lấy tất cả yêu cầu máu có phân trang cho Staff/Admin.
-     */
     @Transactional(readOnly = true)
     public Page<BloodRequestResponse> getAllRequests(Pageable pageable) {
         Page<BloodRequest> requestPage = bloodRequestRepository.findAll(pageable);
         return requestPage.map(this::mapToResponse);
     }
 
-    /**
-     * Lấy danh sách các yêu cầu đã hoàn thành (FULFILLED) có phân trang cho Staff/Admin.
-     */
     @Transactional(readOnly = true)
     public Page<BloodRequestResponse> getCompletedRequests(Pageable pageable) {
         Page<BloodRequest> requestPage = bloodRequestRepository.findByStatus(RequestStatus.FULFILLED, pageable);
         return requestPage.map(this::mapToResponse);
     }
 
-    /**
-     * Cho phép một Member đăng ký hiến tặng cho một yêu cầu cụ thể.
-     */
     @Transactional
     public DonationPledge pledgeForRequest(Long requestId) {
         User currentUser = userService.getCurrentUser();
@@ -106,8 +106,7 @@ public class BloodRequestService {
             throw new IllegalStateException("This blood request is no longer active for pledging.");
         }
 
-        boolean alreadyPledged = bloodRequest.getPledges().stream()
-                .anyMatch(p -> p.getDonor().getId().equals(currentUser.getId()));
+        boolean alreadyPledged = pledgeRepository.existsByDonorIdAndBloodRequestId(currentUser.getId(), requestId);
         if (alreadyPledged) {
             throw new IllegalStateException("You have already pledged for this blood request.");
         }
@@ -118,16 +117,12 @@ public class BloodRequestService {
 
         DonationPledge savedPledge = pledgeRepository.save(pledge);
 
-        // Tải lại đối tượng cha để cập nhật danh sách pledge trong bộ nhớ
-        BloodRequest updatedRequest = bloodRequestRepository.findById(requestId).get();
+        BloodRequest updatedRequest = bloodRequestRepository.findByIdWithPledges(requestId).get();
         checkAndUpdateRequestStatus(updatedRequest);
 
         return savedPledge;
     }
 
-    /**
-     * Staff/Admin cập nhật trạng thái của một yêu cầu.
-     */
     @Transactional
     public BloodRequestResponse updateStatus(Long requestId, RequestStatus newStatus) {
         BloodRequest request = bloodRequestRepository.findById(requestId)
@@ -136,23 +131,31 @@ public class BloodRequestService {
         return mapToResponse(bloodRequestRepository.save(request));
     }
 
-    /**
-     * Hàm nội bộ để kiểm tra và cập nhật trạng thái yêu cầu máu theo quy tắc N+1.
-     */
+    @Transactional(readOnly = true)
+    public List<UserResponse> getPledgedUsersForRequest(Long requestId) {
+        BloodRequest request = bloodRequestRepository.findByIdWithPledges(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + requestId));
+
+        if (request.getPledges() == null) {
+            return Collections.emptyList();
+        }
+
+        return request.getPledges().stream()
+                .map(DonationPledge::getDonor)
+                .map(userService::mapToUserResponse)
+                .collect(Collectors.toList());
+    }
+
     private void checkAndUpdateRequestStatus(BloodRequest bloodRequest) {
         int requiredQuantity = bloodRequest.getQuantityInUnits();
-        int currentPledges = bloodRequest.getPledges().size();
-        int requiredPledges = requiredQuantity + 1;
+        long currentPledges = pledgeRepository.countByBloodRequestId(bloodRequest.getId());
 
-        if (currentPledges >= requiredPledges) {
+        if (currentPledges >= requiredQuantity) {
             bloodRequest.setStatus(RequestStatus.FULFILLED);
             bloodRequestRepository.save(bloodRequest);
         }
     }
 
-    /**
-     * Gửi email thông báo bất đồng bộ đến các người hiến máu phù hợp.
-     */
     @Async
     public void sendNotificationToAvailableDonors(BloodRequest bloodRequest) {
         List<User> availableDonors = userRepository.findByIsReadyToDonateFalseAndLastDonationDateIsNotNull();
@@ -174,9 +177,6 @@ public class BloodRequestService {
         }
     }
 
-    /**
-     * Hàm helper để chuyển đổi BloodRequest Entity sang BloodRequestResponse DTO.
-     */
     private BloodRequestResponse mapToResponse(BloodRequest entity) {
         BloodRequestResponse response = new BloodRequestResponse();
         BeanUtils.copyProperties(entity, response, "bloodType", "createdBy", "pledges");

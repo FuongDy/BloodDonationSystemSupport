@@ -1,7 +1,7 @@
 // src/pages/profile/UserProfileViewPage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { useAuth } from '../../hooks/useAuth';
 import {
   Edit3,
   Mail,
@@ -13,40 +13,34 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Shield,
+  AlertTriangle,
 } from 'lucide-react';
 
-import userService from '../../services/userService';
 import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { getCCCDVerificationStatus } from '../../utils/cccvVerification';
 
 const UserProfileViewPage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user } = useAuth(); // Get user from AuthContext
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUserData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const userData = await userService.getProfile();
-      setUser(userData);
-    } catch (error) {
-      // console.error(error);
-      toast.error(`Không thể tải thông tin: ${error.message}`);
-    } finally {
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
-
   // Component hiển thị chi tiết
-  const DetailItem = ({ icon: label, value, highlight = false }) => {
+  const DetailItem = ({ icon: IconComponent, label, value, highlight = false }) => {
     return (
       <div className='py-3 sm:grid sm:grid-cols-3 sm:gap-4'>
         <dt className='text-sm font-medium text-gray-500 flex items-center'>
-          <IconComponent size={16} className='mr-2 text-red-600' />
+          {IconComponent && <IconComponent size={16} className='mr-2 text-red-600' />}
           {label}
         </dt>
         <dd
@@ -78,7 +72,8 @@ const UserProfileViewPage = () => {
     );
   }
 
-  const bloodTypeDesc = user.bloodTypeDescription || 'Chưa cập nhật';
+  const bloodTypeDesc = user?.bloodType?.bloodGroup || user?.bloodType || 'Chưa cập nhật';
+  const cccvStatus = getCCCDVerificationStatus(user);
 
   return (
     <div className='p-6 max-w-4xl mx-auto'>
@@ -87,10 +82,10 @@ const UserProfileViewPage = () => {
           <div className='flex justify-between items-center'>
             <div>
               <h1 className='text-2xl font-bold text-gray-800'>
-                Hồ sơ cá nhân: {user.fullName}
+                Hồ sơ cá nhân: {user?.fullName || 'Người dùng'}
               </h1>
               <p className='text-sm text-gray-500'>
-                <span className='font-semibold'>{user.email}</span>
+                <span className='font-semibold'>{user?.email}</span>
               </p>
             </div>
             <div className='flex space-x-2'>
@@ -109,15 +104,14 @@ const UserProfileViewPage = () => {
             <h3 className='text-lg font-semibold text-gray-700 my-3'>
               Thông tin liên hệ
             </h3>
-            <DetailItem icon={Mail} label='Email' value={user.email} />
-            <DetailItem icon={Phone} label='Số điện thoại' value={user.phone} />
-            <DetailItem icon={MapPin} label='Địa chỉ' value={user.address} />
-            {/* <DetailItem icon={MapPin} label='Vĩ độ' value={user.latitude} />
-            <DetailItem icon={MapPin} label='Kinh độ ' value={user.longitude} /> */}
+            <DetailItem icon={Mail} label='Email' value={user?.email} />
+            <DetailItem icon={Phone} label='Số điện thoại' value={user?.phone} />
+            <DetailItem icon={MapPin} label='Địa chỉ' value={user?.address || 'Chưa cập nhật'} />
             <DetailItem
               icon={UserCircle}
-              label='Liên hệ khẩn cấp'
-              value={user.emergencyContact}
+              label='Vai trò'
+              value={user?.role}
+              highlight={true}
             />
 
             <h3 className='text-lg font-semibold text-gray-700 pt-5 my-3'>
@@ -126,13 +120,13 @@ const UserProfileViewPage = () => {
             <DetailItem
               icon={CalendarDays}
               label='Ngày sinh'
-              value={
-                user.dateOfBirth
-                  ? new Date(user.dateOfBirth).toLocaleDateString()
-                  : null
-              }
+              value={user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Chưa cập nhật'}
             />
-            <DetailItem icon={UserCircle} label='Giới tính' value={user.gender === 'MALE' ? 'Nam' : user.gender === 'FEMALE' ? 'Nữ' : 'Khác'} />
+            <DetailItem 
+              icon={UserCircle} 
+              label='Giới tính' 
+              value={user?.gender === 'MALE' ? 'Nam' : user?.gender === 'FEMALE' ? 'Nữ' : 'Chưa cập nhật'} 
+            />
             <DetailItem
               icon={Heart}
               label='Nhóm máu'
@@ -142,12 +136,12 @@ const UserProfileViewPage = () => {
             <DetailItem
               icon={UserCircle}
               label='Tình trạng bệnh lý'
-              value={user.medicalConditions}
+              value={user?.medicalConditions || 'Không có'}
             />
             <DetailItem
               icon={CalendarDays}
               label='Lần hiến máu cuối'
-              value={user.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString() : null}
+              value={user?.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString() : 'Chưa hiến máu'}
             />
             <DetailItem
               icon={user.isReadyToDonate ? CheckCircle : XCircle}
@@ -168,6 +162,12 @@ const UserProfileViewPage = () => {
               icon={CheckCircle}
               label='SĐT đã xác thực'
               value={user.phoneVerified ? 'Đã xác thực' : 'Chưa xác thực'}
+            />
+            <DetailItem
+              icon={cccvStatus.isVerified ? Shield : AlertTriangle}
+              label='Xác minh CCCD/CMND'
+              value={cccvStatus.message}
+              highlight={cccvStatus.isVerified}
             />
             <DetailItem
               icon={UserCircle}
