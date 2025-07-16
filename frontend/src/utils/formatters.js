@@ -22,6 +22,21 @@ export const formatDate = (date, options = {}) => {
 };
 
 /**
+ * Format time only
+ */
+export const formatTime = (date, options = {}) => {
+  if (!date) return 'Chưa cập nhật';
+
+  const defaultOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    ...options,
+  };
+
+  return new Date(date).toLocaleTimeString('vi-VN', defaultOptions);
+};
+
+/**
  * Format date and time to Vietnamese locale
  */
 export const formatDateTime = (date, options = {}) => {
@@ -37,6 +52,25 @@ export const formatDateTime = (date, options = {}) => {
   };
 
   return new Date(date).toLocaleDateString('vi-VN', defaultOptions);
+};
+
+/**
+ * Format full date and time to Vietnamese locale
+ */
+export const formatFullDateTime = (date, options = {}) => {
+  if (!date) return 'Chưa cập nhật';
+
+  const defaultOptions = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    ...options,
+  };
+
+  return new Date(date).toLocaleString('vi-VN', defaultOptions);
 };
 
 /**

@@ -15,4 +15,6 @@ public class BloodTestResultRequest {
     private Boolean isSafe;
 
     private String notes;
+
+    private Integer bloodTypeId;
 }

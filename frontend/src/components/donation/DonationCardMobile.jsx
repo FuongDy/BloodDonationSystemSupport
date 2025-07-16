@@ -27,10 +27,21 @@ const DonationCardMobile = ({ process, user }) => {
           </div>
           <div>
             <div className='flex items-center space-x-2'>
-              <span className='text-lg font-bold text-red-600'>
-                {getProcessBloodType(process, user)}
-              </span>
-              <Droplets className='w-4 h-4 text-red-500 fill-current' />
+              {(() => {
+                const bloodType = getProcessBloodType(process, user);
+                const isUndetermined = bloodType === 'Chưa xác định nhóm máu';
+                
+                return (
+                  <>
+                    <span className={`text-lg font-bold ${isUndetermined ? 'text-gray-500' : 'text-red-600'}`}>
+                      {bloodType}
+                    </span>
+                    {!isUndetermined && (
+                      <Droplets className='w-4 h-4 text-red-500 fill-current' />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>
@@ -41,7 +52,7 @@ const DonationCardMobile = ({ process, user }) => {
       </div>
 
       {/* Note */}
-      {process.note && (
+      {process.note && process.note.trim() && (
         <div className='mb-3'>
           <div className='flex items-start space-x-2'>
             <FileText className='w-4 h-4 text-gray-500 mt-0.5' />

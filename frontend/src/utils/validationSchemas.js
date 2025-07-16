@@ -17,57 +17,57 @@ export const userRegistrationSchema = yup.object().shape({
     fullName: yup
         .string()
         .trim()
-        .required('Họ và tên là bắt buộc')
-        .min(3, 'Họ và tên phải có ít nhất 3 ký tự')
-        .max(150, 'Họ và tên không được vượt quá 150 ký tự'),
+        .required('👤 Vui lòng nhập họ và tên đầy đủ')
+        .min(3, '👤 Họ và tên phải có ít nhất 3 ký tự')
+        .max(150, '👤 Họ và tên không được vượt quá 150 ký tự'),
 
     email: yup
         .string()
         .trim()
-        .required('Email là bắt buộc')
-        .email('Định dạng email không hợp lệ')
-        .max(150, 'Email không được vượt quá 150 ký tự'),
+        .required('📧 Vui lòng nhập địa chỉ email')
+        .email('📧 Định dạng email không hợp lệ (ví dụ: user@domain.com)')
+        .max(150, '📧 Email không được vượt quá 150 ký tự'),
 
     phone: yup
         .string()
         .trim()
-        .required('Số điện thoại là bắt buộc')
-        .min(9, 'Số điện thoại phải có ít nhất 9 ký tự')
-        .max(15, 'Số điện thoại không được vượt quá 15 ký tự')
+        .required('📱 Vui lòng nhập số điện thoại')
+        .min(9, '📱 Số điện thoại phải có ít nhất 9 số')
+        .max(15, '📱 Số điện thoại không được vượt quá 15 số')
         .matches(
             /^[0-9+\-\s()]+$/,
-            'Số điện thoại chỉ được chứa số và ký tự đặc biệt'
+            '📱 Số điện thoại chỉ được chứa số và ký tự đặc biệt (+, -, space, ())'
         ),
 
     address: yup
         .string()
         .trim()
-        .required('Địa chỉ là bắt buộc')
-        .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
-        .max(255, 'Địa chỉ không được vượt quá 255 ký tự'),
+        .required('🏠 Vui lòng nhập địa chỉ thường trú')
+        .min(10, '🏠 Địa chỉ phải có ít nhất 10 ký tự')
+        .max(255, '🏠 Địa chỉ không được vượt quá 255 ký tự'),
 
     dateOfBirth: yup
         .string()
-        .required('Ngày sinh là bắt buộc')
-        .matches(/^\d{2}-\d{2}-\d{4}$/, 'Định dạng ngày sinh phải là DD-MM-YYYY'),
+        .required('📅 Vui lòng nhập ngày sinh')
+        .matches(/^\d{2}-\d{2}-\d{4}$/, '📅 Định dạng ngày sinh phải là DD-MM-YYYY'),
 
     password: yup
         .string()
-        .required('Mật khẩu là bắt buộc')
-        .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-        .max(100, 'Mật khẩu không được vượt quá 100 ký tự'),
+        .required('🔒 Vui lòng nhập mật khẩu')
+        .min(6, '🔒 Mật khẩu phải có ít nhất 6 ký tự')
+        .max(100, '🔒 Mật khẩu không được vượt quá 100 ký tự'),
 
     confirmPassword: yup
         .string()
-        .required('Xác nhận mật khẩu là bắt buộc')
-        .oneOf([yup.ref('password')], 'Mật khẩu xác nhận không khớp'),
+        .required('🔒 Vui lòng xác nhận mật khẩu')
+        .oneOf([yup.ref('password')], '🔒 Mật khẩu xác nhận không khớp với mật khẩu đã nhập'),
 
     bloodTypeId: yup.string().nullable(),
 
     agreeTerms: yup
         .boolean()
-        .required('Bạn phải đồng ý với điều khoản')
-        .oneOf([true], 'Bạn phải đồng ý với điều khoản sử dụng'),
+        .required('📜 Bạn phải đồng ý với điều khoản sử dụng')
+        .oneOf([true], '📜 Vui lòng đọc và đồng ý với điều khoản sử dụng'),
 });
 
 /**
@@ -136,11 +136,6 @@ export const userProfileSchema = yup.object().shape({
         .required('Ngày sinh là bắt buộc')
         .max(new Date(), 'Ngày sinh không thể là tương lai'),
 
-    gender: yup
-        .string()
-        .required('Giới tính là bắt buộc')
-        .oneOf(['MALE', 'FEMALE', 'OTHER'], 'Giới tính không hợp lệ'),
-
     address: yup
         .string()
         .required('Địa chỉ là bắt buộc')
@@ -181,6 +176,92 @@ export const idCardUploadSchema = yup.object().shape({
             if (!value) return false;
             return value.size <= 5 * 1024 * 1024;
         }),
+});
+
+/**
+ * Emergency Blood Request Schema
+ */
+export const emergencyRequestSchema = yup.object().shape({
+    patientName: yup
+        .string()
+        .required('👤 Vui lòng nhập tên bệnh nhân')
+        .min(2, '👤 Tên bệnh nhân phải có ít nhất 2 ký tự')
+        .max(100, '👤 Tên bệnh nhân không được vượt quá 100 ký tự'),
+
+    bloodTypeId: yup
+        .string()
+        .required('🩸 Vui lòng chọn nhóm máu cần thiết'),
+
+    quantityInUnits: yup
+        .number()
+        .required('📊 Vui lòng nhập số lượng máu cần thiết')
+        .positive('📊 Số lượng phải lớn hơn 0')
+        .max(20, '⚠️ Số lượng không được quá 20 đơn vị máu'),
+
+    urgency: yup
+        .string()
+        .required('🚨 Vui lòng chọn mức độ khẩn cấp')
+        .oneOf(['NORMAL', 'URGENT', 'CRITICAL'], '🚨 Mức độ khẩn cấp không hợp lệ'),
+
+    hospital: yup
+        .string()
+        .required('🏥 Vui lòng nhập tên bệnh viện')
+        .min(5, '🏥 Tên bệnh viện phải có ít nhất 5 ký tự'),
+
+    roomNumber: yup
+        .string()
+        .max(10, '🏠 Số phòng không được vượt quá 10 ký tự'),
+
+    bedNumber: yup
+        .string()
+        .max(10, '🛏️ Số giường không được vượt quá 10 ký tự'),
+
+    notes: yup
+        .string()
+        .max(500, '📝 Ghi chú không được vượt quá 500 ký tự'),
+});
+
+/**
+ * Donation Request Schema 
+ * Cho form yêu cầu hiến máu của user
+ */
+export const donationRequestSchema = yup.object().shape({
+    fullName: yup
+        .string()
+        .required('⚠️ Vui lòng nhập họ và tên đầy đủ')
+        .min(2, '📝 Họ và tên phải có ít nhất 2 ký tự')
+        .max(100, '📝 Họ và tên không được vượt quá 100 ký tự'),
+
+    email: yup
+        .string()
+        .required('📧 Vui lòng nhập địa chỉ email')
+        .email('📧 Định dạng email không hợp lệ (ví dụ: user@domain.com)'),
+
+    phone: yup
+        .string()
+        .required('📱 Vui lòng nhập số điện thoại')
+        .min(9, '📱 Số điện thoại phải có ít nhất 9 số')
+        .max(15, '📱 Số điện thoại không được vượt quá 15 số')
+        .matches(/^[0-9+\-\s()]+$/, '📱 Số điện thoại chỉ được chứa số và ký tự đặc biệt'),
+
+    cccdNumber: yup
+        .string()
+        .required('🆔 Vui lòng nhập số CCCD/CMND')
+        .matches(/^\d{9,12}$/, '🆔 CCCD/CMND phải từ 9-12 chữ số'),
+
+    address: yup
+        .string()
+        .required('🏠 Vui lòng nhập địa chỉ thường trú')
+        .min(10, '🏠 Địa chỉ phải có ít nhất 10 ký tự')
+        .max(255, '🏠 Địa chỉ không được vượt quá 255 ký tự'),
+
+    bloodTypeId: yup
+        .string()
+        .required('🩸 Vui lòng chọn nhóm máu của bạn'),
+
+    notes: yup
+        .string()
+        .max(500, '📝 Ghi chú không được vượt quá 500 ký tự'),
 });
 
 /**
@@ -255,12 +336,6 @@ export const bloodTypeSchema = yup.object().shape({
         .required('Nhóm máu là bắt buộc')
         .oneOf(['A', 'B', 'AB', 'O'], 'Nhóm máu không hợp lệ'),
 
-    componentType: yup
-        .string()
-        .required('Loại thành phần là bắt buộc')
-        .min(2, 'Loại thành phần phải có ít nhất 2 ký tự')
-        .max(50, 'Loại thành phần không được quá 50 ký tự'),
-
     description: yup.string().max(200, 'Mô tả không được quá 200 ký tự'),
 });
 
@@ -268,19 +343,82 @@ export const bloodTypeSchema = yup.object().shape({
  * Donation Appointment Schema
  */
 export const donationAppointmentSchema = yup.object().shape({
-    donationDate: yup
-        .date()
-        .required('Ngày hiến máu là bắt buộc')
-        .min(new Date(), 'Ngày hiến máu phải là tương lai'),
+    processId: yup
+        .string()
+        .required('🔄 Vui lòng chọn quy trình hiến máu'),
 
-    timeSlot: yup.string().required('Khung giờ là bắt buộc'),
+    appointmentDate: yup
+        .date()
+        .required('📅 Vui lòng chọn ngày hẹn')
+        .min(new Date(), '📅 Ngày hẹn phải là hôm nay hoặc tương lai')
+        .test('not-too-far', '📅 Ngày hẹn không được quá 6 tháng từ hiện tại', function(value) {
+            if (!value) return true;
+            const sixMonthsFromNow = new Date();
+            sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+            return value <= sixMonthsFromNow;
+        }),
 
     location: yup
         .string()
-        .required('Địa điểm là bắt buộc')
-        .min(5, 'Địa điểm phải có ít nhất 5 ký tự'),
+        .required('📍 Vui lòng nhập địa điểm thực hiện')
+        .min(5, '📍 Địa điểm phải có ít nhất 5 ký tự')
+        .max(200, '📍 Địa điểm không được quá 200 ký tự'),
 
-    notes: yup.string().max(500, 'Ghi chú không được quá 500 ký tự'),
+    notes: yup.string().max(500, '📝 Ghi chú không được quá 500 ký tự'),
+});
+
+/**
+ * Health Check Schema
+ * Bỏ range validation - cho phép nhập tự do các giá trị y tế
+ */
+export const healthCheckSchema = yup.object().shape({
+    bloodPressureSystolic: yup
+        .number()
+        .required('💓 Vui lòng nhập chỉ số huyết áp tâm thu')
+        .positive('💓 Huyết áp tâm thu phải lớn hơn 0'),
+
+    bloodPressureDiastolic: yup
+        .number()
+        .required('💓 Vui lòng nhập chỉ số huyết áp tâm trương')
+        .positive('💓 Huyết áp tâm trương phải lớn hơn 0'),
+
+    heartRate: yup
+        .number()
+        .required('💗 Vui lòng nhập nhịp tim')
+        .positive('💗 Nhịp tim phải lớn hơn 0'),
+
+    temperature: yup
+        .number()
+        .required('🌡️ Vui lòng nhập nhiệt độ cơ thể')
+        .positive('🌡️ Nhiệt độ phải lớn hơn 0'),
+
+    weight: yup
+        .number()
+        .required('⚖️ Vui lòng nhập cân nặng')
+        .positive('⚖️ Cân nặng phải lớn hơn 0'),
+
+    hemoglobinLevel: yup
+        .number()
+        .required('🩸 Vui lòng nhập mức hemoglobin')
+        .positive('🩸 Mức hemoglobin phải lớn hơn 0'),
+
+    notes: yup.string().max(500, '📝 Ghi chú không được quá 500 ký tự'),
+
+    isEligible: yup.boolean().required('✅ Vui lòng chọn trạng thái đạt tiêu chuẩn'),
+});
+
+/**
+ * Blood Collection Schema
+ */
+export const bloodCollectionSchema = yup.object().shape({
+    collectedVolumeMl: yup
+        .number()
+        .required('💉 Vui lòng nhập thể tích máu thu thập')
+        .positive('💉 Thể tích thu thập phải lớn hơn 0')
+        .min(100, '⚠️ Thể tích thu thập tối thiểu là 100ml')
+        .max(500, '⚠️ Thể tích thu thập tối đa là 500ml'),
+
+    notes: yup.string().max(500, '📝 Ghi chú không được quá 500 ký tự'),
 });
 
 /**
@@ -318,4 +456,51 @@ export const validateData = async(data, schema) => {
  */
 export const createValidator = schema => {
     return async data => validateData(data, schema);
+};
+
+/**
+ * Enhanced toast message utility for validation errors
+ * Provides user-friendly error messages with icons
+ */
+export const createFormErrorToast = (errors, showToast) => {
+    if (!errors || Object.keys(errors).length === 0) return;
+
+    const firstError = Object.values(errors)[0];
+    const fieldCount = Object.keys(errors).length;
+    
+    let message = firstError;
+    
+    if (fieldCount > 1) {
+        message += ` (và ${fieldCount - 1} lỗi khác)`;
+    }
+    
+    showToast('error', message);
+};
+
+/**
+ * Success messages for common form actions
+ */
+export const FORM_SUCCESS_MESSAGES = {
+    REGISTRATION: '🎉 Đăng ký tài khoản thành công! Vui lòng kiểm tra email để xác thực.',
+    LOGIN: '👋 Đăng nhập thành công! Chào mừng bạn trở lại.',
+    PROFILE_UPDATE: '✅ Cập nhật thông tin cá nhân thành công!',
+    DONATION_REQUEST: '💝 Gửi yêu cầu hiến máu thành công! Chúng tôi sẽ liên hệ với bạn sớm.',
+    EMERGENCY_REQUEST: '🚨 Tạo yêu cầu khẩn cấp thành công! Hệ thống đang thông báo đến người hiến.',
+    APPOINTMENT_CREATED: '📅 Tạo lịch hẹn thành công! Người hiến sẽ nhận được thông báo.',
+    HEALTH_CHECK: '💚 Ghi nhận kết quả khám sức khỏe thành công!',
+    BLOOD_COLLECTION: '🩸 Ghi nhận thu thập máu thành công! Cảm ơn người hiến máu.',
+};
+
+/**
+ * Error messages for common form failures
+ */
+export const FORM_ERROR_MESSAGES = {
+    NETWORK_ERROR: '🌐 Lỗi kết nối mạng. Vui lòng kiểm tra và thử lại.',
+    SERVER_ERROR: '⚠️ Lỗi máy chủ. Vui lòng thử lại sau.',
+    VALIDATION_ERROR: '📝 Vui lòng kiểm tra lại thông tin đã nhập.',
+    UNAUTHORIZED: '🔒 Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.',
+    FORBIDDEN: '⛔ Bạn không có quyền thực hiện hành động này.',
+    DUPLICATE_EMAIL: '📧 Email này đã được sử dụng. Vui lòng chọn email khác.',
+    INVALID_CREDENTIALS: '🔑 Email hoặc mật khẩu không đúng.',
+    CCCD_EXISTS: '🆔 Số CCCD/CMND này đã tồn tại trong hệ thống.',
 };

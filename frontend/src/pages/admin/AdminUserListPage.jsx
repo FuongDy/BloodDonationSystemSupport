@@ -75,32 +75,26 @@ const AdminUserListPage = () => {
 
   // Header actions configuration
   const headerActions = [
-    {
-      label: 'Làm mới',
-      icon: RefreshCw,
-      variant: 'secondary',
-      onClick: handleRefresh,
-      disabled: isLoading,
-      className: isLoading ? 'animate-spin' : '',
-    },
     ...(user?.role === 'Admin'
       ? [
-          {
-            label: 'Thêm người dùng',
-            icon: PlusCircle,
-            variant: 'primary',
-            component: Link,
-            to: '/admin/users/new',
-            disabled: isLoading,
-          },
-        ]
+        {
+          label: 'Thêm người dùng',
+          icon: PlusCircle,
+          variant: 'primary',
+          component: Link,
+          to: '/admin/users/new',
+          disabled: isLoading,
+          className: `flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out ${isLoading ? 'cursor-not-allowed opacity-60' : ''
+            }`,
+        },
+      ]
       : []),
   ];
 
   return (
     <AdminPageLayout>
       {/* Dashboard Header */}
-      <DashboardHeader 
+      <DashboardHeader
         title="Quản lý Người dùng"
         description="Quản lý toàn bộ người dùng trong hệ thống BloodConnect, bao gồm người hiến máu, người cần máu và nhân viên."
         variant="users"

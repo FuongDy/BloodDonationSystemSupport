@@ -14,13 +14,16 @@ export const useEmergencyRequests = () => {
       setIsLoading(true);
       const response = await bloodRequestService.getEmergencyRequests();
       const requestsData = response.data || response || [];
+      
       setRequests(requestsData);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching emergency requests:', error);
 
       // Handle different types of errors
       if (error.response?.status === 401) {
         toast.error('Bạn cần đăng nhập để xem danh sách yêu cầu khẩn cấp');
+      } else if (error.response?.status === 403) {
+        toast.error('Bạn không có quyền truy cập chức năng này');
       } else if (
         error.response?.status === 0 ||
         error.code === 'ECONNABORTED'
@@ -68,8 +71,15 @@ export const useEmergencyRequests = () => {
         bloodTypeText.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.hospital?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesFilter =
-        filterStatus === 'all' || request.status === filterStatus;
+      let matchesFilter = true;
+      if (filterStatus === 'all') {
+        matchesFilter = true;
+      } else if (filterStatus === 'ready') {
+        // Sẵn sàng hoàn thành: status là PENDING và đã có đủ người đăng ký
+        matchesFilter = request.status === 'PENDING' && (request.pledgeCount >= request.quantityInUnits);
+      } else {
+        matchesFilter = request.status === filterStatus;
+      }
 
       return matchesSearch && matchesFilter;
     });
@@ -80,9 +90,11 @@ export const useEmergencyRequests = () => {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
       case 'FULFILLED':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-green-100 text-green-800';
       case 'CANCELLED':
         return 'bg-red-100 text-red-800';
+      case 'COMPLETED':
+        return 'bg-blue-100 text-blue-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -91,11 +103,13 @@ export const useEmergencyRequests = () => {
   const getStatusText = status => {
     switch (status) {
       case 'PENDING':
-        return 'Chờ xử lý';
+        return 'Đang chờ xử lý';
       case 'FULFILLED':
         return 'Đã hoàn thành';
       case 'CANCELLED':
         return 'Đã hủy';
+      case 'COMPLETED':
+        return 'Đã hoàn thành';
       default:
         return status;
     }

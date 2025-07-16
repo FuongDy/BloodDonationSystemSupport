@@ -59,13 +59,43 @@ public class AppointmentService {
         process.setDonationAppointment(savedAppointment);
         process.setStatus(DonationStatus.APPOINTMENT_SCHEDULED);
 
-        // Cập nhật note với format mới
         String formattedDate = request.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         process.setNote("Appointment scheduled for " + formattedDate + " at " + request.getLocation());
         processRepository.save(process);
 
+        // === LOGIC MỚI: GỬI EMAIL XÁC NHẬN LỊCH HẸN ===
+        sendAppointmentConfirmationEmail(process.getDonor(), savedAppointment);
+        // =============================================
+
         return mapToResponse(savedAppointment);
     }
+
+    /**
+     * PHƯƠNG THỨC MỚI: Soạn và gửi email xác nhận lịch hẹn cho người hiến máu.
+     */
+    private void sendAppointmentConfirmationEmail(User donor, DonationAppointment appointment) {
+        String recipientEmail = donor.getEmail();
+        String subject = "Xác nhận lịch hẹn hiến máu";
+        String formattedDate = appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        String emailBody = String.format(
+                "Chào %s,\n\n" +
+                        "Lịch hẹn hiến máu của bạn đã được xác nhận thành công.\n\n" +
+                        "Thông tin chi tiết:\n" +
+                        "- Ngày hẹn: %s\n" +
+                        "- Địa điểm: %s\n\n" +
+                        "Vui lòng có mặt đúng giờ và mang theo giấy tờ tùy thân. " +
+                        "Chúng tôi rất trân trọng sự đóng góp của bạn.\n\n" +
+                        "Trân trọng,\n" +
+                        "Đội ngũ hỗ trợ hiến máu.",
+                donor.getFullName(),
+                formattedDate,
+                appointment.getLocation()
+        );
+
+        emailService.sendEmail(recipientEmail, subject, emailBody);
+    }
+
 
     @Transactional
     public void requestReschedule(Long appointmentId, RescheduleRequest request) {

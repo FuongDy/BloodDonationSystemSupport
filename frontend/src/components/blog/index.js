@@ -11,3 +11,4 @@ export { default as BlogEmptyState } from './BlogEmptyState';
 export { default as BlogDetailHeader } from './BlogDetailHeader';
 export { default as BlogDetailMeta } from './BlogDetailMeta';
 export { default as BlogDetailContent } from './BlogDetailContent';
+export { default as BlogDetailModal } from './BlogDetailModal';

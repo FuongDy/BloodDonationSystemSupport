@@ -63,7 +63,7 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
   };
   const pledgeCount = request.pledgeCount || request.pledges?.length || 0;
   const requiredPledges =
-    (request.quantityInUnits || request.quantityNeeded || 1) + 1; // N+1 rule
+    (request.quantityInUnits || request.quantityNeeded || 1);
   const isUrgent = request.urgency === 'URGENT';
   const isCritical = request.urgency === 'CRITICAL';
 

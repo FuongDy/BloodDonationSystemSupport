@@ -23,7 +23,7 @@ export const useModalManager = () => {
       notes: '',
     },
     collectionForm: {
-      collectedVolumeMl: 450,
+      collectedVolumeMl:350,
     },
     testResultForm: {
       isSafe: true,

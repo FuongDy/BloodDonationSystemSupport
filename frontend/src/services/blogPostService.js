@@ -41,6 +41,13 @@ const blogPostService = {
       .then(res => res.data); // Backend returns Page<BlogPostResponse>
   },
 
+  // Get draft posts (Staff/Admin)
+  getDraftPosts: (page = 0, size = 10) => {
+    return apiClient
+      .get('/blog-posts/drafts', { params: { page, size } })
+      .then(res => res.data); // Backend returns Page<BlogPostResponse>
+  },
+
   // Approve post (Staff/Admin)
   approvePost: id => {
     return apiClient.put(`/blog-posts/${id}/approve`).then(res => res.data);

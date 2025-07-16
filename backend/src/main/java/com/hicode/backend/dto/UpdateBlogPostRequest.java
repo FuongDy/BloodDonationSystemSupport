@@ -12,4 +12,6 @@ public class UpdateBlogPostRequest {
 
     @Size(min = 50)
     private String content;
+
+    private String imageUrl;
 }

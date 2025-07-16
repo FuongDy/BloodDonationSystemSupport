@@ -1,6 +1,6 @@
 package com.hicode.backend.model.entity;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.hicode.backend.model.enums.BloodComponentType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "blood_types", uniqueConstraints = {
-        @UniqueConstraint(name = "UQ_blood_group_component", columnNames = {"blood_group", "component_type"})
-})
+// Sửa lại Table: Bỏ uniqueConstraints cũ
+@Table(name = "blood_types")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,17 +19,12 @@ public class BloodType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "blood_group", length = 3, nullable = false)
+
+    @Column(name = "blood_group", length = 3, nullable = false, unique = true)
     private String bloodGroup;
 
-    @Column(name = "component_type", length = 30, nullable = false)
-    private BloodComponentType componentType;
-
-    @Column(length = 50)
+    @Column(length = 50, nullable = true)
     private String description;
-
-    @Column(nullable = false)
-    private Integer shelfLifeDays;
 
     @OneToMany(mappedBy = "bloodType", fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -43,8 +37,7 @@ public class BloodType {
     @PrePersist
     protected void onCreate() {
         this.createdAt = this.updatedAt = LocalDateTime.now();
-        if (this.componentType == null) this.componentType = BloodComponentType.WHOLE_BLOOD;
-        if (this.shelfLifeDays == null) this.shelfLifeDays = 42;
+        // Xóa bỏ: Các giá trị mặc định cho componentType và shelfLifeDays
     }
 
     @PreUpdate

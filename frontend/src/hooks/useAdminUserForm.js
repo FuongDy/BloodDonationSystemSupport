@@ -39,9 +39,9 @@ export const useAdminUserForm = (userId, mode = 'view') => {
       try {
         // Tạo danh sách roles cố định vì chưa có API
         const rolesData = [
-          { name: 'ADMIN', description: 'Quản trị viên' },
-          { name: 'STAFF', description: 'Nhân viên' },
-          { name: 'MEMBER', description: 'Thành viên' },
+          { name: 'Admin', description: 'Quản trị viên' },
+          { name: 'Staff', description: 'Nhân viên' },
+          { name: 'Member', description: 'Thành viên' },
         ];
 
         const [userData, bloodTypesData] = await Promise.all([
@@ -62,7 +62,7 @@ export const useAdminUserForm = (userId, mode = 'view') => {
             gender: userData.gender || '',
             address: userData.address || '',
             emergencyContact: userData.emergencyContact || '',
-            bloodTypeId: userData.bloodType?.id || userData.bloodTypeId || '',
+            bloodTypeId: userData.bloodTypeId || '',
             medicalConditions: userData.medicalConditions || '',
             lastDonationDate: userData.lastDonationDate || '',
             isReadyToDonate:

@@ -190,13 +190,6 @@ const DonationDetailPanel = ({
           </div>
         )}
 
-        {/* Status Update Actions */}
-        {onStatusUpdate && (
-          <div>
-            <SectionHeader title='Cập nhật trạng thái' />
-            <ActionButtonGroup actions={getStatusActions(donation.status)} />
-          </div>
-        )}
       </CardContent>
     </Card>
   );

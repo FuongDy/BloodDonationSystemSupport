@@ -40,51 +40,6 @@ const DashboardHeader = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Get greeting based on time of day
-  useEffect(() => {
-    const hour = currentTime.getHours();
-    if (hour < 6) {
-      setGreeting('Chúc bạn đêm tốt lành');
-    } else if (hour < 12) {
-      setGreeting('Chào buổi sáng');
-    } else if (hour < 18) {
-      setGreeting('Chào buổi chiều');
-    } else {
-      setGreeting('Chào buổi tối');
-    }
-  }, [currentTime]);
-
-  // Format time
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-  };
-
-  // Format date
-  const formatDate = (date) => {
-    return date.toLocaleDateString('vi-VN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  // Get weather icon based on time
-  const getWeatherIcon = () => {
-    const hour = currentTime.getHours();
-    if (hour >= 6 && hour < 12) {
-      return <Sun className="w-6 h-6 text-yellow-400 animate-pulse" />;
-    } else if (hour >= 12 && hour < 18) {
-      return <CloudSun className="w-6 h-6 text-orange-400" />;
-    } else {
-      return <Moon className="w-6 h-6 text-blue-300" />;
-    }
-  };
 
   // Get gradient based on variant
   const getGradient = () => {
@@ -162,85 +117,8 @@ const DashboardHeader = ({
                 {description}
               </p>
             </div>
-
-            {/* Greeting and date */}
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
-              <div className="flex items-center space-x-2 text-white/95">
-                <Activity className="w-5 h-5 text-white" />
-                <span className="font-medium">{greeting}</span>
-              </div>
-              
-              <div className="flex items-center space-x-2 text-white/95">
-                <Calendar className="w-5 h-5 text-white" />
-                <span className="text-sm">{formatDate(currentTime)}</span>
-              </div>
-            </div>
-
-            {/* Activity feed toggle */}
-            {showActivityFeed && (
-              <button
-                onClick={() => setShowActivities(!showActivities)}
-                className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors duration-200 text-sm"
-              >
-                <Activity className="w-4 h-4" />
-                <span>Hoạt động gần đây</span>
-                {showActivities ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </button>
-            )}
-          </div>
-
-          {/* Right section - Time and quick stats */}
-          <div className="flex flex-col items-start lg:items-end space-y-4">
-            {/* Current time */}
-            {showTime && (
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:bg-white/25 transition-all duration-300 shadow-lg min-w-[200px]">
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-6 h-6 text-white" />
-                    {showWeather && getWeatherIcon()}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-2xl md:text-3xl font-bold text-white tabular-nums drop-shadow-md">
-                      {formatTime(currentTime)}
-                    </div>
-                    <div className="text-sm text-white/80">
-                      UTC+7
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Quick stats */}
-            {stats.length > 0 && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {stats.map((stat, index) => (
-                  <div 
-                    key={index}
-                    className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30 text-center min-w-[100px] hover:bg-white/25 transition-all duration-300 hover:scale-105 shadow-lg"
-                  >
-                    <div className="flex items-center justify-center mb-1">
-                      {stat.icon}
-                    </div>
-                    <div className="text-lg font-bold text-white drop-shadow-md">{stat.value}</div>
-                    <div className="text-xs text-white/80 truncate">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          </div> 
         </div>
-
-        {/* Expandable Activity Feed */}
-        {showActivityFeed && showActivities && (
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <LiveActivityFeed maxItems={4} />
-          </div>
-        )}
       </div>
     </div>
   );

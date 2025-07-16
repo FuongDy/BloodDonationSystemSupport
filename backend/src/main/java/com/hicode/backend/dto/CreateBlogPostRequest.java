@@ -15,4 +15,6 @@ public class CreateBlogPostRequest {
     @NotBlank(message = "Content is required")
     @Size(min = 50)
     private String content;
+
+    private String imageUrl;
 }

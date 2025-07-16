@@ -58,7 +58,7 @@ const bloodRequestService = {
         return apiClient.get('/blood-requests/search/active', { params });
     },
 
-    // Lấy các đơn yêu cầu máu đã hoàn thành - Sử dụng endpoint mới
+    // Lấy các đơn yêu cầu máu đã hoàn thành 
     getCompletedRequests: (options = {}) => {
         const { page = 0, size = 10 } = options;
         return apiClient.get('/blood-requests/search/completed', { params: { page, size } });

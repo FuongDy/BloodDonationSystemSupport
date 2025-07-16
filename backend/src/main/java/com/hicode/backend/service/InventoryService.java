@@ -24,7 +24,7 @@ public class InventoryService {
     private BloodUnitRepository bloodUnitRepository;
 
     @Transactional
-    public BloodUnit addUnitToInventory(DonationProcess process, String bloodUnitId) {
+    public void addUnitToInventory(DonationProcess process, String bloodUnitId) {
         if (bloodUnitRepository.existsById(bloodUnitId)) {
             throw new IllegalArgumentException("Blood unit with ID " + bloodUnitId + " already exists.");
         }
@@ -45,13 +45,16 @@ public class InventoryService {
         newUnit.setVolumeMl(process.getCollectedVolumeMl());
         newUnit.setCollectionDate(LocalDate.now());
 
-        int shelfLife = bloodType.getShelfLifeDays();
-        newUnit.setExpiryDate(LocalDate.now().plusDays(shelfLife));
+        // === SỬA LỖI TẠI ĐÂY ===
+        // Đặt một hạn sử dụng mặc định là 42 ngày.
+        final int SHELF_LIFE_DAYS = 42;
+        newUnit.setExpiryDate(LocalDate.now().plusDays(SHELF_LIFE_DAYS));
+        // =======================
 
         newUnit.setStatus(InventoryStatus.AVAILABLE);
         newUnit.setStorageLocation("Main Storage");
 
-        return bloodUnitRepository.save(newUnit);
+        bloodUnitRepository.save(newUnit);
     }
 
     public List<BloodUnitResponse> getAllInventory() {
@@ -83,8 +86,10 @@ public class InventoryService {
         response.setBloodType(btResponse);
 
         // Map Donor Info
-        response.setDonorId(entity.getDonationProcess().getDonor().getId());
-        response.setDonorName(entity.getDonationProcess().getDonor().getFullName());
+        if (entity.getDonationProcess() != null && entity.getDonationProcess().getDonor() != null) {
+            response.setDonorId(entity.getDonationProcess().getDonor().getId());
+            response.setDonorName(entity.getDonationProcess().getDonor().getFullName());
+        }
 
         return response;
     }

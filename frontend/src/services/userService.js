@@ -24,6 +24,68 @@ class UserService {
     }
   }
 
+  /**
+   * Lấy thông tin chi tiết của một người dùng theo ID (dành cho admin).
+   * @param {number} userId - ID của người dùng.
+   * @param {boolean} forceRefresh - Bỏ qua cache và lấy dữ liệu mới.
+   * @returns {Promise<object>} - Đối tượng thông tin người dùng.
+   */
+  async getUserByIdForAdmin(userId, forceRefresh = false) {
+    try {
+      const response = await apiClient.get(`/admin/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tải thông tin người dùng');
+    }
+  }
+
+  /**
+   * Tạo người dùng mới (dành cho admin).
+   * @param {object} userData - Dữ liệu người dùng mới.
+   * @returns {Promise<object>} - Đối tượng người dùng đã được tạo.
+   */
+  async createUserByAdmin(userData) {
+    try {
+      const response = await apiClient.post('/admin/users', userData);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi tạo người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể tạo người dùng');
+    }
+  }
+
+  /**
+   * Cập nhật thông tin người dùng (dành cho admin).
+   * @param {number} userId - ID của người dùng.
+   * @param {object} userData - Dữ liệu cập nhật.
+   * @returns {Promise<object>} - Đối tượng người dùng đã được cập nhật.
+   */
+  async updateUserByAdmin(userId, userData) {
+    try {
+      const response = await apiClient.put(`/admin/users/${userId}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi cập nhật người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể cập nhật người dùng');
+    }
+  }
+
+  /**
+   * Vô hiệu hóa người dùng (soft delete - dành cho admin).
+   * @param {number} userId - ID của người dùng.
+   * @returns {Promise<object>} - Đối tượng người dùng đã được vô hiệu hóa.
+   */
+  async softDeleteUserByAdmin(userId) {
+    try {
+      const response = await apiClient.delete(`/admin/users/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi vô hiệu hóa người dùng:', error.message);
+      throw new Error(error.response?.data?.message || 'Không thể vô hiệu hóa người dùng');
+    }
+  }
+
   // =================================================================
   // CÁC PHƯƠNG THỨC CHO HỒ SƠ CÁ NHÂN CỦA NGƯỜI DÙNG
   // =================================================================
@@ -88,10 +150,6 @@ class UserService {
       throw new Error(error.response?.data?.message || 'Không thể tải lên CCCD');
     }
   }
-
-  // =================================================================
-  // CÁC PHƯƠNG THỨC TIỆN ÍCH KHÁC
-  // =================================================================
 
   /**
    * Tìm kiếm người hiến máu phù hợp dựa trên vị trí.

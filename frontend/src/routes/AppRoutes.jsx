@@ -36,6 +36,7 @@ import AdminEmergencyRequestsPage from '../pages/admin/AdminEmergencyRequestsPag
 import AdminCreateEmergencyRequestPage from '../pages/admin/AdminCreateEmergencyRequestPage';
 import AdminBloodInventoryPage from '../pages/admin/AdminBloodInventoryPage';
 import AdminBlogManagementPage from '../pages/admin/AdminBlogManagementPage';
+import AdminBlogCreatePage from '../pages/admin/AdminBlogCreatePage';
 import AdminAppointmentManagementPage from '../pages/admin/AdminAppointmentManagementPage';
 import AdminReportsPage from '../pages/admin/AdminReportsPage';
 
@@ -48,6 +49,7 @@ import AdminDonationProcessManagementPage from '../pages/admin/AdminDonationProc
 
 // Layout components
 import ProtectedRoute from './ProtectedRoute';
+import AdminOnlyRoute from './AdminOnlyRoute';
 import MainLayout from '../components/layout/MainLayout';
 import AdminLayout from '../components/layout/AdminLayout';
 import StaffLayout from '../components/layout/StaffLayout';
@@ -99,43 +101,35 @@ const AppRoutes = () => (
         </Route>
       </Route>
 
-      {/* Admin Routes */}
-      <Route element={<ProtectedRoute requiredRoles={['Admin']} />}>
+      {/* Admin and Staff Routes - Combined with role-based access */}
+      <Route element={<ProtectedRoute requiredRoles={['Admin', 'Staff']} />}>
         <Route path='/admin' element={<AdminLayout />}>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path='users' element={<AdminUserListPage />} />
-          <Route path='users/new' element={<AdminUserCreatePage />} />
-          <Route path='users/:userId/edit' element={<AdminUserEditPage />} />
-          <Route path='users/:userId' element={<AdminUserDetailPage />} />
-          <Route path='blood-types' element={<AdminBloodTypePage />} />
-          <Route path='blood-compatibility' element={<AdminBloodCompatibilityPage />} />
-          <Route path='donation-history' element={<AdminDonationHistoryPage />} />
+          {/* Admin-only routes */}
+          <Route index element={<AdminOnlyRoute><AdminDashboardPage /></AdminOnlyRoute>} />
+          <Route path='users' element={<AdminOnlyRoute><AdminUserListPage /></AdminOnlyRoute>} />
+          <Route path='users/new' element={<AdminOnlyRoute><AdminUserCreatePage /></AdminOnlyRoute>} />
+          <Route path='users/:userId/edit' element={<AdminOnlyRoute><AdminUserEditPage /></AdminOnlyRoute>} />
+          <Route path='users/:userId' element={<AdminOnlyRoute><AdminUserDetailPage /></AdminOnlyRoute>} />
+          <Route path='blood-types' element={<AdminOnlyRoute><AdminBloodTypePage /></AdminOnlyRoute>} />
+          <Route path='blood-compatibility' element={<AdminOnlyRoute><AdminBloodCompatibilityPage /></AdminOnlyRoute>} />
+          <Route path='blog-management' element={<AdminOnlyRoute><AdminBlogManagementPage /></AdminOnlyRoute>} />
+          <Route path='blog/create' element={<AdminOnlyRoute><AdminBlogCreatePage /></AdminOnlyRoute>} />
+          <Route path='appointment-management' element={<AdminOnlyRoute><AdminAppointmentManagementPage /></AdminOnlyRoute>} />
+          <Route path='reports' element={<AdminOnlyRoute><AdminReportsPage /></AdminOnlyRoute>} />
+          
+          {/* Shared routes for both Admin and Staff */}
           <Route path='emergency-requests' element={<AdminEmergencyRequestsPage />} />
           <Route path='emergency-requests/create' element={<AdminCreateEmergencyRequestPage />} />
+          <Route path='donation-process-management' element={<AdminDonationProcessManagementPage />} />
+          <Route path='donation-history' element={<AdminDonationHistoryPage />} />
           <Route path='blood-inventory' element={<AdminBloodInventoryPage />} />
-          <Route path='blog-management' element={<AdminBlogManagementPage />} />
-          <Route path='appointment-management' element={<AdminAppointmentManagementPage />} />
-          <Route path='reports' element={<AdminReportsPage />} />
           <Route path='find-donor' element={<AdminFindDonorPage />} />
-          {/* separated donation process management routes */}
+          
+          {/* Donation process sub-routes - Shared */}
           <Route path='donation-requests' element={<AdminDonationRequestsPage />} />
           <Route path='health-checks' element={<AdminHealthCheckPage />} />
           <Route path='blood-collection' element={<AdminBloodCollectionPage />} />
           <Route path='test-results' element={<AdminTestResultsPage />} />
-          <Route path='donation-process-management' element={<AdminDonationProcessManagementPage />} />
-        </Route>
-      </Route>
-
-      {/* Staff Routes - Only for Staff role */}
-      <Route element={<ProtectedRoute requiredRoles={['Staff']} />}>
-        <Route path='/staff' element={<StaffLayout />}>
-          <Route index element={<StaffDashboardPage />} />
-          <Route path='donations' element={<StaffDonationsPage />} />
-          <Route path='appointments' element={<StaffAppointmentsPage />} />
-          <Route path='users' element={<StaffUserManagementPage />} />
-          <Route path='inventory' element={<StaffInventoryPage />} />
-          <Route path='blog-management' element={<AdminBlogManagementPage />} />
-          <Route path='reports' element={<StaffReportsPage />} />
         </Route>
       </Route>
 

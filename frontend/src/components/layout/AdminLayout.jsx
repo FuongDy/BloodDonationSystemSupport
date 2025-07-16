@@ -1,6 +1,6 @@
 // frontendv2/src/components/layout/AdminLayout.jsx
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -23,6 +23,7 @@ import RoleBadge from '../common/RoleBadge';
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout, user } = useAuth();
 
   const menuItems = [
@@ -79,7 +80,7 @@ const AdminLayout = () => {
       path: '/admin/blog-management',
       icon: FileText,
       label: 'Quản lý blog',
-      roles: ['Admin', 'Staff'],
+      roles: ['Admin'],
     },
     {
       path: '/admin/find-donor',
@@ -117,16 +118,16 @@ const AdminLayout = () => {
       <aside className='w-80 bg-white/20 backdrop-blur-xl border-r border-white/30 text-gray-800 flex flex-col fixed h-full shadow-2xl z-10'>
         {/* Header with Logo and Branding */}
         <div className='p-6 border-b border-white/30 bg-gradient-to-r from-purple-500/10 to-indigo-500/10'>
-          <Link to='/admin' className='flex items-center space-x-3'>
+          <Link to={user?.role === 'Staff' ? '/admin/emergency-requests' : '/admin'} className='flex items-center space-x-3'>
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
               <Crown className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
             <div>
               <span className='text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm'>
-                Admin Panel
+                {user?.role === 'Staff' ? 'Staff Panel' : 'Admin Panel'}
               </span>
               <div className='text-xs text-purple-600/80 font-medium'>
-                Quản trị hệ thống
+                {user?.role === 'Staff' ? 'Quản lý nhân viên' : 'Quản trị hệ thống'}
               </div>
             </div>
           </Link>

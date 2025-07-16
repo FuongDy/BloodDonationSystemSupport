@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface BloodTypeRepository extends JpaRepository<BloodType, Integer> {
-    Optional<BloodType> findByBloodGroupAndComponentType(String bloodGroup, BloodComponentType componentType);
+    Optional<BloodType> findByBloodGroup(String bloodGroup);
 }

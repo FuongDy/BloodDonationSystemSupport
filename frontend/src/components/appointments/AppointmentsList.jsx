@@ -3,7 +3,7 @@ import React from 'react';
 import EmptyState from '../common/EmptyState';
 import AppointmentCard from './AppointmentCard';
 
-const AppointmentsList = ({ appointments, getStatusColor, onRequestReschedule }) => {
+const AppointmentsList = ({ appointments, onRequestReschedule }) => {
   if (appointments.length === 0) {
     return (
       <EmptyState
@@ -23,7 +23,6 @@ const AppointmentsList = ({ appointments, getStatusColor, onRequestReschedule })
         <AppointmentCard
           key={appointment.id}
           appointment={appointment}
-          getStatusColor={getStatusColor}
           onRequestReschedule={onRequestReschedule}
         />
       ))}

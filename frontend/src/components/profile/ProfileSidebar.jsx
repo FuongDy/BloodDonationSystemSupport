@@ -16,19 +16,6 @@ const ProfileSidebar = () => {
 
   const menuItems = [
     { path: '/profile', icon: UserCircle, label: 'Thông tin cá nhân' },
-    { path: '/profile/security', icon: Shield, label: 'Bảo mật & Đăng nhập' },
-    {
-      path: '/profile/donation-schedule',
-      icon: CalendarDays,
-      label: 'Lịch hiến máu',
-    },
-    {
-      path: '/profile/donation-history',
-      icon: History,
-      label: 'Lịch sử hiến máu',
-    },
-    { path: '/profile/notifications', icon: Bell, label: 'Thông báo' },
-    { path: '/profile/settings', icon: Settings, label: 'Cài đặt tài khoản' },
   ];
 
   const isActive = path => {

@@ -11,6 +11,7 @@ import com.hicode.backend.model.enums.*;
 import com.hicode.backend.repository.DonationProcessRepository;
 import com.hicode.backend.repository.HealthCheckRepository;
 import com.hicode.backend.repository.UserRepository;
+import com.hicode.backend.repository.BloodTypeRepository; // <<< THÊM IMPORT
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +25,16 @@ import java.util.stream.Collectors;
 @Service
 public class DonationService {
 
-    @Autowired
-    private DonationProcessRepository donationProcessRepository;
-    @Autowired
-    private HealthCheckRepository healthCheckRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AppointmentService appointmentService;
-    @Autowired
-    private InventoryService inventoryService;
-    @Autowired
-    private EmailService emailService; // Inject EmailService
+    @Autowired private DonationProcessRepository donationProcessRepository;
+    @Autowired private HealthCheckRepository healthCheckRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private BloodTypeRepository bloodTypeRepository; // <<< THÊM AUTOWIRED
+    @Autowired private UserService userService;
+    @Autowired private AppointmentService appointmentService;
+    @Autowired private InventoryService inventoryService;
+    @Autowired private EmailService emailService;
+
+    // ... (các phương thức từ createDonationRequest đến recordHealthCheck không đổi) ...
 
     /**
      * User đăng ký một quy trình hiến máu mới.
@@ -48,6 +45,7 @@ public class DonationService {
         DonationProcess process = new DonationProcess();
         process.setDonor(currentUser);
         process.setStatus(DonationStatus.PENDING_APPROVAL);
+        process.setDonationType(DonationType.STANDARD);
         DonationProcess savedProcess = donationProcessRepository.save(process);
         return mapToResponse(savedProcess);
     }
@@ -105,7 +103,7 @@ public class DonationService {
         healthCheck.setDonationProcess(process);
         healthCheckRepository.save(healthCheck);
 
-        process.setHealthCheck(healthCheck); // Đảm bảo mối quan hệ hai chiều
+        process.setHealthCheck(healthCheck);
         process.setStatus(request.getIsEligible() ? DonationStatus.HEALTH_CHECK_PASSED : DonationStatus.HEALTH_CHECK_FAILED);
         process.setNote("Health check recorded. Result: " + (request.getIsEligible() ? "Passed." : "Failed. " + request.getNotes()));
 
@@ -128,8 +126,10 @@ public class DonationService {
         return mapToResponse(donationProcessRepository.save(process));
     }
 
+
     /**
      * Staff/Admin ghi nhận kết quả xét nghiệm túi máu.
+     * <<< LOGIC MỚI ĐƯỢC THÊM VÀO ĐÂY >>>
      */
     @Transactional
     public DonationProcessResponse recordBloodTestResult(Long processId, BloodTestResultRequest request) {
@@ -138,30 +138,42 @@ public class DonationService {
             throw new IllegalStateException("Cannot record test results for blood that has not been collected.");
         }
 
+        User donor = process.getDonor();
+
+        // === BƯỚC 1: KIỂM TRA VÀ CẬP NHẬT NHÓM MÁU CHO USER NẾU CÓ ===
+        if (request.getBloodTypeId() != null) {
+            BloodType newBloodType = bloodTypeRepository.findById(request.getBloodTypeId())
+                    .orElseThrow(() -> new EntityNotFoundException("BloodType not found with id: " + request.getBloodTypeId()));
+
+            // Cập nhật nhóm máu mới cho hồ sơ người hiến
+            donor.setBloodType(newBloodType);
+            userRepository.save(donor); // Lưu lại thông tin người dùng
+        }
+        // =============================================================
+
         if (request.getIsSafe()) {
+            // Service Inventory sẽ tự động lấy nhóm máu MỚI NHẤT từ `donor`
             inventoryService.addUnitToInventory(process, request.getBloodUnitId());
 
             process.setStatus(DonationStatus.COMPLETED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " passed tests and added to inventory.");
 
-            User donor = process.getDonor();
+            // Cập nhật trạng thái sẵn sàng hiến của người dùng
             donor.setIsReadyToDonate(false);
             donor.setLastDonationDate(LocalDate.now());
             userRepository.save(donor);
 
-            // **NEW: Send email with test results**
             sendTestResultEmail(process, request);
-
 
         } else {
             process.setStatus(DonationStatus.TESTING_FAILED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " failed testing. Reason: " + request.getNotes());
-            // **NEW: Send email with test results even if it failed**
             sendTestResultEmail(process, request);
         }
         return mapToResponse(donationProcessRepository.save(process));
     }
 
+    // ... (các phương thức helper còn lại không thay đổi) ...
     /**
      * Prepares and sends the blood test result email to the donor.
      * @param process The donation process containing donor and appointment info.
@@ -177,11 +189,11 @@ public class DonationService {
         String donationDate = "không xác định";
         String location = "không xác định";
         if (appointment != null) {
-            // SỬA Ở ĐÂY
             donationDate = appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             location = appointment.getLocation();
         }
 
+        // Lấy nhóm máu đã được cập nhật
         String bloodGroup = donor.getBloodType() != null ? donor.getBloodType().getBloodGroup() : "chưa xác định";
 
         String resultText;
@@ -194,7 +206,7 @@ public class DonationService {
         String emailBody = String.format(
                 "Trân trọng cảm ơn quý vị đã tham gia Hiến máu vào ngày %s tại %s.\n\n" +
                         "%s\n\n" +
-                        "Kính mong quý vị sẽ tiếp tục tham gia Hiến máu trong các chương trình tiếp theo. LH: 0328223509",
+                        "Kính mong quý vị sẽ tiếp tục tham gia Hiến máu trong các chương trình tiếp theo. LH: 0338203440",
                 donationDate,
                 location,
                 resultText

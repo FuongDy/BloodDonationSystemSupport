@@ -47,10 +47,10 @@ public class BloodManagementService {
 
     @Transactional
     public BloodTypeResponse createBloodType(CreateBloodTypeRequest request) {
-        Optional<BloodType> existing = bloodTypeRepository.findByBloodGroupAndComponentType(
-                request.getBloodGroup(), request.getComponentType());
+        // Sửa lại logic: chỉ kiểm tra theo bloodGroup
+        Optional<BloodType> existing = bloodTypeRepository.findByBloodGroup(request.getBloodGroup());
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("Blood type with this group and component already exists.");
+            throw new IllegalArgumentException("Blood type with group '" + request.getBloodGroup() + "' already exists.");
         }
         BloodType bloodType = new BloodType();
         BeanUtils.copyProperties(request, bloodType);

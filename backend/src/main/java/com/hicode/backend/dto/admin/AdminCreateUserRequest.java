@@ -43,6 +43,14 @@ public class AdminCreateUserRequest {
     @Size(min = 10, max = 255, message = "Address must be between 10 and 255 characters")
     private String address;
 
+    private String gender;
+    private String emergencyContact;
+    private String medicalConditions;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate lastDonationDate;
+    
+    private Boolean isReadyToDonate;
     private Integer bloodTypeId;
     private String status;
     private Boolean emailVerified;

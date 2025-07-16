@@ -3,22 +3,6 @@ import apiClient from './apiClient';
 
 const bloodTypeService = {
   getAll: () => {
-    // For testing: Check if we're in mock mode (when no real backend)
-    if (!import.meta.env.VITE_API_BASE_URL || window.location.hostname === 'localhost') {
-      const mockBloodTypes = [
-        { id: 1, bloodGroup: 'O+', description: 'O positive' },
-        { id: 2, bloodGroup: 'O-', description: 'O negative' },
-        { id: 3, bloodGroup: 'A+', description: 'A positive' },
-        { id: 4, bloodGroup: 'A-', description: 'A negative' },
-        { id: 5, bloodGroup: 'B+', description: 'B positive' },
-        { id: 6, bloodGroup: 'B-', description: 'B negative' },
-        { id: 7, bloodGroup: 'AB+', description: 'AB positive' },
-        { id: 8, bloodGroup: 'AB-', description: 'AB negative' }
-      ];
-      
-      return Promise.resolve(mockBloodTypes);
-    }
-    
     return apiClient.get('/blood-types').then(res => res.data).catch(error => {
       console.error('BloodTypeService.getAll error:', error);
       throw error;

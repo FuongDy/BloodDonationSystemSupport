@@ -13,13 +13,10 @@ public class InventorySummary {
     private long totalVolumeMl;
 
     public InventorySummary(BloodType bloodType, long unitCount, Long totalVolumeMl) {
-        // Chuyển đổi BloodType Entity sang BloodTypeResponse
+
         BloodTypeResponse btResponse = new BloodTypeResponse();
         btResponse.setId(bloodType.getId());
         btResponse.setBloodGroup(bloodType.getBloodGroup());
-        btResponse.setComponentType(bloodType.getComponentType());
-        btResponse.setDescription(bloodType.getDescription());
-        btResponse.setShelfLifeDays(bloodType.getShelfLifeDays());
 
         this.bloodType = btResponse;
         this.unitCount = unitCount;

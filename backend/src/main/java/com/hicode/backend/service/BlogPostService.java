@@ -67,6 +67,7 @@ public class BlogPostService {
         BlogPost post = new BlogPost();
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
+        post.setImageUrl(request.getImageUrl()); // Xử lý trường imageUrl
         post.setAuthor(currentUser);
 
         // Kiểm tra vai trò để quyết định trạng thái bài viết
@@ -98,6 +99,9 @@ public class BlogPostService {
         }
         if (request.getContent() != null) {
             post.setContent(request.getContent());
+        }
+        if (request.getImageUrl() != null) { // Xử lý trường imageUrl
+            post.setImageUrl(request.getImageUrl());
         }
 
         BlogPost updatedPost = blogPostRepository.save(post);

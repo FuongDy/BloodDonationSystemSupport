@@ -1,5 +1,5 @@
 // src/pages/admin/AdminAppointmentManagementPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Calendar } from 'lucide-react';
 
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
@@ -10,10 +10,14 @@ import {
   CreateAppointmentModal,
   RescheduleAppointmentModal,
 } from '../../components/admin/appointments';
+import { AppointmentDetailModal } from '../../components/admin/modals';
 import { useAppointmentManagement } from '../../hooks/useAppointmentManagement';
 import StatusBadge from '../../components/common/StatusBadge';
 
 const AdminAppointmentManagementPage = () => {
+  const [selectedAppointmentDetail, setSelectedAppointmentDetail] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
   const {
     // Data
     appointments,
@@ -45,6 +49,11 @@ const AdminAppointmentManagementPage = () => {
     isUpcoming,
     isPast,
   } = useAppointmentManagement();
+
+  const handleViewDetail = (appointment) => {
+    setSelectedAppointmentDetail(appointment);
+    setShowDetailModal(true);
+  };
 
   const headerActions = [
     {
@@ -87,6 +96,7 @@ const AdminAppointmentManagementPage = () => {
             appointments={appointments}
             isLoading={isLoading}
             onReschedule={openRescheduleModal}
+            onViewDetail={handleViewDetail}
             getStatusColor={getStatusColor}
             isUpcoming={isUpcoming}
             columns={[
@@ -118,6 +128,13 @@ const AdminAppointmentManagementPage = () => {
           rescheduleForm={rescheduleForm}
           setRescheduleForm={setRescheduleForm}
           onSubmit={handleRequestReschedule}
+        />
+
+        {/* Appointment Detail Modal */}
+        <AppointmentDetailModal
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          appointment={selectedAppointmentDetail}
         />
       </div>
     </AdminPageLayout>

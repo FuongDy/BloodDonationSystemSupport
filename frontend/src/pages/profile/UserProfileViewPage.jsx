@@ -19,6 +19,7 @@ import {
 
 import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { formatFullDateTime } from '../../utils/formatters';
 import { getCCCDVerificationStatus } from '../../utils/cccvVerification';
 
 const UserProfileViewPage = () => {
@@ -120,12 +121,12 @@ const UserProfileViewPage = () => {
             <DetailItem
               icon={CalendarDays}
               label='Ngày sinh'
-              value={user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'Chưa cập nhật'}
+              value={user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}
             />
             <DetailItem 
               icon={UserCircle} 
               label='Giới tính' 
-              value={user?.gender === 'MALE' ? 'Nam' : user?.gender === 'FEMALE' ? 'Nữ' : 'Chưa cập nhật'} 
+              value={user?.gender === 'Male' ? 'Nam' : user?.gender === 'Female' ? 'Nữ' : 'Chưa cập nhật'} 
             />
             <DetailItem
               icon={Heart}
@@ -141,14 +142,14 @@ const UserProfileViewPage = () => {
             <DetailItem
               icon={CalendarDays}
               label='Lần hiến máu cuối'
-              value={user?.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString() : 'Chưa hiến máu'}
+              value={user?.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString('vi-VN') : 'Chưa hiến máu'}
             />
-            <DetailItem
+            {/* <DetailItem
               icon={user.isReadyToDonate ? CheckCircle : XCircle}
               label='Sẵn sàng hiến máu'
               value={user.isReadyToDonate ? 'Có' : 'Không'}
               highlight={user.isReadyToDonate === true}
-            />
+            /> */}
 
             <h3 className='text-lg font-semibold text-gray-700 pt-5 my-3'>
               Thông tin tài khoản
@@ -158,11 +159,11 @@ const UserProfileViewPage = () => {
               label='Email đã xác thực'
               value={user.emailVerified ? 'Đã xác thực' : 'Chưa xác thực'}
             />
-            <DetailItem
+            {/* <DetailItem
               icon={CheckCircle}
               label='SĐT đã xác thực'
               value={user.phoneVerified ? 'Đã xác thực' : 'Chưa xác thực'}
-            />
+            /> */}
             <DetailItem
               icon={cccvStatus.isVerified ? Shield : AlertTriangle}
               label='Xác minh CCCD/CMND'
@@ -182,12 +183,12 @@ const UserProfileViewPage = () => {
             <DetailItem
               icon={Clock}
               label='Ngày tạo tài khoản'
-              value={user.createdAt ? new Date(user.createdAt).toLocaleString() : null}
+              value={formatFullDateTime(user.createdAt)}
             />
             <DetailItem
               icon={Clock}
               label='Ngày cập nhật gần nhất'
-              value={user.updatedAt ? new Date(user.updatedAt).toLocaleString() : null}
+              value={formatFullDateTime(user.updatedAt)}
             />
           </dl>
         </div>

@@ -2,7 +2,6 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import Pagination from '../components/common/Pagination';
 import CCCDVerificationBanner from '../components/common/CCCDVerificationBanner';
 import { useAuth } from '../hooks/useAuth';
 import { useMyAppointments } from '../hooks/useMyAppointments';
@@ -17,16 +16,12 @@ const MyAppointmentsPage = () => {
   const {
     appointments,
     isLoading,
-    page,
-    totalPages,
     showRescheduleDialog,
     rescheduleReason,
-    setPage,
     setRescheduleReason,
     setShowRescheduleDialog,
     handleOpenReschedule,
     handleConfirmReschedule,
-    getStatusColor,
   } = useMyAppointments();
 
   if (isLoading) {
@@ -49,19 +44,8 @@ const MyAppointmentsPage = () => {
       
       <AppointmentsList
         appointments={appointments}
-        getStatusColor={getStatusColor}
         onRequestReschedule={handleOpenReschedule}
       />
-      
-      {appointments.length > 0 && (
-        <div className='mt-8 flex justify-center'>
-          <Pagination
-            currentPage={page - 1}
-            totalPages={totalPages}
-            onPageChange={p => setPage(p + 1)}
-          />
-        </div>
-      )}
       
       <RescheduleModal
         isOpen={showRescheduleDialog}

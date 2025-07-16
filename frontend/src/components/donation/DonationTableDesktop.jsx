@@ -14,6 +14,50 @@ import { formatDateTime } from '../../utils/formatters';
 import { HOSPITAL_INFO } from '../../utils/constants';
 import { getProcessBloodType } from '../../utils/bloodTypeUtils';
 
+const BloodTypeDisplay = ({ process, user }) => {
+  const bloodType = getProcessBloodType(process, user);
+  const isUndetermined = bloodType === 'Chưa xác định nhóm máu';
+  
+  return (
+    <div className='flex items-center space-x-2'>
+      <span className={`text-lg font-bold ${isUndetermined ? 'text-gray-500' : 'text-red-600'}`}>
+        {bloodType}
+      </span>
+      {!isUndetermined && (
+        <Droplets className='w-4 h-4 text-red-500 fill-current' />
+      )}
+    </div>
+  );
+};
+
+const DonationInfo = ({ process }) => {
+  const hasNote = process.note && process.note.trim();
+  const hasVolume = process.collectedVolumeMl && process.collectedVolumeMl > 0;
+  
+  return (
+    <div className='max-w-xs'>
+      {hasNote && (
+        <p className='text-sm text-gray-700 line-clamp-2 mb-2'>
+          {process.note}
+        </p>
+      )}
+      {hasVolume && (
+        <div className='flex items-center text-sm text-green-600'>
+          <Droplets className='w-4 h-4 mr-1' />
+          <span className='font-semibold'>
+            {process.collectedVolumeMl}ml
+          </span>
+        </div>
+      )}
+      {!hasNote && !hasVolume && (
+        <span className='text-sm text-gray-500 italic'>
+          Chưa có thông tin
+        </span>
+      )}
+    </div>
+  );
+};
+
 const DonationTableDesktop = ({ donationProcesses, user }) => {
   return (
     <div className='hidden lg:block'>
@@ -57,12 +101,7 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
                         />
                       </div>
                       <div>
-                        <div className='flex items-center space-x-2'>
-                          <span className='text-xl font-bold text-red-600'>
-                            {getProcessBloodType(process, user)}
-                          </span>
-                          <Droplets className='w-4 h-4 text-red-500 fill-current' />
-                        </div>
+                        <BloodTypeDisplay process={process} user={user} />
                         <StatusBadge 
                           status={process.status || 'PENDING_APPROVAL'} 
                           type="donation" 
@@ -73,21 +112,7 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
 
                   {/* Donation Info */}
                   <td className='px-6 py-4'>
-                    <div className='max-w-xs'>
-                      {process.note && (
-                        <p className='text-sm text-gray-700 line-clamp-2 mb-2'>
-                          {process.note}
-                        </p>
-                      )}
-                      {process.collectedVolumeMl && (
-                        <div className='flex items-center text-sm text-green-600'>
-                          <Droplets className='w-4 h-4 mr-1' />
-                          <span className='font-semibold'>
-                            {process.collectedVolumeMl}ml
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    <DonationInfo process={process} />
                   </td>
 
                   {/* Appointment */}

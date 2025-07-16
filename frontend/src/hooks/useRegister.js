@@ -4,10 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { useAppStore, showNotification } from '../store/appStore';
 import bloodTypeService from '../services/bloodTypeService';
-import { userRegistrationSchema } from '../utils/validationSchemas';
+import { userRegistrationSchema, createFormErrorToast, FORM_SUCCESS_MESSAGES, FORM_ERROR_MESSAGES } from '../utils/validationSchemas';
 import { handleApiError } from '../utils/errorHandler';
+import toast from 'react-hot-toast';
 
 export const useRegister = () => {
+    // Tối ưu toast với duration ngắn và dismiss cũ
+    const showToast = (type, message) => {
+        toast.dismiss(); // Dismiss all existing toasts
+        toast[type](message, {
+            duration: 2500, // 2.5 seconds for registration (slightly longer than blog)
+            position: 'top-center',
+        });
+    };
+
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -216,28 +226,29 @@ export const useRegister = () => {
                 errors[err.path] = err.message;
             });
             setValidationErrors(errors);
-            showNotification('Vui lòng kiểm tra lại thông tin đăng ký.', 'error');
+            
+            // Use enhanced error toast function
+            createFormErrorToast(errors, showToast);
 
         } else if (error.message === 'INVALID_DATE_FORMAT') {
             // Lỗi định dạng ngày sinh
+            const dateError = { dateOfBirth: '📅 Định dạng ngày sinh không hợp lệ (DD-MM-YYYY)' };
             setValidationErrors(prev => ({
                 ...prev,
-                dateOfBirth: 'Định dạng ngày sinh không hợp lệ (DD-MM-YYYY)',
+                ...dateError,
             }));
-            showNotification('Định dạng ngày sinh không hợp lệ', 'error');
+            createFormErrorToast(dateError, showToast);
 
         } else if (!error.response) {
             // Network error or other non-HTTP error
             console.error('Network or non-HTTP error:', error);
-            showNotification('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.', 'error');
+            showToast('error', FORM_ERROR_MESSAGES.NETWORK_ERROR);
 
         } else if (error.response && error.response.data) {
             handleBackendError(error.response.data, error.response.status);
         } else {
             // Network hoặc lỗi không xác định
-            handleApiError(error, showNotification, {
-                fallbackMessage: 'Không thể kết nối đến server. Vui lòng thử lại.',
-            });
+            showToast('error', 'Không thể kết nối đến server. Vui lòng thử lại');
         }
     };
 
@@ -250,7 +261,7 @@ export const useRegister = () => {
         // Handle 500 internal server errors
         if (status === 500) {
             console.error('Server internal error (500):', apiErrors);
-            showNotification('Lỗi hệ thống. Vui lòng thử lại sau hoặc liên hệ quản trị viên.', 'error');
+            showToast('error', FORM_ERROR_MESSAGES.SERVER_ERROR);
             return;
         }
 
@@ -259,13 +270,14 @@ export const useRegister = () => {
             // Check if it's an email already exists error
             if (apiErrors.toLowerCase().includes('email is already in use') ||
                 apiErrors.toLowerCase().includes('email already exists')) {
+                const emailError = { email: FORM_ERROR_MESSAGES.DUPLICATE_EMAIL };
                 setValidationErrors(prev => ({
                     ...prev,
-                    email: 'Email này đã được sử dụng. Vui lòng chọn email khác.'
+                    ...emailError
                 }));
-                showNotification('Email này đã được sử dụng. Vui lòng chọn email khác.', 'error');
+                createFormErrorToast(emailError, showToast);
             } else {
-                showNotification(apiErrors, 'error');
+                showToast('error', `⚠️ ${apiErrors}`);
             }
             return;
         }
@@ -274,9 +286,9 @@ export const useRegister = () => {
             handleFieldErrors(apiErrors.errors);
         } else if (apiErrors.message) {
             // General API error message
-            showNotification(apiErrors.message, 'error');
+            showToast('error', `⚠️ ${apiErrors.message}`);
         } else {
-            showNotification('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.', 'error');
+            showToast('error', FORM_ERROR_MESSAGES.VALIDATION_ERROR);
         }
     };
 
@@ -336,7 +348,19 @@ export const useRegister = () => {
             const mappedField = mapFieldName(field);
 
             if (mappedField) {
-                formErrors[mappedField] = errorMessage;
+                // Add emoji prefix based on field type
+                let enhancedMessage = errorMessage;
+                if (mappedField === 'email' && !enhancedMessage.startsWith('📧')) {
+                    enhancedMessage = `📧 ${errorMessage}`;
+                } else if (mappedField === 'phone' && !enhancedMessage.startsWith('📱')) {
+                    enhancedMessage = `📱 ${errorMessage}`;
+                } else if (mappedField === 'fullName' && !enhancedMessage.startsWith('👤')) {
+                    enhancedMessage = `👤 ${errorMessage}`;
+                } else if (mappedField === 'password' && !enhancedMessage.startsWith('🔒')) {
+                    enhancedMessage = `🔒 ${errorMessage}`;
+                }
+                
+                formErrors[mappedField] = enhancedMessage;
             } else {
                 console.warn(`Unmapped field: ${field} -> ${errorMessage}`);
                 if (!formErrors.general) formErrors.general = [];
@@ -381,10 +405,7 @@ export const useRegister = () => {
 
             // Bước 5: Xử lý response thành công
             if (response && (response.success || response.data)) {
-                showNotification(
-                    'Mã OTP đã được gửi! Vui lòng kiểm tra email.',
-                    'success'
-                );
+                showToast('success', FORM_SUCCESS_MESSAGES.REGISTRATION);
 
                 // Navigate với data đã được format
                 navigate('/verify-otp', {
@@ -395,7 +416,7 @@ export const useRegister = () => {
             } else {
                 // If we received a response but it doesn't indicate success
                 console.error('Unexpected response format:', response);
-                throw new Error('Không thể gửi OTP. Vui lòng thử lại.');
+                showToast('error', FORM_ERROR_MESSAGES.SERVER_ERROR);
             }
         } catch (error) {
             console.error('Registration submit error:', error);

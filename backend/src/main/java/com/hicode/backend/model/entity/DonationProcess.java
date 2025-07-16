@@ -3,6 +3,7 @@ package com.hicode.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hicode.backend.model.enums.DonationStatus;
+import com.hicode.backend.model.enums.DonationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,10 @@ public class DonationProcess {
     @OneToOne(mappedBy = "donationProcess", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("process-appointment")
     private DonationAppointment donationAppointment;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30, nullable = false)
+    private DonationType donationType;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

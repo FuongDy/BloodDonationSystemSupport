@@ -6,10 +6,7 @@ import com.hicode.backend.dto.admin.BloodTypeResponse;
 import com.hicode.backend.dto.admin.CreateBloodRequestRequest;
 import com.hicode.backend.model.entity.*;
 import com.hicode.backend.model.enums.*;
-import com.hicode.backend.repository.BloodRequestRepository;
-import com.hicode.backend.repository.BloodTypeRepository;
-import com.hicode.backend.repository.DonationPledgeRepository;
-import com.hicode.backend.repository.UserRepository;
+import com.hicode.backend.repository.*; // THÊM IMPORT
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +30,13 @@ public class BloodRequestService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
 
+    // THÊM AUTOWIRED CHO REPOSITORY MỚI
+    @Autowired private DonationProcessRepository donationProcessRepository;
+
+
     @Transactional
     public BloodRequestResponse createRequest(CreateBloodRequestRequest request) {
-        // === LOGIC KIỂM TRA MỚI ===
         checkBedAvailability(request.getRoomNumber(), request.getBedNumber());
-        // ==========================
 
         User currentStaff = userService.getCurrentUser();
         BloodType bloodType = bloodTypeRepository.findById(request.getBloodTypeId())
@@ -52,7 +51,7 @@ public class BloodRequestService {
         newRequest.setCreatedBy(currentStaff);
         newRequest.setStatus(RequestStatus.PENDING);
         newRequest.setRoomNumber(request.getRoomNumber());
-        newRequest.setBedNumber(request.getBedNumber()); // Lưu số giường
+        newRequest.setBedNumber(request.getBedNumber());
 
         BloodRequest savedRequest = bloodRequestRepository.save(newRequest);
         sendNotificationToAvailableDonors(savedRequest);
@@ -71,6 +70,46 @@ public class BloodRequestService {
         }
     }
 
+    @Transactional
+    public DonationPledge pledgeForRequest(Long requestId) {
+        User currentUser = userService.getCurrentUser();
+        BloodRequest bloodRequest = bloodRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("Blood request not found"));
+
+        if(bloodRequest.getStatus() != RequestStatus.PENDING) {
+            throw new IllegalStateException("This blood request is no longer active for pledging.");
+        }
+
+        boolean alreadyPledged = pledgeRepository.existsByDonorIdAndBloodRequestId(currentUser.getId(), requestId);
+        if (alreadyPledged) {
+            throw new IllegalStateException("You have already pledged for this blood request.");
+        }
+
+        // === LOGIC MỚI: TỰ ĐỘNG TẠO QUY TRÌNH HIẾN MÁU KHẨN CẤP ===
+        createEmergencyDonationProcess(currentUser, bloodRequest);
+        // ==========================================================
+
+        DonationPledge pledge = new DonationPledge();
+        pledge.setDonor(currentUser);
+        pledge.setBloodRequest(bloodRequest);
+
+        return pledgeRepository.save(pledge);
+    }
+
+    /**
+     * PHƯƠNG THỨC HELPER MỚI: Tạo một quy trình hiến máu loại EMERGENCY
+     */
+    private void createEmergencyDonationProcess(User donor, BloodRequest forRequest) {
+        DonationProcess process = new DonationProcess();
+        process.setDonor(donor);
+        process.setStatus(DonationStatus.APPOINTMENT_PENDING); // Chuyển sang chờ xếp lịch ngay
+        process.setDonationType(DonationType.EMERGENCY); // Gán đúng loại là KHẨN CẤP
+        process.setNote("Donor pledged for emergency request ID: " + forRequest.getId() + " for patient " + forRequest.getPatientName());
+
+        donationProcessRepository.save(process);
+    }
+
+    // ... các phương thức còn lại không thay đổi ...
     @Transactional(readOnly = true)
     public List<BloodRequestResponse> searchActiveRequests() {
         List<BloodRequest> requests = bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
@@ -97,33 +136,6 @@ public class BloodRequestService {
     }
 
     @Transactional
-    public DonationPledge pledgeForRequest(Long requestId) {
-        User currentUser = userService.getCurrentUser();
-        BloodRequest bloodRequest = bloodRequestRepository.findById(requestId)
-                .orElseThrow(() -> new EntityNotFoundException("Blood request not found"));
-
-        if(bloodRequest.getStatus() != RequestStatus.PENDING) {
-            throw new IllegalStateException("This blood request is no longer active for pledging.");
-        }
-
-        boolean alreadyPledged = pledgeRepository.existsByDonorIdAndBloodRequestId(currentUser.getId(), requestId);
-        if (alreadyPledged) {
-            throw new IllegalStateException("You have already pledged for this blood request.");
-        }
-
-        DonationPledge pledge = new DonationPledge();
-        pledge.setDonor(currentUser);
-        pledge.setBloodRequest(bloodRequest);
-
-        DonationPledge savedPledge = pledgeRepository.save(pledge);
-
-        BloodRequest updatedRequest = bloodRequestRepository.findByIdWithPledges(requestId).get();
-        checkAndUpdateRequestStatus(updatedRequest);
-
-        return savedPledge;
-    }
-
-    @Transactional
     public BloodRequestResponse updateStatus(Long requestId, RequestStatus newStatus) {
         BloodRequest request = bloodRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found with id: " + requestId));
@@ -144,16 +156,6 @@ public class BloodRequestService {
                 .map(DonationPledge::getDonor)
                 .map(userService::mapToUserResponse)
                 .collect(Collectors.toList());
-    }
-
-    private void checkAndUpdateRequestStatus(BloodRequest bloodRequest) {
-        int requiredQuantity = bloodRequest.getQuantityInUnits();
-        long currentPledges = pledgeRepository.countByBloodRequestId(bloodRequest.getId());
-
-        if (currentPledges >= requiredQuantity) {
-            bloodRequest.setStatus(RequestStatus.FULFILLED);
-            bloodRequestRepository.save(bloodRequest);
-        }
     }
 
     @Async

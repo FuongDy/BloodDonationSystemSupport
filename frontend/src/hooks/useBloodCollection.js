@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import donationService from '../services/donationService';
 import { DONATION_STATUS } from '../utils/constants';
+import { useDonationProcess } from '../contexts/DonationProcessContext';
 
 export const useBloodCollection = () => {
+  const { navigateToTestResults } = useDonationProcess();
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProcess, setSelectedProcess] = useState(null);
@@ -34,8 +36,14 @@ export const useBloodCollection = () => {
   const handleBloodCollection = async (processId, collectionData) => {
     try {
       await donationService.markBloodAsCollected(processId, collectionData);
-      toast.success('Đánh dấu đã lấy máu thành công');
+      toast.success('Thu thập máu thành công - Chuyển sang xét nghiệm');
       fetchCollections();
+      
+      // Navigate to test results after successful blood collection with a small delay
+      setTimeout(() => {
+        navigateToTestResults(processId);
+      }, 1000);
+      
       return true;
     } catch (error) {
       console.error('Error marking blood as collected:', error);

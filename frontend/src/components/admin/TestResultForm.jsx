@@ -39,6 +39,20 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
     }
   }, [processId]);
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        bloodUnitId: processId ? processId.toString() : '',
+        isSafe: true,
+        notes: '',
+        bloodTypeId: '',
+        componentType: '',
+      });
+      setIsSubmitting(false);
+    }
+  }, [isOpen, processId]);
+
   // Fetch blood types on component mount
   useEffect(() => {
     const fetchBloodTypes = async () => {
@@ -79,15 +93,16 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
       return;
     }
 
-    if (!formData.bloodTypeId.trim()) {
+    if (!formData.bloodTypeId || !formData.bloodTypeId.toString().trim()) {
       toast.error('Vui lòng chọn nhóm máu');
       return;
     }
 
-    if (!formData.componentType.trim()) {
-      toast.error('Vui lòng chọn thành phần máu');
-      return;
-    }
+    // componentType is optional, remove validation
+    // if (!formData.componentType || !formData.componentType.trim()) {
+    //   toast.error('Vui lòng chọn thành phần máu trước khi ghi nhận kết quả');
+    //   return;
+    // }
 
     // Validate that selected blood type exists
     const selectedBloodType = bloodTypes.find(bt => bt.id.toString() === formData.bloodTypeId);
@@ -104,7 +119,7 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
         isSafe: formData.isSafe,
         notes: formData.notes || null,
         bloodTypeId: formData.bloodTypeId.trim(),
-        componentType: formData.componentType.trim(),
+        componentType: formData.componentType ? formData.componentType.trim() : null,
       };
 
       await donationService.recordBloodTestResult(processId, testResultData);
@@ -171,7 +186,7 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
             {bloodTypes.length > 0 ? (
               bloodTypes.map(bt => (
                 <option key={bt.id} value={bt.id}>
-                  {bt.bloodGroup} {bt.componentType ? `(${bt.componentType})` : ''}
+                  {bt.bloodGroup}
                 </option>
               ))
             ) : (
@@ -185,26 +200,25 @@ const TestResultForm = ({ processId, isOpen, onClose, onSuccess }) => {
           )}
         </div>
 
-        <div>
+        {/* <div>
           <label className='block text-sm font-medium text-gray-700 mb-2'>
-            Thành phần máu
+            Thành phần máu <span className="text-gray-400">(tùy chọn)</span>
           </label>
           <select
             name='componentType'
-            value={formData.componentType}
+            value={formData.componentType || ''}
             onChange={handleChange}
             disabled={isSubmitting}
             className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-            required
           >
-            <option value=''>-- Chọn thành phần máu --</option>
+            <option value=''>-- Chọn thành phần máu (không bắt buộc) --</option>
             <option value='Whole Blood'>Máu toàn phần</option>
             <option value='Red Blood Cells'>Hồng cầu</option>
             <option value='Plasma'>Huyết tương</option>
             <option value='Platelets'>Tiểu cầu</option>
             <option value='White Blood Cells'>Bạch cầu</option>
           </select>
-        </div>
+        </div> */}
 
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-3'>

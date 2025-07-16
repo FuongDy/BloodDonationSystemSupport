@@ -37,7 +37,7 @@ const UserPersonalSection = ({
         label='Ngày sinh'
         value={
           user.dateOfBirth
-            ? new Date(user.dateOfBirth).toLocaleDateString()
+            ? new Date(user.dateOfBirth).toLocaleDateString('vi-VN')
             : null
         }
         isEditable={true}
@@ -79,8 +79,8 @@ const UserPersonalSection = ({
       <UserDetailItem
         icon={Heart}
         label='Nhóm máu'
-        value={bloodTypeDesc}
-        highlight={bloodTypeDesc !== 'Chưa cập nhật'}
+        value={bloodTypes.find(bt => bt.id === user.bloodTypeId)?.bloodGroup || bloodTypeDesc}
+        highlight={bloodTypes.find(bt => bt.id === user.bloodTypeId)?.bloodGroup !== 'Chưa cập nhật'}
         isEditable={true}
         fieldName='bloodTypeId'
         fieldType='select'
@@ -119,7 +119,7 @@ const UserPersonalSection = ({
         label='Lần hiến máu cuối'
         value={
           user.lastDonationDate
-            ? new Date(user.lastDonationDate).toLocaleDateString()
+            ? new Date(user.lastDonationDate).toLocaleDateString('vi-VN')
             : null
         }
         isEditable={true}
@@ -131,7 +131,7 @@ const UserPersonalSection = ({
         errors={errors}
         isSubmitting={isSubmitting}
       />
-      <UserDetailItem
+      {/* <UserDetailItem
         icon={user.isReadyToDonate ? CheckCircle : XCircle}
         label='Sẵn sàng hiến máu'
         value={user.isReadyToDonate ? 'Có' : 'Không'}
@@ -144,7 +144,7 @@ const UserPersonalSection = ({
         onInputChange={onInputChange}
         errors={errors}
         isSubmitting={isSubmitting}
-      />
+      /> */}
     </>
   );
 };

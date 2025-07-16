@@ -38,6 +38,9 @@ public class BlogPost {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
     private LocalDateTime updatedAt;
 
     @PrePersist

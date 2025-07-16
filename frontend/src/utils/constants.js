@@ -88,6 +88,15 @@ export const DONATION_STATUS = {
     CANCELLED: 'CANCELLED',
 };
 
+// Appointment Status
+export const APPOINTMENT_STATUS = {
+    PENDING: 'PENDING',
+    CONFIRMED: 'CONFIRMED',
+    COMPLETED: 'COMPLETED',
+    CANCELLED: 'CANCELLED',
+    RESCHEDULED: 'RESCHEDULED',
+};
+
 // Request Status
 export const REQUEST_STATUS = {
     PENDING: 'PENDING',

@@ -27,7 +27,7 @@ const UserAccountSection = ({
         fieldType='select'
         options={roles.map(role => ({
           value: role.name,
-          label: `${role.name} (${role.description})`,
+          label: `${role.name}`,
         }))}
         isEditMode={isEditMode}
         formData={formData}

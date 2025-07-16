@@ -8,14 +8,33 @@ import { HOSPITAL_INFO } from '../utils/constants';
 import { useAppToast } from './useAppToast';
 import { getErrorMessage } from '../utils/errorHandler';
 import { canProceedWithDonation } from '../utils/cccvVerification';
+import toast from 'react-hot-toast';
+import * as Yup from 'yup';
+
+// Validation schema cho donation request
+const donationRequestSchema = Yup.object().shape({
+    notes: Yup.string()
+        .max(500, 'Ghi chú không được vượt quá 500 ký tự')
+        .nullable()
+});
 
 export const useRequestDonation = () => {
+    // Tối ưu toast với duration ngắn
+    const showToast = (type, message) => {
+        toast.dismiss();
+        toast[type](message, {
+            duration: 2500,
+            position: 'top-center',
+        });
+    };
+
     const [formData, setFormData] = useState({
         notes: '',
     });
     const [loading, setLoading] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showCCCDAlert, setShowCCCDAlert] = useState(false);
+    const [validationErrors, setValidationErrors] = useState({});
 
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
@@ -29,6 +48,22 @@ export const useRequestDonation = () => {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        
+        // Validate form data
+        try {
+            await donationRequestSchema.validate(formData, { abortEarly: false });
+            setValidationErrors({});
+        } catch (error) {
+            if (error.name === 'ValidationError') {
+                const errors = {};
+                error.inner.forEach(err => {
+                    errors[err.path] = err.message;
+                });
+                setValidationErrors(errors);
+                return; // Don't show toast for validation errors
+            }
+        }
+
         const canProceed = requireAuth(
             null,
             'Vui lòng đăng nhập để đăng ký hiến máu.'
@@ -56,12 +91,10 @@ export const useRequestDonation = () => {
             };
 
             await donationService.createDonationRequest(requestData);
-            showSuccess(
-                'Đăng ký hiến máu thành công! Chúng tôi sẽ sớm liên hệ với bạn để sắp xếp lịch hẹn phù hợp.'
-            );
+            showToast('success', 'Đăng ký hiến máu thành công! Chúng tôi sẽ sớm liên hệ với bạn');
             navigate('/my-donation-history');
         } catch (error) {
-            showError(getErrorMessage(error));
+            showToast('error', getErrorMessage(error));
         } finally {
             setLoading(false);
         }
@@ -74,6 +107,7 @@ export const useRequestDonation = () => {
         showConfirmModal,
         showCCCDAlert,
         isAuthenticated,
+        validationErrors,
 
         // Actions
         setShowConfirmModal,

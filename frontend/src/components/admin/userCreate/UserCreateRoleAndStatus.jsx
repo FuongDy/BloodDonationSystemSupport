@@ -32,7 +32,7 @@ const UserCreateRoleAndStatus = ({
           >
             {roles.map(role => (
               <option key={role.name} value={role.name}>
-                {role.name} ({role.description})
+                {role.name}
               </option>
             ))}
           </select>
@@ -55,9 +55,9 @@ const UserCreateRoleAndStatus = ({
             disabled={isLoading}
             className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
           >
-            <option value="Active">Active</option>
-            <option value="Suspended">Suspended</option>
-            <option value="Pending">Pending</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="SUSPENDED">SUSPENDED</option>
+            <option value="PENDING">PENDING</option>
           </select>
         </div>
       </div>
@@ -110,7 +110,7 @@ const UserCreateRoleAndStatus = ({
             Email đã xác thực
           </label>
         </div>
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <input
             id="phoneVerified"
             name="phoneVerified"
@@ -126,7 +126,7 @@ const UserCreateRoleAndStatus = ({
           >
             SĐT đã xác thực
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );

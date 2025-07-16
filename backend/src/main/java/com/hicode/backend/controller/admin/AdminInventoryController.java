@@ -6,11 +6,13 @@ import com.hicode.backend.dto.admin.InventorySummary;
 import com.hicode.backend.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/inventory")
+@PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 public class AdminInventoryController {
 
     @Autowired

@@ -7,9 +7,9 @@ import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import DashboardHeader from '../../components/admin/DashboardHeader';
+import AdminFiltersPanel from '../../components/admin/common/AdminFiltersPanel';
 import {
   EmergencyRequestsInfoBox,
-  EmergencyRequestsFilters,
   EmergencyRequestsTable,
 } from '../../components/admin/emergencyRequests';
 import { useEmergencyRequests } from '../../hooks/useEmergencyRequests';
@@ -40,9 +40,40 @@ const AdminEmergencyRequestsPage = () => {
 
   // Calculate stats
   const totalRequests = filteredRequests?.length || 0;
-  const pendingRequests = filteredRequests?.filter(req => req.status === 'pending')?.length || 0;
-  const approvedRequests = filteredRequests?.filter(req => req.status === 'approved')?.length || 0;
-  const urgentRequests = filteredRequests?.filter(req => req.urgencyLevel === 'critical')?.length || 0;
+  const pendingRequests = filteredRequests?.filter(req => req.status === 'PENDING')?.length || 0;
+  const fulfilledRequests = filteredRequests?.filter(req => req.status === 'FULFILLED' || req.status === 'COMPLETED')?.length || 0;
+  const urgentRequests = filteredRequests?.filter(req => req.urgency === 'CRITICAL' || req.urgencyLevel === 'critical')?.length || 0;
+  const readyToCompleteRequests = filteredRequests?.filter(req => 
+    req.status === 'PENDING' && (req.pledgeCount >= req.quantityInUnits)
+  )?.length || 0;
+
+  // Status options for filter
+  const statusOptions = [
+    { value: 'all', label: 'Tất cả trạng thái' },
+    { value: 'PENDING', label: 'Đang chờ xử lý' },
+    { value: 'FULFILLED', label: 'Đã hoàn thành' },
+    { value: 'CANCELLED', label: 'Đã hủy' },
+  ];
+
+  // Filters configuration for AdminFiltersPanel
+  const filtersConfig = [
+    {
+      key: 'status',
+      label: 'Trạng thái',
+      value: filterStatus,
+      onChange: setFilterStatus,
+      options: statusOptions,
+    },
+  ];
+
+  // Check if filters are active
+  const hasActiveFilters = searchTerm || filterStatus !== 'all';
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setFilterStatus('all');
+  };
 
   return (
     <AdminPageLayout>
@@ -61,17 +92,17 @@ const AdminEmergencyRequestsPage = () => {
           {
             icon: <Clock className="w-5 h-5 text-yellow-300" />,
             value: pendingRequests,
-            label: "Đang chờ"
+            label: "Đang chờ xử lý"
           },
           {
             icon: <CheckCircle className="w-5 h-5 text-green-300" />,
-            value: approvedRequests,
-            label: "Đã duyệt"
+            value: fulfilledRequests,
+            label: "Đã hoàn thành"
           },
           {
-            icon: <Users className="w-5 h-5 text-orange-300" />,
-            value: urgentRequests,
-            label: "Rất khẩn cấp"
+            icon: <Users className="w-5 h-5 text-blue-300" />,
+            value: readyToCompleteRequests,
+            label: "Sẵn sàng hoàn thành"
           }
         ]}
       />
@@ -95,11 +126,17 @@ const AdminEmergencyRequestsPage = () => {
         <EmergencyRequestsInfoBox />
 
         {/* Filters */}
-        <EmergencyRequestsFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filterStatus={filterStatus}
-          setFilterStatus={setFilterStatus}
+        <AdminFiltersPanel
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Tên bệnh nhân, nhóm máu, bệnh viện..."
+          filters={filtersConfig}
+          showViewMode={false}
+          totalCount={filteredRequests?.length || 0}
+          filteredCount={filteredRequests?.length || 0}
+          itemLabel="yêu cầu khẩn cấp"
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={handleClearFilters}
         />
 
         {/* Requests List */}

@@ -277,7 +277,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
                       </div>
                       <div className="flex items-center mt-1 space-x-2">
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                          {pledge.bloodTypeDescription}
+                          {pledge.bloodType|| 'Nhóm máu chưa xác định'}
                         </span>
                         {pledge.status && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
@@ -301,7 +301,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
                   </div>
                   <div className="flex items-center">
                     <Phone className="w-3 h-3 mr-2 flex-shrink-0" />
-                    <span>{pledge.phone}</span>
+                    <span>Số điện thoại: {pledge.phone}</span>
                   </div>
                   {pledge.address && (
                     <div className="flex items-center md:col-span-2">
@@ -337,7 +337,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
                     </div>
                   )}
 
-                  {pledge.isReadyToDonate !== undefined && (
+                  {/* {pledge.isReadyToDonate !== undefined && (
                     <div className="flex items-center text-xs text-gray-600">
                       <Activity className="w-3 h-3 mr-2 flex-shrink-0" />
                       <span className="font-medium">Sẵn sàng hiến máu:</span>
@@ -345,7 +345,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
                         {pledge.isReadyToDonate ? 'Có' : 'Không'}
                       </span>
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Emergency Contact */}

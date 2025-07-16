@@ -171,7 +171,7 @@ const AdminDashboardPage = () => {
       {/* Main Content Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Weekly Chart - Takes 2 columns */}
-        <div className='lg:col-span-2'>
+        <div className='col-span-1 lg:col-span-4'>
           <div className='bg-white/70 backdrop-blur-xl rounded-2xl p-5 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500'>
             <div className='flex items-center justify-between mb-4'>
               <div>
@@ -209,38 +209,6 @@ const AdminDashboardPage = () => {
                 </defs>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Recent Activities - Takes 1 column */}
-        <div className='bg-white/70 backdrop-blur-xl rounded-2xl p-5 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500'>
-          <div className='flex items-center justify-between mb-4'>
-            <div>
-              <h3 className='text-lg font-bold text-gray-800'>Hoạt động gần đây</h3>
-              <p className='text-gray-600 text-sm'>Cập nhật mới nhất</p>
-            </div>
-            <div className='w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg'>
-              <Clock className='w-5 h-5 text-white' />
-            </div>
-          </div>
-          <div className='space-y-3 max-h-80 overflow-y-auto'>
-            {recentActivities.map((activity) => (
-              <div key={activity.id} className='flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-white/40 to-purple-50/30 border border-white/30 hover:shadow-md transition-all duration-300'>
-                <div className='w-8 h-8 bg-white/80 rounded-lg flex items-center justify-center shadow-sm'>
-                  {getActivityIcon(activity.type)}
-                </div>
-                <div className='flex-1 min-w-0'>
-                  <p className='text-sm font-medium text-gray-800 truncate'>{activity.user}</p>
-                  <p className='text-xs text-gray-600'>{activity.time}</p>
-                </div>
-                <span className={getStatusBadge(activity.status)}>
-                  {activity.status === 'completed' && 'Hoàn thành'}
-                  {activity.status === 'scheduled' && 'Đã hẹn'}
-                  {activity.status === 'urgent' && 'Khẩn cấp'}
-                  {activity.status === 'cancelled' && 'Đã hủy'}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
       </div>

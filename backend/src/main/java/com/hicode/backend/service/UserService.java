@@ -10,11 +10,13 @@ import com.hicode.backend.model.enums.UserStatus;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
+import com.hicode.backend.repository.specifications.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -80,12 +82,17 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserResponse> searchDonorsByLocation(LocationSearchRequest request) {
-        List<User> users = userRepository.findDonorsWithinRadius(
+        // TẠO SPECIFICATION TỪ YÊU CẦU
+        var spec = UserSpecifications.findDonorsWithinRadius(
                 request.getLatitude(),
                 request.getLongitude(),
                 request.getRadius(),
                 request.getBloodTypeId()
         );
+
+        // THỰC THI TRUY VẤN BẰNG SPECIFICATION
+        List<User> users = userRepository.findAll(spec);
+
         return users.stream()
                 .map(this::mapToUserResponse)
                 .collect(Collectors.toList());
@@ -121,6 +128,13 @@ public class UserService {
         // Đảm bảo gán giá trị cho các trường bắt buộc
         user.setDateOfBirth(request.getDateOfBirth());
         user.setAddress(request.getAddress());
+        
+        // Các trường tùy chọn
+        if (request.getGender() != null) user.setGender(request.getGender());
+        if (request.getEmergencyContact() != null) user.setEmergencyContact(request.getEmergencyContact());
+        if (request.getMedicalConditions() != null) user.setMedicalConditions(request.getMedicalConditions());
+        if (request.getLastDonationDate() != null) user.setLastDonationDate(request.getLastDonationDate());
+        if (request.getIsReadyToDonate() != null) user.setIsReadyToDonate(request.getIsReadyToDonate());
 
         Role role = roleRepository.findByName(request.getRoleName())
                 .orElseThrow(() -> new RuntimeException("Error: Role '" + request.getRoleName() + "' not found."));
@@ -152,6 +166,13 @@ public class UserService {
         if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getAddress() != null) user.setAddress(request.getAddress());
         if (request.getDateOfBirth() != null) user.setDateOfBirth(request.getDateOfBirth());
+        if (request.getGender() != null) user.setGender(request.getGender());
+        if (request.getEmergencyContact() != null) user.setEmergencyContact(request.getEmergencyContact());
+        if (request.getMedicalConditions() != null) user.setMedicalConditions(request.getMedicalConditions());
+        if (request.getLastDonationDate() != null) user.setLastDonationDate(request.getLastDonationDate());
+        if (request.getIsReadyToDonate() != null) user.setIsReadyToDonate(request.getIsReadyToDonate());
+        if (request.getEmailVerified() != null) user.setEmailVerified(request.getEmailVerified());
+        if (request.getPhoneVerified() != null) user.setPhoneVerified(request.getPhoneVerified());
 
         if (request.getStatus() != null && !request.getStatus().isEmpty()) {
             try {
@@ -192,6 +213,8 @@ public class UserService {
         }
         if (user.getBloodType() != null) {
             userResponse.setBloodTypeDescription(user.getBloodType().getDescription());
+            userResponse.setBloodType(user.getBloodType().getBloodGroup());
+            userResponse.setBloodTypeId(user.getBloodType().getId());
         }
         if (user.getStatus() != null) {
             userResponse.setStatus(user.getStatus().name());

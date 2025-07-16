@@ -1,443 +1,285 @@
 // src/components/staff/donations/StaffDonationManagement.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Heart,
+  Users,
   Search,
   Filter,
   Plus,
   Calendar,
   Clock,
   MapPin,
-  User,
-  AlertTriangle,
   CheckCircle,
+  AlertCircle,
   XCircle,
   Eye,
-  RefreshCw,
-  Phone,
-  Activity,
-  TestTube,
-  Droplets,
-  ClipboardCheck
+  Edit,
+  Download
 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import staffService from '../../../services/staffService';
-import LoadingSpinner from '../../common/LoadingSpinner';
-import StatusBadge from '../../common/StatusBadge';
-import Button from '../../common/Button';
-import { formatDateTime } from '../../../utils/formatters';
-import { DONATION_STATUS } from '../../../utils/constants';
-import StaffDashboardHeader from '../StaffDashboardHeader';
 
 const StaffDonationManagement = () => {
-  const [donations, setDonations] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [selectedDonation, setSelectedDonation] = useState(null);
 
-  // Fetch donation requests
-  const fetchDonations = async (page = 0) => {
-    try {
-      setIsLoading(true);
-      const response = await staffService.getAllDonationRequests({ page, size: 10 });
-      
-      if (response.data) {
-        setDonations(response.data.content || response.data || []);
-        setCurrentPage(response.data.number || 0);
-        setTotalPages(response.data.totalPages || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching donations:', error);
-      toast.error('Không thể tải danh sách đơn hiến máu');
-      
-      // Fallback to mock data
-      const mockDonations = [
-        {
-          id: 1,
-          donor: {
-            id: 1,
-            fullName: 'Nguyễn Văn A',
-            email: 'nguyenvana@email.com',
-            phone: '0123456789',
-            bloodGroup: 'O+'
-          },
-          status: 'PENDING_APPROVAL',
-          createdAt: '2025-01-10T10:00:00',
-          note: 'Đăng ký hiến máu tình nguyện',
-          preferredDonationDate: '2025-01-15',
-          location: 'Bệnh viện Chợ Rẫy'
-        },
-        {
-          id: 2,
-          donor: {
-            id: 2,
-            fullName: 'Trần Thị B',
-            email: 'tranthib@email.com',
-            phone: '0987654321',
-            bloodGroup: 'A+'
-          },
-          status: 'APPOINTMENT_SCHEDULED',
-          createdAt: '2025-01-09T14:30:00',
-          note: 'Hiến máu lần 3',
-          preferredDonationDate: '2025-01-14',
-          location: 'Trung tâm hiến máu quốc gia'
-        },
-        {
-          id: 3,
-          donor: {
-            id: 3,
-            fullName: 'Lê Văn C',
-            email: 'levanc@email.com',
-            phone: '0369852741',
-            bloodGroup: 'B+'
-          },
-          status: 'HEALTH_CHECK_PASSED',
-          createdAt: '2025-01-08T09:15:00',
-          note: 'Sức khỏe tốt, sẵn sàng hiến máu',
-          preferredDonationDate: '2025-01-13',
-          location: 'Bệnh viện Bình Dân'
-        }
-      ];
-      setDonations(mockDonations);
-    } finally {
-      setIsLoading(false);
+  // Mock data for donations
+  const donations = [
+    {
+      id: 'D001',
+      donorName: 'Nguyễn Văn A',
+      bloodType: 'O+',
+      amount: '450ml',
+      date: '2025-06-29',
+      time: '09:00',
+      location: 'Phòng hiến máu 1',
+      status: 'completed',
+      phone: '0123456789'
+    },
+    {
+      id: 'D002',
+      donorName: 'Trần Thị B',
+      bloodType: 'A+',
+      amount: '450ml',
+      date: '2025-06-29',
+      time: '10:30',
+      location: 'Phòng hiến máu 2',
+      status: 'in_progress',
+      phone: '0987654321'
+    },
+    {
+      id: 'D003',
+      donorName: 'Lê Văn C',
+      bloodType: 'B-',
+      amount: '450ml',
+      date: '2025-06-29',
+      time: '14:00',
+      location: 'Phòng hiến máu 1',
+      status: 'scheduled',
+      phone: '0123987654'
+    },
+    {
+      id: 'D004',
+      donorName: 'Phạm Thị D',
+      bloodType: 'AB+',
+      amount: '450ml',
+      date: '2025-06-28',
+      time: '16:00',
+      location: 'Phòng hiến máu 3',
+      status: 'cancelled',
+      phone: '0456789123'
+    }
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800';
+      case 'scheduled':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  // Filter donations based on search and status
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'in_progress':
+        return <Clock className="w-4 h-4" />;
+      case 'scheduled':
+        return <Calendar className="w-4 h-4" />;
+      case 'cancelled':
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'Hoàn thành';
+      case 'in_progress':
+        return 'Đang thực hiện';
+      case 'scheduled':
+        return 'Đã lên lịch';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return status;
+    }
+  };
+
   const filteredDonations = donations.filter(donation => {
-    const matchesSearch = searchTerm === '' || 
-      donation.donor?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      donation.donor?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      donation.donor?.phone?.includes(searchTerm);
+    const matchesSearch = donation.donorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         donation.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         donation.bloodType.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || donation.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+    if (activeTab === 'all') return matchesSearch;
+    return matchesSearch && donation.status === activeTab;
   });
 
-  // Handle status update
-  const handleStatusUpdate = async (donationId, newStatus, note = '') => {
-    try {
-      await staffService.updateDonationStatus(donationId, {
-        newStatus,
-        note
-      });
-      toast.success('Cập nhật trạng thái thành công');
-      fetchDonations(currentPage);
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Không thể cập nhật trạng thái');
-    }
-  };
-
-  // Get status color and text
-  const getStatusInfo = (status) => {
-    const statusMap = {
-      'PENDING_APPROVAL': { color: 'bg-yellow-100 text-yellow-800', text: 'Chờ duyệt' },
-      'APPOINTMENT_PENDING': { color: 'bg-blue-100 text-blue-800', text: 'Chờ đặt lịch' },
-      'APPOINTMENT_SCHEDULED': { color: 'bg-green-100 text-green-800', text: 'Đã lên lịch' },
-      'HEALTH_CHECK_PASSED': { color: 'bg-purple-100 text-purple-800', text: 'Khám đạt' },
-      'HEALTH_CHECK_FAILED': { color: 'bg-red-100 text-red-800', text: 'Khám không đạt' },
-      'BLOOD_COLLECTED': { color: 'bg-indigo-100 text-indigo-800', text: 'Đã lấy máu' },
-      'TESTING_PASSED': { color: 'bg-teal-100 text-teal-800', text: 'Xét nghiệm đạt' },
-      'TESTING_FAILED': { color: 'bg-red-100 text-red-800', text: 'Xét nghiệm không đạt' },
-      'COMPLETED': { color: 'bg-green-100 text-green-800', text: 'Hoàn thành' },
-      'REJECTED': { color: 'bg-red-100 text-red-800', text: 'Từ chối' }
-    };
-    return statusMap[status] || { color: 'bg-gray-100 text-gray-800', text: status };
-  };
-
-  // Render action buttons based on status
-  const renderActionButtons = (donation) => {
-    switch (donation.status) {
-      case 'PENDING_APPROVAL':
-        return (
-          <div className="flex space-x-2">
-            <Button
-              size="sm"
-              variant="success"
-              onClick={() => handleStatusUpdate(donation.id, 'APPOINTMENT_PENDING', 'Đơn được duyệt')}
-            >
-              <CheckCircle className="w-4 h-4 mr-1" />
-              Duyệt
-            </Button>
-            <Button
-              size="sm"
-              variant="danger"
-              onClick={() => handleStatusUpdate(donation.id, 'REJECTED', 'Đơn bị từ chối')}
-            >
-              <XCircle className="w-4 h-4 mr-1" />
-              Từ chối
-            </Button>
-          </div>
-        );
-      case 'APPOINTMENT_SCHEDULED':
-        return (
-          <Button
-            size="sm"
-            onClick={() => handleStatusUpdate(donation.id, 'HEALTH_CHECK_PASSED', 'Khám sức khỏe đạt yêu cầu')}
-          >
-            <Activity className="w-4 h-4 mr-1" />
-            Khám sức khỏe
-          </Button>
-        );
-      case 'HEALTH_CHECK_PASSED':
-        return (
-          <Button
-            size="sm"
-            onClick={() => handleStatusUpdate(donation.id, 'BLOOD_COLLECTED', 'Đã thu thập máu thành công')}
-          >
-            <Droplets className="w-4 h-4 mr-1" />
-            Thu thập máu
-          </Button>
-        );
-      case 'BLOOD_COLLECTED':
-        return (
-          <div className="flex space-x-2">
-            <Button
-              size="sm"
-              variant="success"
-              onClick={() => handleStatusUpdate(donation.id, 'TESTING_PASSED', 'Xét nghiệm đạt yêu cầu')}
-            >
-              <TestTube className="w-4 h-4 mr-1" />
-              XN Đạt
-            </Button>
-            <Button
-              size="sm"
-              variant="danger"
-              onClick={() => handleStatusUpdate(donation.id, 'TESTING_FAILED', 'Xét nghiệm không đạt')}
-            >
-              <XCircle className="w-4 h-4 mr-1" />
-              XN Không đạt
-            </Button>
-          </div>
-        );
-      case 'TESTING_PASSED':
-        return (
-          <Button
-            size="sm"
-            variant="success"
-            onClick={() => handleStatusUpdate(donation.id, 'COMPLETED', 'Quy trình hiến máu hoàn tất')}
-          >
-            <ClipboardCheck className="w-4 h-4 mr-1" />
-            Hoàn thành
-          </Button>
-        );
-      default:
-        return null;
-    }
-  };
-
-  useEffect(() => {
-    fetchDonations();
-  }, []);
-
-  if (isLoading && donations.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <LoadingSpinner size="large" />
-      </div>
-    );
-  }
+  const tabs = [
+    { id: 'all', label: 'Tất cả', count: donations.length },
+    { id: 'scheduled', label: 'Đã lên lịch', count: donations.filter(d => d.status === 'scheduled').length },
+    { id: 'in_progress', label: 'Đang thực hiện', count: donations.filter(d => d.status === 'in_progress').length },
+    { id: 'completed', label: 'Hoàn thành', count: donations.filter(d => d.status === 'completed').length },
+    { id: 'cancelled', label: 'Đã hủy', count: donations.filter(d => d.status === 'cancelled').length }
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Enhanced Header */}
-      <StaffDashboardHeader 
-        title="Quản lý hiến máu"
-        description="Theo dõi và xử lý các đơn đăng ký hiến máu từ người dùng"
-        variant="donations"
-        showTime={true}
-        showWeather={true}
-      />
-
-      {/* Action Bar */}
-      <div className="flex items-center justify-between bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30 shadow-lg">
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-600">
-            <span className="font-medium">{donations.length}</span> đơn hiến máu
-          </div>
-        </div>
-        <Button
-          onClick={() => fetchDonations(currentPage)}
-          variant="outline"
-          className="flex items-center space-x-2 bg-white/80 hover:bg-white/90 border-orange-200 hover:border-orange-300"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span>Làm mới</span>
-        </Button>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo tên, email, số điện thoại..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
+      {/* Header */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-3 bg-red-100 rounded-xl">
+              <Heart className="w-8 h-8 text-red-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Quản lý hiến máu</h1>
+              <p className="text-gray-600">Theo dõi và quản lý các cuộc hiến máu</p>
             </div>
           </div>
-          <div className="w-full sm:w-48">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-            >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="PENDING_APPROVAL">Chờ duyệt</option>
-              <option value="APPOINTMENT_PENDING">Chờ đặt lịch</option>
-              <option value="APPOINTMENT_SCHEDULED">Đã lên lịch</option>
-              <option value="HEALTH_CHECK_PASSED">Khám đạt</option>
-              <option value="BLOOD_COLLECTED">Đã lấy máu</option>
-              <option value="TESTING_PASSED">Xét nghiệm đạt</option>
-              <option value="COMPLETED">Hoàn thành</option>
-              <option value="REJECTED">Từ chối</option>
-            </select>
-          </div>
+          <button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg">
+            <Plus className="w-5 h-5" />
+            <span>Tạo lịch hiến máu</span>
+          </button>
         </div>
       </div>
 
-      {/* Results count */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Hiển thị {filteredDonations.length} / {donations.length} đơn hiến máu
-        </p>
+      {/* Filters and Search */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo tên, mã hoặc nhóm máu..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent w-80"
+              />
+            </div>
+            <button className="flex items-center space-x-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+              <Filter className="w-5 h-5 text-gray-600" />
+              <span className="text-gray-600">Bộ lọc</span>
+            </button>
+          </div>
+          <button className="flex items-center space-x-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+            <Download className="w-5 h-5 text-gray-600" />
+            <span className="text-gray-600">Xuất báo cáo</span>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex space-x-1 mt-6 bg-gray-100 p-1 rounded-xl">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-white text-red-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Donations Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {filteredDonations.length === 0 ? (
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Thông tin người hiến
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nhóm máu
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Thời gian
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Địa điểm
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Hành động
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredDonations.map((donation) => (
+                <tr key={donation.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{donation.donorName}</div>
+                      <div className="text-sm text-gray-500">{donation.id} • {donation.phone}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                      {donation.bloodType}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span>{donation.date}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      <span className="text-gray-500">{donation.time}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2 text-sm text-gray-900">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <span>{donation.location}</span>
+                    </div>
+                    <div className="text-sm text-gray-500">{donation.amount}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(donation.status)}`}>
+                      {getStatusIcon(donation.status)}
+                      <span>{getStatusText(donation.status)}</span>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="text-gray-600 hover:text-gray-800 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredDonations.length === 0 && (
           <div className="text-center py-12">
             <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Không tìm thấy đơn hiến máu
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || statusFilter !== 'all' 
-                ? 'Thử thay đổi bộ lọc để xem thêm kết quả'
-                : 'Chưa có đơn đăng ký hiến máu nào'
-              }
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Người hiến
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nhóm máu
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Trạng thái
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ngày đăng ký
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Địa điểm
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Hành động
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredDonations.map((donation) => {
-                  const statusInfo = getStatusInfo(donation.status);
-                  return (
-                    <tr key={donation.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0">
-                            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                              <User className="w-5 h-5 text-red-600" />
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {donation.donor?.fullName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {donation.donor?.email}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              <Phone className="w-3 h-3 inline mr-1" />
-                              {donation.donor?.phone}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          {donation.donor?.bloodGroup}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
-                          {statusInfo.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                          {formatDateTime(donation.createdAt)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center">
-                          <MapPin className="w-4 h-4 text-gray-400 mr-2" />
-                          {donation.location || 'Chưa xác định'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {renderActionButtons(donation)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy kết quả</h3>
+            <p className="text-gray-500">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
           </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              disabled={currentPage === 0}
-              onClick={() => fetchDonations(currentPage - 1)}
-            >
-              Trang trước
-            </Button>
-            <span className="text-sm text-gray-600">
-              Trang {currentPage + 1} / {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              disabled={currentPage >= totalPages - 1}
-              onClick={() => fetchDonations(currentPage + 1)}
-            >
-              Trang sau
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Edit, Check, X } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import userService from '../../../services/userService';
+import bloodTypeService from '../../../services/bloodTypeService';
 import { useAppToast } from '../../../hooks/useAppToast';
 import { useNavigate } from 'react-router-dom';
+import { formatDateForBackend, formatDateForInput } from '../../../utils/dateUtils';
 
 const UserInfoSection = () => {
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useAppToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bloodTypes, setBloodTypes] = useState([]);
   const [editData, setEditData] = useState({
     fullName: user?.fullName || '',
     phone: user?.phone || '',
@@ -20,8 +23,23 @@ const UserInfoSection = () => {
     medicalConditions: user?.medicalConditions || '',
     lastDonationDate: user?.lastDonationDate || '',
     isReadyToDonate: user?.isReadyToDonate ?? true,
+    bloodTypeId: user?.bloodTypeId || '',
   });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchBloodTypes = async () => {
+      try {
+        const bloodTypesData = await bloodTypeService.getAll();
+        setBloodTypes(bloodTypesData || []);
+      } catch (error) {
+        console.error('Error fetching blood types:', error);
+      }
+    };
+    if (isEditing) {
+      fetchBloodTypes();
+    }
+  }, [isEditing]);
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -36,6 +54,7 @@ const UserInfoSection = () => {
         medicalConditions: user?.medicalConditions || '',
         lastDonationDate: user?.lastDonationDate || '',
         isReadyToDonate: user?.isReadyToDonate ?? true,
+        bloodTypeId: user?.bloodTypeId || '',
       });
     }
     setIsEditing(!isEditing);
@@ -52,7 +71,15 @@ const UserInfoSection = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const updatedUser = await userService.updateProfile(editData);
+      // Format dates for backend
+      const requestData = {
+        ...editData,
+        dateOfBirth: editData.dateOfBirth ? formatDateForBackend(editData.dateOfBirth) : null,
+        lastDonationDate: editData.lastDonationDate ? formatDateForBackend(editData.lastDonationDate) : null,
+        bloodTypeId: editData.bloodTypeId ? parseInt(editData.bloodTypeId, 10) : null,
+      };
+      
+      const updatedUser = await userService.updateUserProfile(requestData);
       setUser(updatedUser);
       setIsEditing(false);
       showSuccess('Cập nhật thông tin thành công!');
@@ -74,6 +101,9 @@ const UserInfoSection = () => {
     if (!phone) return 'Chưa cập nhật';
     return phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
   };
+
+  // Đồng bộ logic với UserProfileViewPage
+  const bloodTypeDesc = user?.bloodType?.bloodGroup || user?.bloodType || 'Chưa cập nhật';
 
   return (
     <div className='bg-purple-50 rounded-xl p-6 border border-purple-200'>
@@ -152,7 +182,7 @@ const UserInfoSection = () => {
             <input
               type='date'
               name='dateOfBirth'
-              value={editData.dateOfBirth}
+              value={formatDateForInput(editData.dateOfBirth)}
               onChange={handleInputChange}
               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500'
               required
@@ -170,13 +200,38 @@ const UserInfoSection = () => {
               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500'
             >
               <option value=''>Chưa chọn</option>
-              <option value='MALE'>Nam</option>
-              <option value='FEMALE'>Nữ</option>
-              <option value='OTHER'>Khác</option>
+              <option value='Male'>Nam</option>
+              <option value='Female'>Nữ</option>
+              <option value='Other'>Khác</option>
             </select>
           </div>
 
-          {/* <div>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              Nhóm máu
+            </label>
+            <select
+              name='bloodTypeId'
+              value={editData.bloodTypeId}
+              onChange={handleInputChange}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500'
+            >
+              <option value=''>-- Chọn nhóm máu --</option>
+              {bloodTypes
+                .filter(
+                  (value, index, self) =>
+                    index ===
+                    self.findIndex(t => t.bloodGroup === value.bloodGroup)
+                )
+                .map(bt => (
+                  <option key={bt.id} value={bt.id}>
+                    {bt.bloodGroup}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
               Liên hệ khẩn cấp
             </label>
@@ -187,7 +242,7 @@ const UserInfoSection = () => {
               onChange={handleInputChange}
               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500'
             />
-          </div> */}
+          </div>
 
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
@@ -209,7 +264,7 @@ const UserInfoSection = () => {
             <input
               type='date'
               name='lastDonationDate'
-              value={editData.lastDonationDate}
+              value={formatDateForInput(editData.lastDonationDate)}
               onChange={handleInputChange}
               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500'
             />
@@ -218,6 +273,7 @@ const UserInfoSection = () => {
           <div className='flex items-center gap-2'>
             <input
               type='checkbox'
+              id='isReadyToDonate'
               name='isReadyToDonate'
               checked={editData.isReadyToDonate}
               onChange={handleInputChange}
@@ -259,7 +315,7 @@ const UserInfoSection = () => {
           </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Ngày sinh:</span>
-            <span className='text-sm text-gray-900'>{formatDate(user?.dateOfBirth)}</span>
+            <span className='text-sm text-gray-900'>{user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa cập nhật'}</span>
           </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Địa chỉ:</span>
@@ -267,28 +323,30 @@ const UserInfoSection = () => {
           </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Nhóm máu:</span>
-            <span className='text-sm text-gray-900'>{user?.bloodType?.bloodGroup || 'Chưa cập nhật'}</span>
+            <span className='text-sm text-gray-900'>{bloodTypeDesc}</span>
           </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Giới tính:</span>
-            <span className='text-sm text-gray-900'>{user?.gender === 'MALE' ? 'Nam' : user?.gender === 'FEMALE' ? 'Nữ' : user?.gender === 'OTHER' ? 'Khác' : 'Chưa cập nhật'}</span>
+            <span className='text-sm text-gray-900'>
+              {user?.gender === 'Male' ? 'Nam' : user?.gender === 'Female' ? 'Nữ' : 'Chưa cập nhật'}
+            </span>
           </div>
-          {/* <div className='flex justify-between items-start'>
+          <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Liên hệ khẩn cấp:</span>
             <span className='text-sm text-gray-900'>{user?.emergencyContact || 'Chưa cập nhật'}</span>
-          </div> */}
+          </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Tình trạng bệnh lý:</span>
-            <span className='text-sm text-gray-900'>{user?.medicalConditions || 'Chưa cập nhật'}</span>
+            <span className='text-sm text-gray-900'>{user?.medicalConditions || 'Không có'}</span>
           </div>
           <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Lần hiến máu cuối:</span>
-            <span className='text-sm text-gray-900'>{formatDate(user?.lastDonationDate)}</span>
+            <span className='text-sm text-gray-900'>{user?.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString('vi-VN') : 'Chưa hiến máu'}</span>
           </div>
-          {/* <div className='flex justify-between items-start'>
+          <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Sẵn sàng hiến máu:</span>
             <span className='text-sm text-gray-900'>{user?.isReadyToDonate ? 'Có' : 'Không'}</span>
-          </div> */}
+          </div>
         </div>
       )}
 

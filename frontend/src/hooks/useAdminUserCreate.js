@@ -16,12 +16,17 @@ export const useAdminUserCreate = () => {
     fullName: '',
     password: '',
     confirmPassword: '',
-    roleName: 'MEMBER',
+    roleName: 'Member',
     dateOfBirth: '',
     phone: '',
     address: '',
+    gender: '',
+    emergencyContact: '',
+    medicalConditions: '',
+    lastDonationDate: '',
+    isReadyToDonate: true,
     bloodTypeId: '',
-    status: 'Active',
+    status: 'ACTIVE',
     emailVerified: false,
     phoneVerified: false,
   });
@@ -37,9 +42,9 @@ export const useAdminUserCreate = () => {
       try {
         // Fixed roles list as no API available yet
         const rolesData = [
-          { name: 'ADMIN', description: 'Quản trị viên' },
-          { name: 'STAFF', description: 'Nhân viên' },
-          { name: 'MEMBER', description: 'Thành viên' },
+          { name: 'Admin', description: 'Quản trị viên' },
+          { name: 'Staff', description: 'Nhân viên' },
+          { name: 'Member', description: 'Thành viên' },
         ];
         setRoles(rolesData);
 
@@ -67,7 +72,7 @@ export const useAdminUserCreate = () => {
     let processedValue = value;
     
     // Convert HTML date input (YYYY-MM-DD) to backend format (dd-MM-yyyy)
-    if (name === 'dateOfBirth' && type === 'date' && value) {
+    if ((name === 'dateOfBirth' || name === 'lastDonationDate') && type === 'date' && value) {
       processedValue = formatDateForBackend(value);
     }
     
@@ -131,6 +136,11 @@ export const useAdminUserCreate = () => {
       newErrors.address = 'Địa chỉ phải có ít nhất 10 ký tự.';
     }
 
+    // Optional validations for additional fields
+    if (formData.emergencyContact && (formData.emergencyContact.length < 9 || formData.emergencyContact.length > 15)) {
+      newErrors.emergencyContact = 'Số điện thoại khẩn cấp phải có từ 9-15 ký tự.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -151,6 +161,7 @@ export const useAdminUserCreate = () => {
       phone: formData.phone.trim(),
       address: formData.address.trim(),
       dateOfBirth: formatDateForBackend(formData.dateOfBirth),
+      lastDonationDate: formData.lastDonationDate ? formatDateForBackend(formData.lastDonationDate) : null,
       bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
     };
     delete requestData.confirmPassword;

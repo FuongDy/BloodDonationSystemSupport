@@ -13,6 +13,7 @@ public class BlogPostResponse {
     private String content;
     private UserResponse author;
     private BlogPostStatus status;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
