@@ -69,4 +69,31 @@ public class AuthController {
             return ResponseEntity.status(401).body("Login failed: " + e.getMessage());
         }
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.handleForgotPassword(request.getEmail());
+        // Luôn trả về OK để bảo mật, tránh để lộ email nào đã đăng ký
+        return ResponseEntity.ok("Nếu tài khoản tồn tại, một email đặt lại mật khẩu đã được gửi đi.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok("Mật khẩu đã được đặt lại thành công.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestParam("token") String token) {
+        boolean isValid = authService.validatePasswordResetToken(token);
+        if (isValid) {
+            return ResponseEntity.ok("Token hợp lệ.");
+        } else {
+            return ResponseEntity.badRequest().body("Token không hợp lệ hoặc đã hết hạn.");
+        }
+    }
 }

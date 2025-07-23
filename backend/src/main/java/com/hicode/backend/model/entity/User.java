@@ -115,6 +115,12 @@ public class User {
     @Column(name = "nationality", columnDefinition = "NVARCHAR(100)")
     private String nationality; // Quốc tịch
 
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiry_date")
+    private LocalDateTime passwordResetTokenExpiryDate;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = this.updatedAt = LocalDateTime.now();

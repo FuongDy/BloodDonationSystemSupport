@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
 
                         // PHÂN LUỒNG TRIỆT ĐỂ CHO ADMIN VÀ STAFF
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")
 
                         // Các API còn lại yêu cầu phải xác thực (đăng nhập)

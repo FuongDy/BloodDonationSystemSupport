@@ -15,6 +15,7 @@ import com.hicode.backend.repository.VerificationTokenRepository;
 import com.hicode.backend.security.JwtTokenProvider;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,8 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
-
+import java.util.UUID;
 @Service
 public class AuthService {
 
@@ -38,6 +40,8 @@ public class AuthService {
     @Autowired private VerificationTokenRepository tokenRepository;
     @Autowired private EmailService emailService;
     @Autowired private BloodTypeRepository bloodTypeRepository;
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -144,5 +148,68 @@ public class AuthService {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequest.getEmail()));
         return new AuthResponse(jwt, user.getId(), user.getEmail(), user.getFullName(), user.getRole().getName());
+    }
+
+    /**
+     * Xử lý yêu cầu "quên mật khẩu".
+     */
+    @Transactional
+    public void handleForgotPassword(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            return;
+        }
+
+        User user = userOptional.get();
+        String token = UUID.randomUUID().toString();
+        user.setPasswordResetToken(token);
+        // Token hết hạn sau 1 giờ
+        user.setPasswordResetTokenExpiryDate(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+
+        // Tạo link reset, ví dụ: http://localhost:3000/reset-password?token=...
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
+
+        // Gửi email
+        String emailBody = "Chào " + user.getFullName() + ",\n\n"
+                + "Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấp vào liên kết dưới đây để đặt lại mật khẩu của bạn:\n"
+                + resetLink + "\n\n"
+                + "Liên kết này sẽ hết hạn sau 1 giờ.\n"
+                + "Nếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.\n\n"
+                + "Trân trọng,\nĐội ngũ hỗ trợ.";
+        emailService.sendEmail(user.getEmail(), "Yêu cầu đặt lại mật khẩu", emailBody);
+    }
+
+    /**
+     * Xác thực token reset.
+     */
+    public boolean validatePasswordResetToken(String token) {
+        Optional<User> userOptional = userRepository.findByPasswordResetToken(token);
+        if (userOptional.isEmpty()) {
+            return false;
+        }
+        User user = userOptional.get();
+        // Kiểm tra token đã hết hạn chưa
+        return user.getPasswordResetTokenExpiryDate().isAfter(LocalDateTime.now());
+    }
+
+    /**
+     * Xử lý việc đặt lại mật khẩu mới.
+     */
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        Optional<User> userOptional = userRepository.findByPasswordResetToken(request.getToken());
+
+        if (userOptional.isEmpty() || !validatePasswordResetToken(request.getToken())) {
+            throw new IllegalArgumentException("Token không hợp lệ hoặc đã hết hạn.");
+        }
+
+        User user = userOptional.get();
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        // Xóa token sau khi đã sử dụng
+        user.setPasswordResetToken(null);
+        user.setPasswordResetTokenExpiryDate(null);
+        userRepository.save(user);
     }
 }

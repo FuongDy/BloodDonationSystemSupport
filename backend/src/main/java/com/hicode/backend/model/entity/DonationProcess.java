@@ -55,4 +55,7 @@ public class DonationProcess {
     protected void onCreate() { this.createdAt = this.updatedAt = LocalDateTime.now(); }
     @PreUpdate
     protected void onUpdate() { this.updatedAt = LocalDateTime.now(); }
+
+    @Column(name = "certificate_url")
+    private String certificateUrl;
 }

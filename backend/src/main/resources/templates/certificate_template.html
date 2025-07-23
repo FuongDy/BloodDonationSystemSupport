@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Certificate of Donation</title>
+    <style>
+        body { font-family: 'DejaVu Sans', sans-serif; }
+        .certificate { border: 5px solid #0056b3; padding: 30px; text-align: center; width: 700px; margin: auto; }
+        h1 { color: #0056b3; }
+        p { font-size: 18px; }
+        .signature { margin-top: 50px; }
+    </style>
+</head>
+<body>
+<div class="certificate">
+    <h1>GIẤY CHỨNG NHẬN HIẾN MÁU TÌNH NGUYỆN</h1>
+    <p>Chứng nhận Anh/Chị:</p>
+    <h2 th:text="${donorName}">Tên Người Hiến Máu</h2>
+    <p>Đã hiến máu tại sự kiện của chúng tôi vào ngày <span th:text="${donationDate}"></span>.</p>
+    <p>
+        Nhóm máu: <b th:text="${bloodType}"></b> -
+        Số lượng: <b th:text="${volume} + 'ml'"></b>
+    </p>
+    <p>Chúng tôi xin chân thành cảm ơn nghĩa cử cao đẹp của bạn.</p>
+    <div class="signature">
+        <p>_________________________</p>
+        <p>Trưởng ban tổ chức</p>
+    </div>
+    <p style="font-size: 12px; margin-top: 20px;">Mã quy trình: <span th:text="${processId}"></span></p>
+</div>
+</body>
+</html>

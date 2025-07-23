@@ -23,4 +23,5 @@ public class DonationProcessResponse {
     private AppointmentResponse appointment;
     private HealthCheckResponse healthCheck;
     private DonationType donationType;
+    private String certificateUrl;
 }

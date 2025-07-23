@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "(:name IS NULL OR u.fullName LIKE %:name%) AND " +
             "(:email IS NULL OR u.email LIKE %:email%)")
     List<User> searchMembers(@Param("name") String name, @Param("email") String email);
+
+    long countByCreatedAtBefore(LocalDateTime date);
+
+    Optional<User> findByPasswordResetToken(String token);
 }

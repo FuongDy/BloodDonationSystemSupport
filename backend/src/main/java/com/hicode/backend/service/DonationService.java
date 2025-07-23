@@ -13,28 +13,33 @@ import com.hicode.backend.repository.HealthCheckRepository;
 import com.hicode.backend.repository.UserRepository;
 import com.hicode.backend.repository.BloodTypeRepository; // <<< THÊM IMPORT
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException; // <<< THÊM IMPORT
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DonationService {
 
     @Autowired private DonationProcessRepository donationProcessRepository;
     @Autowired private HealthCheckRepository healthCheckRepository;
     @Autowired private UserRepository userRepository;
-    @Autowired private BloodTypeRepository bloodTypeRepository; // <<< THÊM AUTOWIRED
+    @Autowired private BloodTypeRepository bloodTypeRepository;
     @Autowired private UserService userService;
     @Autowired private AppointmentService appointmentService;
     @Autowired private InventoryService inventoryService;
     @Autowired private EmailService emailService;
+    @Autowired private PdfService pdfService; // <<< THÊM DEPENDENCY
+    @Autowired private CloudinaryService cloudinaryService;
 
-    // ... (các phương thức từ createDonationRequest đến recordHealthCheck không đổi) ...
 
     /**
      * User đăng ký một quy trình hiến máu mới.
@@ -129,55 +134,110 @@ public class DonationService {
 
     /**
      * Staff/Admin ghi nhận kết quả xét nghiệm túi máu.
-     * <<< LOGIC MỚI ĐƯỢC THÊM VÀO ĐÂY >>>
+     * <<< LOGIC MỚI ĐÃ ĐƯỢC THÊM VÀO ĐÂY >>>
      */
     @Transactional
     public DonationProcessResponse recordBloodTestResult(Long processId, BloodTestResultRequest request) {
+        log.info("Recording blood test result for process ID: {}", processId);
         DonationProcess process = findProcessById(processId);
         if (process.getStatus() != DonationStatus.BLOOD_COLLECTED) {
+            log.warn("Attempted to record test results for a process not in BLOOD_COLLECTED state. Status is: {}", process.getStatus());
             throw new IllegalStateException("Cannot record test results for blood that has not been collected.");
         }
 
         User donor = process.getDonor();
 
-        // === BƯỚC 1: KIỂM TRA VÀ CẬP NHẬT NHÓM MÁU CHO USER NẾU CÓ ===
         if (request.getBloodTypeId() != null) {
+            log.info("Updating blood type for donor ID: {}", donor.getId());
             BloodType newBloodType = bloodTypeRepository.findById(request.getBloodTypeId())
                     .orElseThrow(() -> new EntityNotFoundException("BloodType not found with id: " + request.getBloodTypeId()));
-
-            // Cập nhật nhóm máu mới cho hồ sơ người hiến
             donor.setBloodType(newBloodType);
-            userRepository.save(donor); // Lưu lại thông tin người dùng
+            userRepository.save(donor);
         }
-        // =============================================================
 
+        log.info("Checking blood test safety. isSafe = {}", request.getIsSafe());
         if (request.getIsSafe()) {
-            // Service Inventory sẽ tự động lấy nhóm máu MỚI NHẤT từ `donor`
             inventoryService.addUnitToInventory(process, request.getBloodUnitId());
-
             process.setStatus(DonationStatus.COMPLETED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " passed tests and added to inventory.");
 
-            // Cập nhật trạng thái sẵn sàng hiến của người dùng
             donor.setIsReadyToDonate(false);
             donor.setLastDonationDate(LocalDate.now());
             userRepository.save(donor);
 
-            sendTestResultEmail(process, request);
+            byte[] pdfBytes = null;
+            try {
+                log.info("Starting certificate generation for process ID: {}", processId);
+                pdfBytes = pdfService.generateCertificatePdf(process);
+                log.info("PDF generated successfully. Starting upload to Cloudinary...");
+
+                String certificateUrl = cloudinaryService.upload(pdfBytes, "certificates");
+                log.info("Certificate uploaded successfully. URL: {}", certificateUrl);
+                process.setCertificateUrl(certificateUrl); // Lưu link vào DB để quản lý
+
+            } catch (Exception e) {
+                log.error("!!! CRITICAL: Certificate generation or upload FAILED for process ID: {}", processId, e);
+                process.setNote(process.getNote() + " | CRITICAL: Certificate generation/upload failed. Check logs for details.");
+            }
+
+            // Gửi email
+            if (pdfBytes != null) {
+                // Nếu tạo PDF thành công, gửi email có đính kèm file
+                sendTestResultEmailWithAttachment(process, request, pdfBytes);
+            } else {
+                // Nếu tạo PDF thất bại, gửi email thông báo kết quả nhưng không có chứng nhận
+                sendTestResultEmail(process, request);
+            }
 
         } else {
             process.setStatus(DonationStatus.TESTING_FAILED);
             process.setNote("Blood unit " + request.getBloodUnitId() + " failed testing. Reason: " + request.getNotes());
+            log.info("Preparing to send 'UNSAFE' test result email to {}", donor.getEmail());
             sendTestResultEmail(process, request);
         }
-        return mapToResponse(donationProcessRepository.save(process));
+
+        DonationProcess savedProcess = donationProcessRepository.save(process);
+        log.info("Successfully saved final process state for ID: {}. Status: {}", savedProcess.getId(), savedProcess.getStatus());
+        return mapToResponse(savedProcess);
     }
+
 
     // ... (các phương thức helper còn lại không thay đổi) ...
     /**
-     * Prepares and sends the blood test result email to the donor.
-     * @param process The donation process containing donor and appointment info.
-     * @param result The result of the blood test.
+     * Soạn và gửi email có đính kèm file chứng nhận.
+     */
+    private void sendTestResultEmailWithAttachment(DonationProcess process, BloodTestResultRequest result, byte[] certificatePdf) {
+        User donor = process.getDonor();
+        DonationAppointment appointment = process.getDonationAppointment();
+
+        String recipientEmail = donor.getEmail();
+        String subject = "Kết quả xét nghiệm máu và Giấy chứng nhận hiến máu";
+        String donationDate = appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String location = appointment.getLocation();
+        String bloodGroup = donor.getBloodType() != null ? donor.getBloodType().getBloodGroup() : "chưa xác định";
+        String resultText = "KQ: Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.";
+
+        String emailBody = String.format(
+                "Trân trọng cảm ơn Anh/Chị %s đã tham gia Hiến máu vào ngày %s tại %s.\n\n" +
+                        "Chúng tôi xin gửi kết quả xét nghiệm máu của Anh/Chị:\n%s\n\n" +
+                        "Giấy chứng nhận hiến máu của Anh/Chị đã được đính kèm trong email này.\n\n" +
+                        "Kính mong Anh/Chị sẽ tiếp tục tham gia Hiến máu trong các chương trình tiếp theo. LH: 0338203440",
+                donor.getFullName(), donationDate, location, resultText
+        );
+
+        String attachmentName = "Chung-Nhan-Hien-Mau-" + donor.getFullName().replaceAll("\\s+", "") + ".pdf";
+
+        try {
+            emailService.sendEmailWithAttachment(recipientEmail, subject, emailBody, certificatePdf, attachmentName);
+            log.info("Successfully sent email with certificate attachment to {}", recipientEmail);
+        } catch (Exception e) {
+            log.error("Failed to send email with attachment to {}", recipientEmail, e);
+        }
+    }
+
+    /**
+     * Gửi email thông báo kết quả xét nghiệm (không có file đính kèm).
+     * Dùng cho trường hợp hiến máu không thành công hoặc khi tạo PDF bị lỗi.
      */
     private void sendTestResultEmail(DonationProcess process, BloodTestResultRequest result) {
         User donor = process.getDonor();
@@ -185,20 +245,13 @@ public class DonationService {
 
         String recipientEmail = donor.getEmail();
         String subject = "Kết quả xét nghiệm máu của bạn";
-
-        String donationDate = "không xác định";
-        String location = "không xác định";
-        if (appointment != null) {
-            donationDate = appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            location = appointment.getLocation();
-        }
-
-        // Lấy nhóm máu đã được cập nhật
+        String donationDate = appointment != null ? appointment.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "không xác định";
+        String location = appointment != null ? appointment.getLocation() : "không xác định";
         String bloodGroup = donor.getBloodType() != null ? donor.getBloodType().getBloodGroup() : "chưa xác định";
 
         String resultText;
         if (result.getIsSafe()) {
-            resultText = "KQ: Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.";
+            resultText = "KQ: Nhóm máu " + bloodGroup + ", âm tính với VR HIV, VR viêm gan B, VR viêm gan C, VK giang mai.\n(Đã có lỗi xảy ra trong quá trình tạo giấy chứng nhận, chúng tôi sẽ gửi lại sau.)";
         } else {
             resultText = "KQ: Máu của bạn không đạt tiêu chuẩn an toàn. Lý do: " + result.getNotes() + ". Vui lòng liên hệ cơ sở y tế để được tư vấn chi tiết.";
         }
@@ -207,14 +260,16 @@ public class DonationService {
                 "Trân trọng cảm ơn quý vị đã tham gia Hiến máu vào ngày %s tại %s.\n\n" +
                         "%s\n\n" +
                         "Kính mong quý vị sẽ tiếp tục tham gia Hiến máu trong các chương trình tiếp theo. LH: 0338203440",
-                donationDate,
-                location,
-                resultText
+                donationDate, location, resultText
         );
 
-        emailService.sendEmail(recipientEmail, subject, emailBody);
+        try {
+            emailService.sendEmail(recipientEmail, subject, emailBody);
+            log.info("Successfully sent simple email notification to {}", recipientEmail);
+        } catch (Exception e) {
+            log.error("Failed to send simple email to {}", recipientEmail, e);
+        }
     }
-
 
     // Hàm helper để tìm quy trình theo ID
     private DonationProcess findProcessById(Long processId) {

@@ -41,7 +41,7 @@ public class BloodRequestController {
     }
 
     @GetMapping("/search/active")
-    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<BloodRequestResponse>> searchActiveRequests() {
         return ResponseEntity.ok(bloodRequestService.searchActiveRequests());
     }
