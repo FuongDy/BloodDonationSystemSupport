@@ -54,12 +54,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/blog-posts", "/api/blog-posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/blood-requests/search/active").permitAll()
                         .requestMatchers("/error").permitAll()
-
+                        .requestMatchers(HttpMethod.POST, "/api/blood-requests/{id}/pledge").hasAnyRole("MEMBER", "ADMIN")
                         // PHÂN LUỒNG TRIỆT ĐỂ CHO ADMIN VÀ STAFF
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/staff/**").hasRole("STAFF")
-
-                        // Các API còn lại yêu cầu phải xác thực (đăng nhập)
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
                         .anyRequest().authenticated()
                 );
 

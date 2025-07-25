@@ -16,6 +16,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +32,6 @@ public class BloodRequestService {
     @Autowired private UserRepository userRepository;
     @Autowired private EmailService emailService;
 
-    // THÊM AUTOWIRED CHO REPOSITORY MỚI
     @Autowired private DonationProcessRepository donationProcessRepository;
 
 
@@ -102,7 +103,14 @@ public class BloodRequestService {
     private void createEmergencyDonationProcess(User donor, BloodRequest forRequest) {
         DonationProcess process = new DonationProcess();
         process.setDonor(donor);
-        process.setStatus(DonationStatus.APPOINTMENT_PENDING); // Chuyển sang chờ xếp lịch ngay
+
+        DonationAppointment donationAppointment = new DonationAppointment();
+        donationAppointment.setDonationProcess(process);
+        donationAppointment.setAppointmentDate(LocalDate.now());
+
+        process.setDonationAppointment(donationAppointment);
+        donationAppointment.setLocation(forRequest.getHospital());
+        process.setStatus(DonationStatus.APPOINTMENT_SCHEDULED); // Chuyển sang chờ kiểm tra sức khỏe.
         process.setDonationType(DonationType.EMERGENCY); // Gán đúng loại là KHẨN CẤP
         process.setNote("Donor pledged for emergency request ID: " + forRequest.getId() + " for patient " + forRequest.getPatientName());
 
