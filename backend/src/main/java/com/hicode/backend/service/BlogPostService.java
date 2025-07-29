@@ -86,11 +86,15 @@ public class BlogPostService {
     @Transactional
     public BlogPostResponse updatePost(Long postId, UpdateBlogPostRequest request) {
         User currentUser = userService.getCurrentUser();
+        
         BlogPost post = blogPostRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Blog post not found with id: " + postId));
 
-        // Chỉ tác giả mới được sửa bài viết
-        if (!Objects.equals(post.getAuthor().getId(), currentUser.getId())) {
+        // Chỉ tác giả hoặc Admin mới được sửa bài viết
+        boolean isAuthor = Objects.equals(post.getAuthor().getId(), currentUser.getId());
+        boolean isAdmin = currentUser.getRole().getName().equals("Admin");
+        
+        if (!isAuthor && !isAdmin) {
             throw new AccessDeniedException("You are not authorized to update this post.");
         }
 

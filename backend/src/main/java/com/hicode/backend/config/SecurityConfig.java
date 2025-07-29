@@ -56,6 +56,11 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/blood-requests/{id}/pledge").hasAnyRole("MEMBER", "ADMIN")
                         
+                        // Blog post operations
+                        .requestMatchers(HttpMethod.POST, "/api/blog-posts").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/blog-posts/**").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blog-posts/**").hasAnyRole("ADMIN")
+                        
                         // Chỉ ADMIN mới được truy cập
                         .requestMatchers("/api/admin/users/**").hasRole("ADMIN")           // Quản lí người dùng
                         .requestMatchers("/api/admin/blog-posts/**").hasRole("ADMIN")     // Quản lí blog  
