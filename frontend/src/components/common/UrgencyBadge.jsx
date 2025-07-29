@@ -1,5 +1,4 @@
 // src/components/common/UrgencyBadge.jsx
-import React from 'react';
 import { Badge } from '../ui/Badge';
 
 const UrgencyBadge = ({ urgency, className, ...props }) => {

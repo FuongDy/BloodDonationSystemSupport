@@ -1,12 +1,11 @@
 // src/components/emergency/EmergencyRequestCard.jsx
-import React from 'react';
-import { AlertTriangle, Clock, Bed, Droplets } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import UrgencyBadge from '../common/UrgencyBadge';
-import DateTimeDisplay from '../common/DateTimeDisplay';
-import PledgeButton from '../blood/PledgeButton';
-import { HOSPITAL_INFO } from '../../utils/constants';
+import { AlertTriangle, Bed, Clock } from 'lucide-react';
 import { getBloodCompatibilityInfo } from '../../utils/bloodCompatibility';
+import { HOSPITAL_INFO } from '../../utils/constants';
+import PledgeButton from '../blood/PledgeButton';
+import DateTimeDisplay from '../common/DateTimeDisplay';
+import UrgencyBadge from '../common/UrgencyBadge';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 const EmergencyRequestCard = ({ request, onPledgeSuccess }) => {
   const pledgeCount = request.pledgeCount || request.pledges?.length || 0;
@@ -26,7 +25,7 @@ const EmergencyRequestCard = ({ request, onPledgeSuccess }) => {
         <div className='flex items-center justify-between'>
           <CardTitle className='text-lg text-red-600 flex items-center'>
             <AlertTriangle className='w-5 h-5 mr-2' />
-            Cần máu 
+            Cần máu #{request.id}
           </CardTitle>
           <UrgencyBadge urgency={request.urgency} />
         </div>
@@ -101,7 +100,7 @@ const EmergencyRequestCard = ({ request, onPledgeSuccess }) => {
                 <Bed className='w-4 h-4 mr-1' />
                 Số phòng - giường:
               </span>
-              <span className='text-sm bg-green-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium'>
+              <span className=' bg-green-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium'>
                 {request.roomNumber && `P.${request.roomNumber}`}
                 {request.roomNumber && request.bedNumber && ' - '}
                 {request.bedNumber && `G.${request.bedNumber}`}

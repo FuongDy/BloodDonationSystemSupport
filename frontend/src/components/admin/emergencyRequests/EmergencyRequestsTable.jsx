@@ -214,14 +214,14 @@ const EmergencyRequestsTable = ({
                             'Hoàn thành'
                           )}
                         </Button>
-                        <Button
+                        {/* <Button
                           variant='outline'
                           size='sm'
                           onClick={() => onStatusUpdate(request.id, 'CANCELLED')}
                           title='Hủy yêu cầu này'
                         >
                           Hủy yêu cầu
-                        </Button>
+                        </Button> */}
                       </>
                     )}
                     

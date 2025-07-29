@@ -15,15 +15,20 @@ export const useEmergencyRequests = () => {
       const response = await bloodRequestService.getEmergencyRequests();
       const requestsData = response.data || response || [];
       
+      // Debug logging to check data structure
+      console.log('Emergency requests data:', requestsData);
+      if (requestsData.length > 0) {
+        console.log('First request sample:', requestsData[0]);
+        console.log('Available fields:', Object.keys(requestsData[0]));
+      }
+      
       setRequests(requestsData);
     } catch (error) {
-      console.error('Error fetching emergency requests:', error);
+      console.error(error);
 
       // Handle different types of errors
       if (error.response?.status === 401) {
         toast.error('Bạn cần đăng nhập để xem danh sách yêu cầu khẩn cấp');
-      } else if (error.response?.status === 403) {
-        toast.error('Bạn không có quyền truy cập chức năng này');
       } else if (
         error.response?.status === 0 ||
         error.code === 'ECONNABORTED'

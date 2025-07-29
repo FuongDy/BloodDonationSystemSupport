@@ -65,7 +65,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
             </span>
           )}
         </div>
-        <Button
+        {/* <Button
           variant="outline"
           size="sm"
           onClick={handleRefresh}
@@ -73,7 +73,7 @@ const EmergencyPledgesList = ({ requestId, requestData }) => {
         >
           <RefreshCw className="w-4 h-4 mr-1" />
           Làm mới
-        </Button>
+        </Button> */}
       </div>
 
       {/* Request Info (if viewing specific request) */}

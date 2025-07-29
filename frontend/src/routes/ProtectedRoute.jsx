@@ -1,15 +1,14 @@
 // src/routes/ProtectedRoute.jsx
-import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAuth } from '../hooks/useAuth';
 
 const ProtectedRoute = ({ requiredRoles }) => {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, isAuthenticating } = useAuth();
   const location = useLocation();
 
   // Show loading spinner while checking auth
-  if (loading) {
+  if (isAuthenticating) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
         <LoadingSpinner />

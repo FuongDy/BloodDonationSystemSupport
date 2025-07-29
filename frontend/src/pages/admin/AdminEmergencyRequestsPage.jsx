@@ -1,5 +1,5 @@
 // src/pages/admin/AdminEmergencyRequestsPage.jsx
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, AlertTriangle, Clock, CheckCircle, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,6 +28,24 @@ const AdminEmergencyRequestsPage = () => {
     getStatusText,
   } = useEmergencyRequests();
 
+  // Pagination state (admin style: 10/page, 0-based index)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const totalPages = Math.ceil((filteredRequests?.length || 0) / pageSize) || 1;
+  const paginatedRequests = useMemo(() => {
+    const startIdx = currentPage * pageSize;
+    return filteredRequests?.slice(startIdx, startIdx + pageSize) || [];
+  }, [filteredRequests, currentPage, pageSize]);
+
+  // Handler for page change
+  const handlePageChange = (direction) => {
+    setCurrentPage((prev) => {
+      if (direction === 'prev') return Math.max(prev - 1, 0);
+      if (direction === 'next') return Math.min(prev + 1, totalPages - 1);
+      return prev;
+    });
+  };
+
   if (isLoading) {
     return (
       <AdminPageLayout>
@@ -51,8 +69,10 @@ const AdminEmergencyRequestsPage = () => {
   const statusOptions = [
     { value: 'all', label: 'Tất cả trạng thái' },
     { value: 'PENDING', label: 'Đang chờ xử lý' },
-    { value: 'FULFILLED', label: 'Đã hoàn thành' },
-    { value: 'CANCELLED', label: 'Đã hủy' },
+    { value: 'ready', label: 'Sẵn sàng hoàn thành' },
+    // { value: 'FULFILLED', label: 'Đã hoàn thành' },
+    // { value: 'COMPLETED', label: 'Đã hoàn thành' },
+    // { value: 'CANCELLED', label: 'Đã hủy' },
   ];
 
   // Filters configuration for AdminFiltersPanel
@@ -123,7 +143,7 @@ const AdminEmergencyRequestsPage = () => {
         </div>
 
         {/* Info Box */}
-        <EmergencyRequestsInfoBox />
+        {/* <EmergencyRequestsInfoBox /> */}
 
         {/* Filters */}
         <AdminFiltersPanel
@@ -141,11 +161,33 @@ const AdminEmergencyRequestsPage = () => {
 
         {/* Requests List */}
         <EmergencyRequestsTable
-          filteredRequests={filteredRequests}
+          filteredRequests={paginatedRequests}
           getStatusColor={getStatusColor}
           getStatusText={getStatusText}
           onStatusUpdate={handleStatusUpdate}
         />
+        {/* Pagination (admin style, always visible) */}
+        <div className="flex justify-end mt-6">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">
+              Trang {currentPage + 1} / {totalPages}
+            </span>
+            <button
+              className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              onClick={() => handlePageChange('prev')}
+              disabled={currentPage === 0}
+            >
+              Trước
+            </button>
+            <button
+              className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              onClick={() => handlePageChange('next')}
+              disabled={currentPage >= totalPages - 1}
+            >
+              Sau
+            </button>
+          </div>
+        </div>
       </div>
     </AdminPageLayout>
   );
