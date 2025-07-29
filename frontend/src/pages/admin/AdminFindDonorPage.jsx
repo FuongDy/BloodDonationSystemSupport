@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Users, MapPin, Heart } from 'lucide-react';
-import DonorSearchControls from '../../components/nearby/DonorSearchControls';
-import DonorList from '../../components/nearby/DonorList';
-import useNearbyDonors from '../../hooks/useNearbyDonors';
-import PageHeader from '../../components/common/PageHeader';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import EmptyState from '../../components/common/EmptyState';
-import DashboardHeader from '../../components/admin/DashboardHeader';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
-import bloodTypeService from '../../services/bloodTypeService';
+import { Heart, MapPin, Search, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import DashboardHeader from '../../components/admin/DashboardHeader';
+import ContactDonorModal from '../../components/nearby/ContactDonorModal';
+import DonorList from '../../components/nearby/DonorList';
+import DonorSearchControls from '../../components/nearby/DonorSearchControls';
+import useNearbyDonors from '../../hooks/useNearbyDonors';
+import bloodTypeService from '../../services/bloodTypeService';
 
 const AdminFindDonorPage = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [bloodTypes, setBloodTypes] = useState([]);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [selectedDonor, setSelectedDonor] = useState(null);
   const {
     searchParams,
     handleSearch,
@@ -46,6 +46,17 @@ const AdminFindDonorPage = () => {
     } else {
       toast.error('Vui lòng chọn một địa chỉ hợp lệ để tìm kiếm.');
     }
+  };
+
+  // Handlers for the contact modal
+  const handleOpenContactModal = (donor) => {
+    setSelectedDonor(donor);
+    setIsContactModalOpen(true);
+  };
+
+  const handleCloseContactModal = () => {
+    setIsContactModalOpen(false);
+    setSelectedDonor(null);
   };
 
   // Calculate stats
@@ -109,12 +120,20 @@ const AdminFindDonorPage = () => {
                   hasSearched={hasSearched}
                   searchParams={searchParams}
                   bloodTypes={bloodTypes}
+                  onContact={handleOpenContactModal}
                 />
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Render the contact modal */}
+      <ContactDonorModal
+        isOpen={isContactModalOpen}
+        onClose={handleCloseContactModal}
+        donor={selectedDonor}
+      />
     </AdminPageLayout>
   );
 };

@@ -421,12 +421,6 @@ export const bloodCollectionSchema = yup.object().shape({
     notes: yup.string().max(500, '📝 Ghi chú không được quá 500 ký tự'),
 });
 
-/**
- * Validate data against a schema
- * @param {Object} data - Data to validate
- * @param {yup.Schema} schema - Yup schema to validate against
- * @returns {Object} - { isValid, errors, validData }
- */
 export const validateData = async(data, schema) => {
     try {
         const validData = await schema.validate(data, { abortEarly: false });
@@ -449,19 +443,10 @@ export const validateData = async(data, schema) => {
     }
 };
 
-/**
- * Create a validation hook for forms
- * @param {yup.Schema} schema - Yup schema
- * @returns {Function} - Validation function
- */
 export const createValidator = schema => {
     return async data => validateData(data, schema);
 };
 
-/**
- * Enhanced toast message utility for validation errors
- * Provides user-friendly error messages with icons
- */
 export const createFormErrorToast = (errors, showToast) => {
     if (!errors || Object.keys(errors).length === 0) return;
 
@@ -482,7 +467,6 @@ export const createFormErrorToast = (errors, showToast) => {
  */
 export const FORM_SUCCESS_MESSAGES = {
     REGISTRATION: '🎉 Đăng ký tài khoản thành công! Vui lòng kiểm tra email để xác thực.',
-    LOGIN: '👋 Đăng nhập thành công! Chào mừng bạn trở lại.',
     PROFILE_UPDATE: '✅ Cập nhật thông tin cá nhân thành công!',
     DONATION_REQUEST: '💝 Gửi yêu cầu hiến máu thành công! Chúng tôi sẽ liên hệ với bạn sớm.',
     EMERGENCY_REQUEST: '🚨 Tạo yêu cầu khẩn cấp thành công! Hệ thống đang thông báo đến người hiến.',
@@ -504,3 +488,35 @@ export const FORM_ERROR_MESSAGES = {
     INVALID_CREDENTIALS: '🔑 Email hoặc mật khẩu không đúng.',
     CCCD_EXISTS: '🆔 Số CCCD/CMND này đã tồn tại trong hệ thống.',
 };
+
+/**
+ * Forgot Password Validation Schema
+ */
+export const forgotPasswordSchema = yup.object().shape({
+    email: yup
+        .string()
+        .trim()
+        .required('📧 Vui lòng nhập địa chỉ email')
+        .email('📧 Định dạng email không hợp lệ')
+        .max(150, '📧 Email không được vượt quá 150 ký tự'),
+});
+
+/**
+ * Reset Password Validation Schema
+ */
+export const resetPasswordSchema = yup.object().shape({
+    password: yup
+        .string()
+        .required('🔑 Vui lòng nhập mật khẩu mới')
+        .min(6, '🔑 Mật khẩu phải có ít nhất 6 ký tự')
+        .max(100, '🔑 Mật khẩu không được vượt quá 100 ký tự')
+        .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+            '🔑 Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa, 1 số và 1 ký tự đặc biệt'
+        ),
+
+    confirmPassword: yup
+        .string()
+        .required('🔑 Vui lòng xác nhận mật khẩu')
+        .oneOf([yup.ref('password'), null], '🔑 Mật khẩu xác nhận không khớp'),
+});

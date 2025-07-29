@@ -1,20 +1,5 @@
 // src/components/admin/DashboardHeader.jsx
-import React, { useState, useEffect } from 'react';
-import { 
-  Clock, 
-  Calendar, 
-  Activity, 
-  TrendingUp, 
-  Users,
-  Droplet,
-  Sun,
-  Moon,
-  CloudSun,
-  Star,
-  ChevronDown,
-  ChevronUp
-} from 'lucide-react';
-import LiveActivityFeed from './LiveActivityFeed';
+import { useEffect, useState } from 'react';
 
 const DashboardHeader = ({ 
   title, 
@@ -71,8 +56,8 @@ const DashboardHeader = ({
 
   if (!mounted) {
     return (
-      <div className="relative mb-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/60 via-purple-500/50 to-pink-500/60 backdrop-blur-md rounded-2xl border border-white/30 animate-pulse"></div>
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/60 via-purple-500/50 to-pink-500/60 rounded-2xl border border-white/30"></div>
         <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
         <div className="relative p-6 md:p-8 h-32 flex items-center justify-center">
           <div className="text-white text-lg font-medium">Đang tải...</div>
@@ -82,28 +67,12 @@ const DashboardHeader = ({
   }
 
   return (
-    <div className="relative mb-8 overflow-hidden">
-      {/* Background with gradient and glass effect - Enhanced visibility */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} backdrop-blur-md rounded-2xl border border-white/30`}></div>
+    <div className="relative mb-8">
+      {/* Background with gradient - Enhanced visibility */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} rounded-2xl border border-white/30`}></div>
       
       {/* Stronger background overlay for better text visibility */}
       <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
-      
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden rounded-2xl">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-300/40 rounded-full animate-ping delay-1000"></div>
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-pink-300/50 rounded-full animate-ping delay-2000"></div>
-        <div className="absolute bottom-1/4 left-3/4 w-3 h-3 bg-purple-400/30 rounded-full animate-pulse delay-500"></div>
-      </div>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-2 right-2 opacity-30">
-        <div className="flex items-center space-x-2">
-          <Star className="w-4 h-4 text-white animate-pulse" />
-          <Star className="w-3 h-3 text-white animate-pulse delay-500" />
-          <Star className="w-5 h-5 text-white animate-pulse delay-1000" />
-        </div>
-      </div>
 
       <div className="relative p-6 md:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">

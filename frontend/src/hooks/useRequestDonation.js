@@ -23,7 +23,7 @@ export const useRequestDonation = () => {
     const showToast = (type, message) => {
         toast.dismiss();
         toast[type](message, {
-            duration: 2500,
+            duration: 1500,
             position: 'top-center',
         });
     };

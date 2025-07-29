@@ -1,14 +1,16 @@
 // src/pages/NearbyDonorsPage.jsx
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { Navigate } from 'react-router-dom';
-import DonorSearchControls from '../components/nearby/DonorSearchControls';
-import DonorList from '../components/nearby/DonorList';
-import useNearbyDonors from '../hooks/useNearbyDonors';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import bloodTypeService from '../services/bloodTypeService';
+import Pagination from '@mui/material/Pagination';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Navigate } from 'react-router-dom';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import ContactDonorModal from '../components/nearby/ContactDonorModal'; // Import the new modal
+import DonorList from '../components/nearby/DonorList';
+import DonorSearchControls from '../components/nearby/DonorSearchControls';
+import FindDonorsHeroSection from '../components/nearby/FindDonorsHeroSection';
+import { useAuth } from '../hooks/useAuth';
+import useNearbyDonors from '../hooks/useNearbyDonors';
+import bloodTypeService from '../services/bloodTypeService';
 
 const NearbyDonorsPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -74,55 +76,75 @@ const NearbyDonorsPage = () => {
     setSelectedDonor(null);
   };
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1); // 1-based
+  const [pageSize] = useState(6);
+
+  // Pagination logic
+  const totalPages = useMemo(() => Math.ceil(donors.length / pageSize) || 1, [donors, pageSize]);
+  const paginatedDonors = useMemo(() => {
+    const startIdx = (currentPage - 1) * pageSize;
+    return donors.slice(startIdx, startIdx + pageSize);
+  }, [donors, currentPage, pageSize]);
+
   return (
-      <>
-        <div className="bg-gray-50 min-h-screen">
-          <div className="container mx-auto px-4 py-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2 text-gray-800">Tìm người hiến máu</h1>
-              <p className="text-gray-600">Tìm kiếm người hiến máu phù hợp với nhu cầu của bạn</p>
+    <>
+      {/* Hero Section */}
+      <FindDonorsHeroSection />
+      
+      <div className="bg-gray-50 min-h-screen">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <div className="lg:col-span-4">
+              <DonorSearchControls
+                searchParams={searchParams}
+                onSearchChange={handleSearch}
+                onSearch={onSearch}
+                isLoading={donorsLoading}
+                bloodTypes={bloodTypes}
+              />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-              <div className="lg:col-span-4">
-                <DonorSearchControls
-                    searchParams={searchParams}
-                    onSearchChange={handleSearch}
-                    onSearch={onSearch}
+            <div className="lg:col-span-8">
+              <div className='bg-white p-4 rounded-lg border border-gray-200 min-h-[600px] flex flex-col'>
+                <h3 className="text-lg font-semibold mb-4 flex-shrink-0 border-b pb-3">Kết quả tìm kiếm</h3>
+                <div className="flex-grow pt-4">
+                  <DonorList
+                    donors={paginatedDonors}
                     isLoading={donorsLoading}
+                    error={error}
+                    hasSearched={hasSearched}
+                    searchParams={searchParams}
                     bloodTypes={bloodTypes}
-                />
-              </div>
-
-              <div className="lg:col-span-8">
-                <div className='bg-white p-4 rounded-lg border border-gray-200 min-h-[600px] flex flex-col'>
-                  <h3 className="text-lg font-semibold mb-4 flex-shrink-0 border-b pb-3">Kết quả tìm kiếm</h3>
-                  <div className="flex-grow pt-4">
-                    <DonorList
-                        donors={donors}
-                        isLoading={donorsLoading}
-                        error={error}
-                        hasSearched={hasSearched}
-                        searchParams={searchParams}
-                        bloodTypes={bloodTypes}
-                        onContact={handleOpenContactModal} // Pass the handler down
-                    />
-                  </div>
+                    onContact={handleOpenContactModal}
+                  />
+                </div>
+                <div className="flex justify-center my-4">
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={(_, page) => setCurrentPage(page)}
+                    color="primary"
+                    shape="rounded"
+                    showFirstButton
+                    showLastButton
+                  />
                 </div>
               </div>
-
             </div>
+
           </div>
         </div>
+      </div>
 
-        {/* Render the modal */}
-        <ContactDonorModal
-            isOpen={isContactModalOpen}
-            onClose={handleCloseContactModal}
-            donor={selectedDonor}
-        />
-      </>
+      {/* Render the modal */}
+      <ContactDonorModal
+        isOpen={isContactModalOpen}
+        onClose={handleCloseContactModal}
+        donor={selectedDonor}
+      />
+    </>
   );
 };
 
