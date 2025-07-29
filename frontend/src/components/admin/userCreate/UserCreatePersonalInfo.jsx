@@ -108,7 +108,7 @@ const UserCreatePersonalInfo = ({ formData, onInputChange, errors, isLoading }) 
             error={errors.lastDonationDate}
             disabled={isLoading}
           />
-          {/* <div className="mt-4">
+          <div className="mt-4">
             <label className="flex items-center">
               <input
                 type="checkbox"
@@ -116,11 +116,11 @@ const UserCreatePersonalInfo = ({ formData, onInputChange, errors, isLoading }) 
                 checked={formData.isReadyToDonate}
                 onChange={onInputChange}
                 disabled={isLoading}
-                className="mr-2"
+                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded mr-2"
               />
               <span className="text-sm text-gray-700">Sẵn sàng hiến máu</span>
             </label>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

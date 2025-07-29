@@ -1,23 +1,22 @@
 // src/pages/LoginPage.jsx
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
+  ArrowRight,
   Eye,
   EyeOff,
-  LogIn as LogInIcon,
   Heart,
+  Lock,
+  LogIn as LogInIcon,
+  Mail,
   Shield,
   Users,
-  Mail,
-  Lock,
-  ArrowRight,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../hooks/useAuth';
 import { useAppStore } from '../store/appStore';
 import { userLoginSchema } from '../utils/validationSchemas';
-import { handleApiError } from '../utils/errorHandler';
 
 /**
  * LoginPage Component
@@ -38,8 +37,9 @@ const LoginPage = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, user, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { setLoading } = useAppStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -51,18 +51,16 @@ const LoginPage = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       const userRole = user?.role;
-      toast.success(
-        `Đăng nhập thành công! Chào mừng ${user?.fullName || 'bạn'}.`
-      );
-
       // Use setTimeout to ensure state updates are complete
       setTimeout(() => {
         if (userRole === 'Admin') {
           navigate('/admin', { replace: true });
+        } else if (userRole === 'Staff') {
+          navigate('/admin', { replace: true });
         } else {
           navigate(from, { replace: true });
         }
-      }, 100);
+      },0);
     }
   }, [isAuthenticated, user, navigate, from]);
 
@@ -99,23 +97,23 @@ const LoginPage = () => {
       await userLoginSchema.validate(credentials, { abortEarly: false });
       setValidationErrors({});
 
-      setLoading(true);
+      setIsSubmitting(true);
       await login(credentials);
     } catch (error) {
       if (error.name === 'ValidationError') {
         // Xử lý validation errors
         const errors = {};
         error.inner.forEach(err => {
-          errors[err.path] = error.message;
+          errors[err.path] = err.message;
         });
         setValidationErrors(errors);
         toast.error('Vui lòng kiểm tra lại thông tin đăng nhập.');
       } else {
-        // Xử lý API errors
-        handleApiError(error);
+        // Xử lý API errors - không cần handleApiError vì đã được xử lý trong AuthContext
+        console.error('Kiểm tra lại dữ liệu với API:', error);
       }
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -227,12 +225,12 @@ const LoginPage = () => {
                       onChange={handleChange}
                       placeholder='your.email@example.com'
                       required
-                      disabled={authLoading}
+                      disabled={authLoading || isSubmitting}
                       className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors ${
                         validationErrors.email
                           ? 'border-red-300 bg-red-50'
                           : 'border-gray-300 bg-white'
-                      } ${authLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      } ${authLoading || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                     {validationErrors.email && (
                       <p className='mt-1 text-xs text-red-600'>
@@ -257,17 +255,17 @@ const LoginPage = () => {
                       onChange={handleChange}
                       placeholder='••••••••••••'
                       required
-                      disabled={authLoading}
+                      disabled={authLoading || isSubmitting}
                       className={`w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors ${
                         validationErrors.password
                           ? 'border-red-300 bg-red-50'
                           : 'border-gray-300 bg-white'
-                      } ${authLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      } ${authLoading || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                     <button
                       type='button'
                       onClick={() => setShowPassword(!showPassword)}
-                      disabled={authLoading}
+                      disabled={authLoading || isSubmitting}
                       className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors'
                     >
                       {showPassword ? (
@@ -308,21 +306,22 @@ const LoginPage = () => {
                   type='submit'
                   disabled={
                     authLoading ||
+                    isSubmitting ||
                     Object.keys(validationErrors).some(
                       key => validationErrors[key]
                     )
                   }
                   className={`w-full bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
-                    authLoading ? 'cursor-wait' : ''
+                    authLoading || isSubmitting ? 'cursor-wait' : ''
                   }`}
                 >
                   <div className='flex items-center justify-center'>
-                    {authLoading ? (
+                    {authLoading || isSubmitting ? (
                       <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2'></div>
                     ) : (
                       <LogInIcon className='w-5 h-5 mr-2' />
                     )}
-                    {authLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                    {authLoading || isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
                   </div>
                 </button>
 

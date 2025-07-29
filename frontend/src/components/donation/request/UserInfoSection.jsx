@@ -270,7 +270,7 @@ const UserInfoSection = () => {
             />
           </div>
 
-          <div className='flex items-center gap-2'>
+          {/* <div className='flex items-center gap-2'>
             <input
               type='checkbox'
               id='isReadyToDonate'
@@ -282,7 +282,7 @@ const UserInfoSection = () => {
             <label htmlFor='isReadyToDonate' className='text-sm font-medium text-gray-700'>
               Sẵn sàng hiến máu
             </label>
-          </div>
+          </div> */}
 
           <div className='flex gap-2 pt-2'>
             <button
@@ -343,10 +343,10 @@ const UserInfoSection = () => {
             <span className='text-sm font-medium text-gray-600'>Lần hiến máu cuối:</span>
             <span className='text-sm text-gray-900'>{user?.lastDonationDate ? new Date(user.lastDonationDate).toLocaleDateString('vi-VN') : 'Chưa hiến máu'}</span>
           </div>
-          <div className='flex justify-between items-start'>
+          {/* <div className='flex justify-between items-start'>
             <span className='text-sm font-medium text-gray-600'>Sẵn sàng hiến máu:</span>
             <span className='text-sm text-gray-900'>{user?.isReadyToDonate ? 'Có' : 'Không'}</span>
-          </div>
+          </div> */}
         </div>
       )}
 

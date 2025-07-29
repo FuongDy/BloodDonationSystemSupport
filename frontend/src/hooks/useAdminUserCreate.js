@@ -1,22 +1,19 @@
-// src/hooks/useAdminUserCreate.js
-import { useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import userService from '../services/userService';
 import bloodTypeService from '../services/bloodTypeService';
-import { useApi } from './useApi';
+import userService from '../services/userService';
 import { formatDateForBackend } from '../utils/dateUtils';
 
-export const useAdminUserCreate = () => {
+const useAdminUserCreate = () => {
   const navigate = useNavigate();
-  const { execute, isLoading: isApiLoading } = useApi();
   
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     fullName: '',
     password: '',
     confirmPassword: '',
-    roleName: 'Member',
+    roleName: 'Member', // Default role based on backend
     dateOfBirth: '',
     phone: '',
     address: '',
@@ -24,180 +21,263 @@ export const useAdminUserCreate = () => {
     emergencyContact: '',
     medicalConditions: '',
     lastDonationDate: '',
-    isReadyToDonate: true,
     bloodTypeId: '',
     status: 'ACTIVE',
     emailVerified: false,
-    phoneVerified: false,
+    phoneVerified: false
   });
-  
-  const [roles, setRoles] = useState([]);
-  const [bloodTypes, setBloodTypes] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [bloodTypes, setBloodTypes] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fixed roles list as no API available yet
-        const rolesData = [
-          { name: 'Admin', description: 'Quản trị viên' },
-          { name: 'Staff', description: 'Nhân viên' },
-          { name: 'Member', description: 'Thành viên' },
-        ];
-        setRoles(rolesData);
-
-        // Fetch blood types from API
-        const bloodTypesData = await bloodTypeService.getAll();
-        setBloodTypes(bloodTypesData || []);
-      } catch (error) {
-        console.error('Data loading error:', error);
-        await execute(
-          () => Promise.reject(error),
-          {
-            showToast: true,
-            errorMessage: `Không thể tải dữ liệu: ${error.message || 'Không thể tải dữ liệu'}`
-          }
-        );
-      }
-      setIsLoading(false);
-    };
-    
-    fetchData();
-  }, [execute]);
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    let processedValue = value;
-    
-    // Convert HTML date input (YYYY-MM-DD) to backend format (dd-MM-yyyy)
-    if ((name === 'dateOfBirth' || name === 'lastDonationDate') && type === 'date' && value) {
-      processedValue = formatDateForBackend(value);
+  // Load blood types on component mount
+  const loadBloodTypes = useCallback(async () => {
+    try {
+      const response = await bloodTypeService.getAll();
+      setBloodTypes(response || []);
+    } catch (error) {
+      console.error('Error loading blood types:', error);
+      toast.error('Không thể tải danh sách nhóm máu');
     }
+  }, []);
+
+  // Handle form field changes
+  const handleInputChange = useCallback((nameOrEvent, value) => {
+    let fieldName, fieldValue;
     
+    // Check if first parameter is an event object
+    if (nameOrEvent && nameOrEvent.target) {
+      const { name, value: eventValue, type, checked } = nameOrEvent.target;
+      fieldName = name;
+      fieldValue = type === 'checkbox' ? checked : eventValue;
+    } else {
+      // Direct parameters
+      fieldName = nameOrEvent;
+      fieldValue = value;
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : processedValue,
+      [fieldName]: fieldValue
     }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
-    }
-  };
 
-  const validateForm = () => {
+    // Clear error for this field when user starts typing
+    if (errors[fieldName]) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldName]: ''
+      }));
+    }
+  }, [errors]);
+
+  // Validate form data
+  const validateForm = useCallback(() => {
     const newErrors = {};
-    
-    if (!formData.username.trim()) {
-      newErrors.username = 'Tên đăng nhập không được để trống.';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Tên đăng nhập phải có ít nhất 3 ký tự.';
-    }
-    
+
+    // Required fields validation
     if (!formData.email.trim()) {
-      newErrors.email = 'Email không được để trống.';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ.';
-    }
-    
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Họ tên không được để trống.';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Mật khẩu không được để trống.';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự.';
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp.';
-    }
-    
-    if (!formData.roleName) {
-      newErrors.roleName = 'Vai trò không được để trống.';
-    }
-    
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = 'Ngày sinh không được để trống.';
-    }
-    
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Số điện thoại không được để trống.';
-    } else if (formData.phone.length < 9 || formData.phone.length > 15) {
-      newErrors.phone = 'Số điện thoại phải có từ 9-15 ký tự.';
-    }
-    
-    if (!formData.address.trim()) {
-      newErrors.address = 'Địa chỉ không được để trống.';
-    } else if (formData.address.length < 10) {
-      newErrors.address = 'Địa chỉ phải có ít nhất 10 ký tự.';
+      newErrors.email = 'Email là bắt buộc';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
     }
 
-    // Optional validations for additional fields
-    if (formData.emergencyContact && (formData.emergencyContact.length < 9 || formData.emergencyContact.length > 15)) {
-      newErrors.emergencyContact = 'Số điện thoại khẩn cấp phải có từ 9-15 ký tự.';
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Họ và tên là bắt buộc';
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = 'Mật khẩu là bắt buộc';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+    }
+
+    if (!formData.confirmPassword.trim()) {
+      newErrors.confirmPassword = 'Xác nhận mật khẩu là bắt buộc';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+    }
+
+    if (!formData.roleName) {
+      newErrors.roleName = 'Vai trò là bắt buộc';
+    }
+
+    if (!formData.dateOfBirth) {
+      newErrors.dateOfBirth = 'Ngày sinh là bắt buộc';
+    } else {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      
+      if (age < 18 || (age === 18 && today < new Date(birthDate.setFullYear(today.getFullYear())))) {
+        newErrors.dateOfBirth = 'Người dùng phải từ 18 tuổi trở lên';
+      }
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Số điện thoại là bắt buộc';
+    } else if (!/^[0-9]{10,11}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Địa chỉ là bắt buộc';
+    }
+
+    // Optional fields validation
+    if (formData.lastDonationDate) {
+      const lastDonationDate = new Date(formData.lastDonationDate);
+      const today = new Date();
+      
+      if (lastDonationDate > today) {
+        newErrors.lastDonationDate = 'Ngày hiến máu cuối không thể trong tương lai';
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      await execute(
-        () => Promise.reject(new Error('Vui lòng kiểm tra lại các trường thông tin.')),
-        { showToast: true }
-      );
-      return;
+  // Prepare data for backend
+  const prepareDataForBackend = useCallback(() => {
+    const backendData = {
+      email: formData.email.trim().toLowerCase(),
+      fullName: formData.fullName.trim(),
+      password: formData.password,
+      roleName: formData.roleName,
+      dateOfBirth: formatDateForBackend(formData.dateOfBirth),
+      phone: formData.phone.trim(),
+      address: formData.address.trim()
+    };
+
+    // Add optional fields only if they have values
+    if (formData.gender) {
+      backendData.gender = formData.gender;
     }
 
-    const requestData = {
-      ...formData,
-      phone: formData.phone.trim(),
-      address: formData.address.trim(),
-      dateOfBirth: formatDateForBackend(formData.dateOfBirth),
-      lastDonationDate: formData.lastDonationDate ? formatDateForBackend(formData.lastDonationDate) : null,
-      bloodTypeId: formData.bloodTypeId ? parseInt(formData.bloodTypeId, 10) : null,
-    };
-    delete requestData.confirmPassword;
+    if (formData.emergencyContact && formData.emergencyContact.trim()) {
+      backendData.emergencyContact = formData.emergencyContact.trim();
+    }
 
-    await execute(
-      () => userService.createUserByAdmin(requestData),
-      {
-        showToast: true,
-        loadingMessage: 'Đang tạo người dùng...',
-        successMessage: 'Tạo người dùng thành công!',
-        onSuccess: () => {
-          navigate('/admin/users');
-        },
-        onError: (error) => {
-          console.error('User creation error:', error);
-          if (error.response?.data && typeof error.response.data === 'object') {
-            const serverErrors = {};
-            for (const key in error.response.data) {
-              serverErrors[key] = error.response.data[key];
-            }
-            setErrors(prev => ({ ...prev, ...serverErrors }));
-          }
-        }
+    if (formData.medicalConditions && formData.medicalConditions.trim()) {
+      backendData.medicalConditions = formData.medicalConditions.trim();
+    }
+
+    if (formData.lastDonationDate) {
+      backendData.lastDonationDate = formatDateForBackend(formData.lastDonationDate);
+    }
+
+    // Convert bloodTypeId to number if provided
+    if (formData.bloodTypeId) {
+      backendData.bloodTypeId = parseInt(formData.bloodTypeId, 10);
+    }
+
+    return backendData;
+  }, [formData]);
+
+  // Submit form
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm()) {
+      toast.error('Vui lòng kiểm tra lại thông tin');
+      return false;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const backendData = prepareDataForBackend();
+      // console.log('Sending user data to backend:', backendData);
+      
+      const response = await userService.createUserByAdmin(backendData);
+      // console.log('Response from backend:', response);
+      
+      // If we get here without error, the user was created successfully
+      toast.success('Tạo người dùng thành công!');
+      // console.log('User created successfully, preparing to navigate...');
+      
+      // Reset form
+      setFormData({
+        email: '',
+        fullName: '',
+        password: '',
+        confirmPassword: '',
+        roleName: 'Member',
+        dateOfBirth: '',
+        phone: '',
+        address: '',
+        gender: '',
+        emergencyContact: '',
+        medicalConditions: '',
+        lastDonationDate: '',
+        bloodTypeId: '',
+        status: 'ACTIVE',
+        emailVerified: false,
+        phoneVerified: false
+      });
+      
+      setErrors({});
+      
+      // Navigate to admin users list
+      console.log('Navigating to /admin/users...');
+      navigate('/admin/users');
+      console.log('Navigate function called');
+      
+      return true;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      
+      // Handle validation errors from backend
+      if (error.response?.data?.errors) {
+        const backendErrors = {};
+        Object.entries(error.response.data.errors).forEach(([field, message]) => {
+          backendErrors[field] = message;
+        });
+        setErrors(backendErrors);
+      } else {
+        const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra khi tạo người dùng';
+        toast.error(errorMessage);
       }
-    );
-  };
+      
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [validateForm, prepareDataForBackend]);
 
-  const combinedLoading = isLoading || isApiLoading;
+  // Reset form
+  const resetForm = useCallback(() => {
+    setFormData({
+      email: '',
+      fullName: '',
+      password: '',
+      confirmPassword: '',
+      roleName: 'Member',
+      dateOfBirth: '',
+      phone: '',
+      address: '',
+      gender: '',
+      emergencyContact: '',
+      medicalConditions: '',
+      lastDonationDate: '',
+      bloodTypeId: '',
+      status: 'ACTIVE',
+      emailVerified: false,
+      phoneVerified: false
+    });
+    setErrors({});
+  }, []);
 
   return {
     formData,
-    roles,
-    bloodTypes,
-    isLoading: combinedLoading,
+    isLoading,
     errors,
+    bloodTypes,
     handleInputChange,
     handleSubmit,
+    resetForm,
+    loadBloodTypes,
+    validateForm
   };
 };
+
+export default useAdminUserCreate;

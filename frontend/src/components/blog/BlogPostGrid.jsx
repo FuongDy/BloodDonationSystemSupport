@@ -1,13 +1,11 @@
 // src/components/blog/BlogPostGrid.jsx
-import React from 'react';
-import BlogPostCard from './BlogPostCard';
 import { useAuth } from '../../hooks/useAuth';
+import BlogPostCard from './BlogPostCard';
 
 const BlogPostGrid = ({ 
   posts = [], 
   onStatusChange, 
   onDelete,
-  onViewPost,
   showApproval = false,
   viewMode = 'cards',
   className = '' 
@@ -43,7 +41,6 @@ const BlogPostGrid = ({
                   post={post} 
                   onStatusChange={onStatusChange}
                   onDelete={onDelete}
-                  onViewPost={onViewPost}
                   showApproval={showApproval}
                 />
               ))}
@@ -62,7 +59,6 @@ const BlogPostGrid = ({
           post={post}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
-          onViewPost={onViewPost}
           showApproval={showApproval}
         />
       ))}
@@ -71,7 +67,7 @@ const BlogPostGrid = ({
 };
 
 // Component cho table row
-const BlogPostTableRow = ({ post, onStatusChange, onDelete, onViewPost, showApproval }) => {
+const BlogPostTableRow = ({ post, onStatusChange, onDelete, showApproval }) => {
   const { user } = useAuth();
   
   // Check permissions
@@ -139,23 +135,12 @@ const BlogPostTableRow = ({ post, onStatusChange, onDelete, onViewPost, showAppr
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div className="flex space-x-2">
-          {onViewPost ? (
-            <button 
-              onClick={() => onViewPost(post.id)}
-              className="text-blue-600 hover:text-blue-900"
-            >
-              Xem
-            </button>
-          ) : (
-            <a 
-              href={`/blog/${post.id}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-900"
-            >
-              Xem
-            </a>
-          )}
+          <button 
+            onClick={() => post.onViewDetail && post.onViewDetail(post.id)}
+            className="text-blue-600 hover:text-blue-900"
+          >
+            Xem
+          </button>
           {canEdit && (
             <a 
               href={`/blog/${post.id}/edit`}

@@ -1,56 +1,55 @@
 // src/components/admin/UserManagementTable.jsx
-import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import {
-  Edit3,
-  Trash2,
-  Eye,
   CheckCircle,
-  XCircle,
+  Edit3,
+  Eye,
   ShieldQuestion,
+  Trash2,
+  XCircle,
 } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 import userService from '../../services/userService';
-import StatusBadge from '../common/StatusBadge';
-import DateTimeDisplay from '../common/DateTimeDisplay';
-import ActionButtonGroup from '../common/ActionButtonGroup';
-import { useApi } from '../../hooks/useApi';
 import { USER_ROLES, USER_STATUSES } from '../../utils/constants';
 import {
   getRoleSpecificClasses,
   getStatusSpecificClasses,
 } from '../../utils/formatters';
+import ActionButtonGroup from '../common/ActionButtonGroup';
+import DateTimeDisplay from '../common/DateTimeDisplay';
+import StatusBadge from '../common/StatusBadge';
 
-/**
- * UserManagementTable Component
- *
- * Component quản lý bảng danh sách người dùng trong admin panel.
- * Sử dụng Zustand cho state management, error handling toàn diện,
- * và UI optimization với memoization.
- *
- * Features:
- * - Sorting functionality
- * - User actions (view, edit, delete)
- * - Role-based styling
- * - Loading states với Zustand
- * - Error handling với notifications
- * - Performance optimization với useMemo và useCallback
- *
- * @param {Object} props
- * @param {Array} props.users - Danh sách người dùng
- * @param {Function} props.onRefresh - Callback để refresh data
- * @param {Function} props.onSort - Callback để sort data
- * @param {Function} props.renderSortIcon - Function render sort icon
- * @returns {JSX.Element} UserManagementTable component
- */
+
 const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
-  const { execute, isLoading } = useApi();
-  /**
-   * Handle delete user với confirmation và error handling
-   * @param {number} userId - ID người dùng
-   * @param {string} userName - Tên người dùng
-   * @param {string} userRole - Role của người dùng
-   */
+  const [isLoading, setIsLoading] = useState(false);
+
+  const execute = useCallback(async (asyncFn, options = {}) => {
+    const { showToast = false, successMessage, onSuccess } = options;
+    
+    setIsLoading(true);
+    try {
+      const result = await asyncFn();
+      
+      if (showToast && successMessage) {
+        toast.success(successMessage);
+      }
+      
+      if (onSuccess) {
+        onSuccess(result);
+      }
+      
+      return result;
+    } catch (error) {
+      if (showToast) {
+        toast.error(error.message || 'Có lỗi xảy ra');
+      }
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
   const _handleDeleteUser = useCallback(
     async (userId, userName, userRole) => {
       if (userRole === USER_ROLES.ADMIN) {
@@ -82,11 +81,6 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
     },
     [execute, onRefresh]
   );
-  /**
-   * Component cho header có thể sort
-   * @param {string} field - Field name để sort
-   * @param {ReactNode} children - Header content
-   */
   const SortableHeader = ({ field, children }) => (
     <th
       scope='col'
@@ -130,6 +124,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
         </thead>
         <tbody className='bg-white divide-y divide-gray-200'>
           {users.map(user => {
+            // Luôn có 3 nút để căn đều
             const userActions = [
               {
                 label: 'Xem chi tiết',
@@ -149,10 +144,18 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
               },
             ];
 
-            if (
-              user.role !== USER_ROLES.ADMIN &&
-              user.status === USER_STATUSES.ACTIVE
-            ) {
+            // Nút thứ 3 - thay đổi dựa trên role và status
+            if (user.role === USER_ROLES.ADMIN) {
+              // Admin - nút bị disable
+              userActions.push({
+                label: 'Admin',
+                icon: ShieldQuestion,
+                variant: 'icon',
+                className: 'text-gray-400 cursor-not-allowed',
+                disabled: true,
+              });
+            } else if (user.status === USER_STATUSES.ACTIVE) {
+              // User active - có thể vô hiệu hóa
               userActions.push({
                 label: 'Vô hiệu hóa',
                 icon: Trash2,
@@ -162,10 +165,11 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
                   _handleDeleteUser(user.id, user.fullName, user.role),
                 disabled: isLoading,
               });
-            } else if (user.role === USER_ROLES.ADMIN) {
+            } else {
+              // User đã bị vô hiệu hóa - hiển thị trạng thái
               userActions.push({
-                label: 'Admin',
-                icon: ShieldQuestion,
+                label: 'Đã khóa',
+                icon: XCircle,
                 variant: 'icon',
                 className: 'text-gray-400 cursor-not-allowed',
                 disabled: true,
@@ -173,7 +177,7 @@ const UserManagementTable = ({ users, onRefresh, onSort, renderSortIcon }) => {
             }
 
             return (
-              <tr key={user.id} className='hover:bg-gray-50 transition-colors'>
+              <tr key={user.id} className='hover:bg-gray-50'>
                 <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
                   {user.id}
                 </td>

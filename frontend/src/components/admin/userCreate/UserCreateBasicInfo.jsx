@@ -1,22 +1,10 @@
 // src/components/admin/userCreate/UserCreateBasicInfo.jsx
-import React from 'react';
 import InputField from '../../common/InputField';
 
 const UserCreateBasicInfo = ({ formData, onInputChange, errors, isLoading }) => {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <InputField
-          label="Tên đăng nhập"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={onInputChange}
-          required
-          error={errors.username}
-          disabled={isLoading}
-        />
-        <InputField
+       <InputField
           label="Email"
           id="email"
           name="email"
@@ -27,7 +15,6 @@ const UserCreateBasicInfo = ({ formData, onInputChange, errors, isLoading }) => 
           error={errors.email}
           disabled={isLoading}
         />
-      </div>
       <InputField
         label="Họ và tên đầy đủ"
         id="fullName"

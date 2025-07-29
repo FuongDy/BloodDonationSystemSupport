@@ -1,38 +1,35 @@
 // src/pages/admin/AdminReportsPage.jsx
-import React from 'react';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-} from 'recharts';
-import {
-  TrendingUp,
-  Users,
-  Droplet,
-  Activity,
-  Calendar,
-  BarChart3,
-  PieChart as PieChartIcon,
-  TrendingDown,
-  FileText,
-  Download,
-  Filter
+    Activity,
+    BarChart3,
+    Calendar,
+    Download,
+    Droplet,
+    FileText,
+    PieChart as PieChartIcon,
+    TrendingUp,
+    Users
 } from 'lucide-react';
+import {
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
-import StatsCard from '../../components/common/StatsCard';
 import DashboardHeader from '../../components/admin/DashboardHeader';
+import StatsCard from '../../components/common/StatsCard';
 
 const AdminReportsPage = () => {
   // Mock data for blood type distribution with better colors
@@ -92,7 +89,7 @@ const AdminReportsPage = () => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/95 backdrop-blur-xl p-4 rounded-xl shadow-lg border border-gray-200/50">
+        <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
           <p className="font-semibold text-gray-800 mb-2">{label}</p>
           {payload.map((item, index) => (
             <p key={index} className="text-sm" style={{ color: item.color }}>
@@ -109,7 +106,7 @@ const AdminReportsPage = () => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white/95 backdrop-blur-xl p-4 rounded-xl shadow-lg border border-gray-200/50">
+        <div className="bg-white p-4 rounded-xl shadow border border-gray-200">
           <p className="font-semibold text-gray-800">{data.name}</p>
           <p className="text-sm text-gray-600">{`Số lượng: ${data.count} người`}</p>
           <p className="text-sm text-gray-600">{`Tỷ lệ: ${data.value}%`}</p>
@@ -124,7 +121,7 @@ const AdminReportsPage = () => {
       {/* Dashboard Header */}
       <DashboardHeader
         title="Báo cáo hệ thống"
-        description="Tổng quan chi tiết về các số liệu và phân tích dữ liệu của hệ thống hiến máu BloodConnect. Theo dõi xu hướng và hiệu suất hoạt động."
+        description="Tổng quan chi tiết về các số liệu và phân tích dữ liệu của hệ thống hiến máu HiBlood. Theo dõi xu hướng và hiệu suất hoạt động."
         variant="reports"
         showActivityFeed={false}
         stats={[
@@ -189,7 +186,7 @@ const AdminReportsPage = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Blood Type Distribution - Pie Chart */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-500">
+        <div className="bg-white rounded-2xl p-6 shadow border border-gray-200">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Phân bố nhóm máu</h3>

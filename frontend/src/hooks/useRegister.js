@@ -13,7 +13,7 @@ export const useRegister = () => {
     const showToast = (type, message) => {
         toast.dismiss(); // Dismiss all existing toasts
         toast[type](message, {
-            duration: 2500, // 2.5 seconds for registration (slightly longer than blog)
+            duration: 1500, // 1.5 seconds for registration
             position: 'top-center',
         });
     };

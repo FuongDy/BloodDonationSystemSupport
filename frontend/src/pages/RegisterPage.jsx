@@ -8,27 +8,6 @@ import {
   RegisterFooter,
 } from '../components/register';
 
-/**
- * RegisterPage Component
- *
- * Trang đăng ký tài khoản với form validation toàn diện sử dụng Yup schema,
- * global state management với Zustand, và error handling nâng cao.
- * 
- * Lưu ý: Việc upload ảnh CCCD/CMND đã được chuyển sang UserProfile để
- * đơn giản hóa quy trình đăng ký. Users có thể đăng ký tài khoản trước
- * và upload ảnh CCCD sau đó trong profile.
- *
- * Features:
- * - Multi-step form validation với Yup
- * - Real-time validation feedback
- * - Password strength validation
- * - Blood type selection từ API
- * - Global state management
- * - Comprehensive error handling
- * - Loading states
- *
- * @returns {JSX.Element} RegisterPage component
- */
 const RegisterPage = () => {
   const {
     formData,

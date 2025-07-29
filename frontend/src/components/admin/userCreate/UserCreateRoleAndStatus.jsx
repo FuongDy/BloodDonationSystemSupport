@@ -1,14 +1,18 @@
 // src/components/admin/userCreate/UserCreateRoleAndStatus.jsx
-import React from 'react';
 
 const UserCreateRoleAndStatus = ({ 
   formData, 
   onInputChange, 
   errors, 
   isLoading, 
-  roles, 
   bloodTypes 
 }) => {
+  // Static roles based on backend requirements
+  const roles = [
+    { name: 'Member', description: 'Thành viên' },
+    { name: 'Staff', description: 'Nhân viên' },
+    { name: 'Admin', description: 'Quản trị viên' }
+  ];
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -32,7 +36,7 @@ const UserCreateRoleAndStatus = ({
           >
             {roles.map(role => (
               <option key={role.name} value={role.name}>
-                {role.name}
+                {role.name} ({role.description})
               </option>
             ))}
           </select>
@@ -110,7 +114,7 @@ const UserCreateRoleAndStatus = ({
             Email đã xác thực
           </label>
         </div>
-        {/* <div className="flex items-center">
+        <div className="flex items-center">
           <input
             id="phoneVerified"
             name="phoneVerified"
@@ -126,7 +130,7 @@ const UserCreateRoleAndStatus = ({
           >
             SĐT đã xác thực
           </label>
-        </div> */}
+        </div>
       </div>
     </div>
   );

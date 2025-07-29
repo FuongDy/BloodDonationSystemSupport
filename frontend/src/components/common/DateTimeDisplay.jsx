@@ -1,5 +1,4 @@
 // src/components/common/DateTimeDisplay.jsx
-import React from 'react';
 
 const DateTimeDisplay = ({
   date,
@@ -11,9 +10,46 @@ const DateTimeDisplay = ({
   if (!date) return <span className={className}>{fallback}</span>;
 
   const _formatDate = (dateString, formatType) => {
-    const dateObj = new Date(dateString);
+    let dateObj;
+    
+    console.log('DateTimeDisplay parsing:', dateString); // Debug log
+    
+    // Handle different date formats from backend
+    if (typeof dateString === 'string') {
+      // Try to parse different formats
+      if (dateString.includes('-')) {
+        const parts = dateString.split(' '); // Split date and time if exists
+        const datePart = parts[0];
+        const timePart = parts[1];
+        
+        const dateComponents = datePart.split('-');
+        if (dateComponents.length === 3) {
+          if (dateComponents[0].length === 2) {
+            // dd-MM-yyyy format
+            let isoString = `${dateComponents[2]}-${dateComponents[1]}-${dateComponents[0]}`;
+            if (timePart) {
+              isoString += `T${timePart}`;
+            }
+            console.log('Converted to ISO:', isoString); // Debug log
+            dateObj = new Date(isoString);
+          } else {
+            // yyyy-MM-dd format
+            dateObj = new Date(dateString);
+          }
+        } else {
+          dateObj = new Date(dateString);
+        }
+      } else {
+        dateObj = new Date(dateString);
+      }
+    } else {
+      dateObj = new Date(dateString);
+    }
 
+    console.log('Parsed date object:', dateObj); // Debug log
+    
     if (isNaN(dateObj.getTime())) {
+      console.warn('Invalid date format:', dateString);
       return fallback;
     }
 
@@ -22,17 +58,11 @@ const DateTimeDisplay = ({
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
       },
       date: {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      },
-      time: {
-        hour: '2-digit',
-        minute: '2-digit',
       },
       short: {
         year: 'numeric',

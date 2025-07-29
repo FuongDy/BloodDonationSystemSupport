@@ -1,16 +1,16 @@
 // src/pages/admin/AdminBlogManagementPage.jsx
-import React, { useState } from 'react';
-import {  Plus, FileText, Users, TrendingUp, Calendar } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Calendar, Eye, FileText, Plus, TrendingUp, Users } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import DashboardHeader from '../../components/admin/DashboardHeader';
 import AdminFiltersPanel from '../../components/admin/common/AdminFiltersPanel';
-import { 
-  BlogPostGrid, 
+import {
+  BlogDetailModal,
   BlogManagementEmptyState,
-  BlogDetailModal
+  BlogPostGrid
 } from '../../components/blog';
 import { useBlogManagement } from '../../hooks/useBlogManagement';
 
@@ -20,7 +20,7 @@ const AdminBlogManagementPage = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [viewMode, setViewMode] = useState('cards');
   const [selectedPostId, setSelectedPostId] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const {
     publishedPosts,
@@ -33,18 +33,42 @@ const AdminBlogManagementPage = () => {
 
   // Combine all posts
   const allPosts = [...(publishedPosts.content || []), ...(pendingPosts.content || [])];
-  
+
   // Filter posts based on search and status
   const filteredPosts = allPosts.filter(post => {
     const matchesSearch = search === '' || 
       post.title?.toLowerCase().includes(search.toLowerCase()) ||
       post.content?.toLowerCase().includes(search.toLowerCase()) ||
       post.authorName?.toLowerCase().includes(search.toLowerCase());
-    
     const matchesStatus = statusFilter === 'ALL' || post.status === statusFilter;
-    
     return matchesSearch && matchesStatus;
   });
+
+  // Pagination state (admin style: 10/page, 0-based index)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const totalPages = Math.ceil(filteredPosts.length / pageSize) || 1;
+  const paginatedPosts = useMemo(() => {
+    const startIdx = currentPage * pageSize;
+    return filteredPosts.slice(startIdx, startIdx + pageSize);
+  }, [filteredPosts, currentPage, pageSize]);
+
+  // Handler for page change
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage - 1); // MUI Pagination is 1-based
+  };
+
+  // Thêm handler cho việc xem chi tiết bài viết
+  const handleViewDetail = (postId) => {
+    setSelectedPostId(postId);
+    setIsDetailModalOpen(true);
+  };
+
+  // Thêm onViewDetail cho mỗi post
+  const postsWithViewDetail = paginatedPosts.map(post => ({
+    ...post,
+    onViewDetail: handleViewDetail
+  }));
 
   // Calculate stats
   const totalPosts = allPosts.length;
@@ -55,6 +79,8 @@ const AdminBlogManagementPage = () => {
     { value: 'ALL', label: 'Tất cả trạng thái' },
     { value: 'PUBLISHED', label: 'Đã xuất bản' },
     { value: 'DRAFT', label: 'Bản nháp' },
+    { value: 'PENDING_APPROVAL', label: 'Chờ duyệt' },
+    { value: 'REJECTED', label: 'Bị từ chối' },
   ];
 
   // Filters configuration for AdminFiltersPanel
@@ -77,18 +103,15 @@ const AdminBlogManagementPage = () => {
     setStatusFilter('ALL');
   };
 
-  // Modal handlers
-  const handleViewPost = (postId) => {
-    setSelectedPostId(postId);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedPostId(null);
-  };
-
   const headerActions = [
+    {
+      label: 'Làm mới',
+      icon: Eye,
+      variant: 'outline',
+      onClick: handleRefresh,
+      disabled: isLoading,
+      className: isLoading ? 'animate-spin' : '',
+    },
     {
       label: 'Tạo bài viết mới',
       icon: Plus,
@@ -158,21 +181,45 @@ const AdminBlogManagementPage = () => {
           emptyMessage={<BlogManagementEmptyState />}
         >
           <BlogPostGrid
-            posts={filteredPosts}
+            posts={postsWithViewDetail}
             onStatusChange={handleRefresh}
             onDelete={handleRefresh}
-            onViewPost={handleViewPost}
             showApproval={false} // Admin/staff không cần duyệt
             viewMode={viewMode}
           />
+          {/* Pagination (admin style) */}
+          {filteredPosts.length > pageSize && (
+            <div className="flex justify-end mt-6">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">
+                  Trang {currentPage + 1} / {totalPages}
+                </span>
+                <button
+                  className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 0}
+                >
+                  Trước
+                </button>
+                <button
+                  className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage >= totalPages - 1}
+                >
+                  Sau
+                </button>
+              </div>
+            </div>
+          )}
         </AdminContentWrapper>
       </div>
-
-      {/* Blog Detail Modal */}
+      
+      {/* Modal xem chi tiết bài viết */}
       <BlogDetailModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
         postId={selectedPostId}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onStatusChange={handleRefresh}
       />
     </AdminPageLayout>
   );

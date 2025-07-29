@@ -1,25 +1,24 @@
 // src/components/blog/BlogPostCard.jsx
-import React from 'react';
 import {
-  Eye,
-  Edit,
-  Trash2,
+  Calendar,
   CheckCircle,
   Clock,
+  Edit,
+  Eye,
+  Trash2,
   User,
-  Calendar,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
-import StatusBadge from '../common/StatusBadge';
+import { useAuth } from '../../hooks/useAuth';
+import blogPostService from '../../services/blogPostService';
+import ActionButtonGroup from '../common/ActionButtonGroup';
 import DateTimeDisplay from '../common/DateTimeDisplay';
 import InfoRow from '../common/InfoRow';
-import ActionButtonGroup from '../common/ActionButtonGroup';
-import blogPostService from '../../services/blogPostService';
-import { useAuth } from '../../hooks/useAuth';
+import StatusBadge from '../common/StatusBadge';
 
-const BlogPostCard = ({ post, onStatusChange, onDelete, onViewPost, showApproval = false }) => {
+const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false }) => {
   const { user } = useAuth();
   
   // Safe access to post properties
@@ -81,14 +80,7 @@ const BlogPostCard = ({ post, onStatusChange, onDelete, onViewPost, showApproval
       label: 'Xem',
       icon: Eye,
       variant: 'outline',
-      ...(onViewPost ? {
-        onClick: () => onViewPost(post.id)
-      } : {
-        component: Link,
-        to: `/blog/${post.id}`,
-        target: '_blank',
-        rel: 'noopener noreferrer'
-      })
+      onClick: () => post.onViewDetail && post.onViewDetail(post.id),
     },
   ];
 

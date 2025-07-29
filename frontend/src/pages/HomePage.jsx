@@ -1,27 +1,71 @@
-import React from 'react';
-import {
-  HeroSection,
-  QuickActionsSection,
-  StatsSection,
-  FeaturesSection,
-  TestimonialsSection,
-  CTASection,
-} from '../components/home';
+import React, { Suspense } from 'react';
+import { HeroSection, QuickActionsSection } from '../components/home';
+
+// Lazy load các component nặng
+const UrgencySection = React.lazy(
+  () => import('../components/home/UrgencySection')
+);
+const BloodCompatibilitySection = React.lazy(
+  () => import('../components/home/BloodCompatibilitySection')
+);
+const StatsSection = React.lazy(
+  () => import('../components/home/StatsSection')
+);
+const BlogSection = React.lazy(() => import('../components/home/BlogSection'));
+const FeaturesSection = React.lazy(
+  () => import('../components/home/FeaturesSection')
+);
+const CTASection = React.lazy(() => import('../components/home/CTASection'));
+
+// Component loading placeholder nhẹ
+const LoadingSection = () => (
+  <div className='py-16'>
+    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <div className='animate-pulse space-y-6'>
+        <div className='h-8 bg-gray-200 rounded w-1/3 mx-auto'></div>
+        <div className='h-4 bg-gray-200 rounded w-2/3 mx-auto'></div>
+        <div className='grid md:grid-cols-3 gap-6'>
+          {[1, 2, 3].map(i => (
+            <div key={i} className='h-64 bg-gray-200 rounded-xl'></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const HomePage = () => {
   return (
-    <div className='min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 relative overflow-hidden'>
-      {/* Background Glass Pattern */}
-      <div className='absolute inset-0 bg-gradient-to-br from-red-100/20 via-transparent to-pink-100/20'></div>
-      <div className='absolute top-0 left-0 w-full h-full bg-white/60 backdrop-blur-3xl'></div>
-      
+    <div className='min-h-screen bg-white'>
       <main className='relative pt-16'>
         <HeroSection />
+
+        <Suspense fallback={<LoadingSection />}>
+          <FeaturesSection />
+        </Suspense>
+
+        <Suspense fallback={<LoadingSection />}>
+          <StatsSection />
+        </Suspense>
+
+        {/* Lazy load các component khác */}
+        <Suspense fallback={<LoadingSection />}>
+          <UrgencySection />
+        </Suspense>
+
+        <Suspense fallback={<LoadingSection />}>
+          <BloodCompatibilitySection />
+        </Suspense>
+
+        <Suspense fallback={<LoadingSection />}>
+          <BlogSection />
+        </Suspense>
+
         <QuickActionsSection />
-        <StatsSection />
-        <FeaturesSection />
-        <TestimonialsSection />
-        <CTASection />
+
+        <Suspense fallback={<LoadingSection />}>
+          <CTASection />
+        </Suspense>
       </main>
     </div>
   );

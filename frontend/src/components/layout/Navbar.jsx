@@ -1,22 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import {
+    AlertTriangle,
+    BookOpen,
+    CalendarPlus,
+    ChevronDown,
+    Droplet,
+    Heart,
+    Home,
+    LogOut,
+    Menu,
+    Search,
+    ShieldCheck,
+    User,
+    X,
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import RoleBadge from '../common/RoleBadge';
-import {
-  Droplet,
-  LogOut,
-  User,
-  Menu,
-  X,
-  Home,
-  BookOpen,
-  CalendarPlus,
-  ShieldCheck,
-  AlertTriangle,
-  Heart,
-  Search,
-  ChevronDown,
-} from 'lucide-react';
 
 // Custom hook để xử lý việc click bên ngoài element
 const useOutsideClick = (ref, callback) => {
@@ -64,8 +64,8 @@ const Navbar = () => {
   }, [isUserDropdownOpen]);
 
   const isAuthenticated = !!user;
-  const isAdmin = user?.role === 'Admin';
-  const isStaff = user?.role === 'Staff';
+  // const isAdmin = user?.role === 'Admin';
+  // const isStaff = user?.role === 'Staff';
 
   const handleLogout = () => {
     logout();
@@ -125,102 +125,95 @@ const Navbar = () => {
         <BookOpen className='w-4 h-4 mr-1.5 group-hover:drop-shadow-sm' />
         <span className='drop-shadow-sm'>Blog</span>
       </Link>
-      {isAdmin && (
+      {/* {(isAdmin || isStaff) && (
         <Link
           to='/admin'
           className='flex items-center text-purple-600 hover:text-purple-700 hover:bg-white/30 transition-all duration-300 px-4 py-2 rounded-xl text-sm font-bold backdrop-blur-sm border border-transparent hover:border-purple-200 hover:shadow-md group'
         >
           <ShieldCheck className='w-4 h-4 mr-1.5 group-hover:drop-shadow-sm' />
-          <span className='drop-shadow-sm'>Quản trị</span>
+          <span className='drop-shadow-sm'>{isAdmin ? 'Quản trị' : 'Staff Panel'}</span>
         </Link>
-      )}
+      )} */}
     </>
   );
 
-  // Badge "Staff Panel" cho Staff
-  const staffBadge = isStaff && (
-    <Link
-      to='/staff'
-      className='bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-md hover:shadow-lg backdrop-blur-sm border border-orange-400/30 group'
-    >
-      <span className='drop-shadow-sm group-hover:drop-shadow-md'>Staff Panel</span>
-    </Link>
-  );
+  // Badge "Staff Panel" cho Staff 
+  // const staffBadge = null;
 
   // Các liên kết trong dropdown của người dùng
-  const userLinks = (
-    <div className='py-1'>
-      <div className='px-4 py-3 border-b border-gray-200'>
-        <div className='flex items-center justify-between'>
-          <div>
-            <p className='text-sm font-medium text-gray-900 truncate'>
-              {user?.fullName || 'Người dùng'}
-            </p>
-            <p className='text-sm text-gray-500 truncate'>{user?.email}</p>
-          </div>
-          <RoleBadge role={user?.role} size="sm" />
-        </div>
-      </div>
+  // const userLinks = (
+  //   <div className='py-1'>
+  //     <div className='px-4 py-3 border-b border-gray-200'>
+  //       <div className='flex items-center justify-between'>
+  //         <div>
+  //           <p className='text-sm font-medium text-gray-900 truncate'>
+  //             {user?.fullName || 'Người dùng'}
+  //           </p>
+  //           <p className='text-sm text-gray-500 truncate'>{user?.email}</p>
+  //         </div>
+  //         <RoleBadge role={user?.role} size="sm" />
+  //       </div>
+  //     </div>
       
-      <Link
-        to='/profile'
-        className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-        onClick={() => setIsUserDropdownOpen(false)}
-      >
-        <User className='w-4 h-4 mr-2' />
-        Hồ sơ
-      </Link>
+  //     <Link
+  //       to='/profile'
+  //       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+  //       onClick={() => setIsUserDropdownOpen(false)}
+  //     >
+  //       <User className='w-4 h-4 mr-2' />
+  //       Hồ sơ
+  //     </Link>
       
-      <Link
-        to='/my-donation-history'
-        className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-        onClick={() => setIsUserDropdownOpen(false)}
-      >
-        <Heart className='w-4 h-4 mr-2' />
-        Lịch sử hiến máu
-      </Link>
+  //     <Link
+  //       to='/my-donation-history'
+  //       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+  //       onClick={() => setIsUserDropdownOpen(false)}
+  //     >
+  //       <Heart className='w-4 h-4 mr-2' />
+  //       Lịch sử hiến máu
+  //     </Link>
       
-      <Link
-        to='/my-appointments'
-        className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-        onClick={() => setIsUserDropdownOpen(false)}
-      >
-        <CalendarPlus className='w-4 h-4 mr-2' />
-        Lịch hẹn của tôi
-      </Link>
+  //     <Link
+  //       to='/my-appointments'
+  //       className='flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+  //       onClick={() => setIsUserDropdownOpen(false)}
+  //     >
+  //       <CalendarPlus className='w-4 h-4 mr-2' />
+  //       Lịch hẹn của tôi
+  //     </Link>
       
-      <div className='border-t border-gray-200'>
-        <button
-          onClick={handleLogout}
-          className='flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-        >
-          <LogOut className='w-4 h-4 mr-2' />
-          Đăng xuất
-        </button>
-      </div>
-    </div>
-  );
+  //     <div className='border-t border-gray-200'>
+  //       <button
+  //         onClick={handleLogout}
+  //         className='flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+  //       >
+  //         <LogOut className='w-4 h-4 mr-2' />
+  //         Đăng xuất
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
   
   // Các liên kết cho menu mobile (bao gồm cả các link của user nếu đã đăng nhập)
-  const mobileNavLinks = (
-     <>
-      <Link to="/" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><Home className="w-5 h-5 mr-3" />Trang chủ</Link>
-      <Link to="/blood-compatibility" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><BookOpen className="w-5 h-5 mr-3" />Cẩm nang</Link>
-      <Link to="/blood-requests" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><AlertTriangle className="w-5 h-5 mr-3" />Cần máu gấp</Link>
-      <Link to="/find-donors" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><Search className="w-5 h-5 mr-3" />Tìm người hiến</Link>
-      <Link to="/request-donation" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><CalendarPlus className="w-5 h-5 mr-3" />Đặt lịch hiến máu</Link>
-      <Link to="/blog" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><BookOpen className="w-5 h-5 mr-3" />Blog</Link>
-       {isAdmin && (
-        <Link
-          to='/admin'
-          className='flex items-center text-purple-600 px-3 py-2 rounded-md text-base font-bold hover:bg-gray-50'
-        >
-          <ShieldCheck className='w-5 h-5 mr-3' />
-          Quản trị
-        </Link>
-      )}
-     </>
-  )
+  // const mobileNavLinks = (
+  //    <>
+  //     <Link to="/" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><Home className="w-5 h-5 mr-3" />Trang chủ</Link>
+  //     <Link to="/blood-compatibility" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><BookOpen className="w-5 h-5 mr-3" />Cẩm nang</Link>
+  //     <Link to="/blood-requests" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><AlertTriangle className="w-5 h-5 mr-3" />Cần máu gấp</Link>
+  //     <Link to="/find-donors" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><Search className="w-5 h-5 mr-3" />Tìm người hiến</Link>
+  //     <Link to="/request-donation" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><CalendarPlus className="w-5 h-5 mr-3" />Đặt lịch hiến máu</Link>
+  //     <Link to="/blog" className="flex items-center text-gray-700 px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50"><BookOpen className="w-5 h-5 mr-3" />Blog</Link>
+  //      {(isAdmin || isStaff) && (
+  //       <Link
+  //         to='/admin'
+  //         className='flex items-center text-purple-600 px-3 py-2 rounded-md text-base font-bold hover:bg-gray-50'
+  //       >
+  //         <ShieldCheck className='w-5 h-5 mr-3' />
+  //         {isAdmin ? 'Quản trị' : 'Staff Panel'}
+  //       </Link>
+  //     )}
+  //    </>
+  // )
 
 
   return (
@@ -232,32 +225,31 @@ const Navbar = () => {
       {/* Floating Elements */}
       <div className='absolute top-0 left-0 w-32 h-32 bg-red-500/5 rounded-full blur-2xl'></div>
       <div className='absolute top-0 right-0 w-24 h-24 bg-pink-500/5 rounded-full blur-xl'></div>
-      
-      <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+
+      <div className='relative max-w-full mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center justify-between h-16'>
           <div className='flex items-center'>
             <Link to='/' className='flex-shrink-0 flex items-center text-red-600 group'>
               <div className='w-10 h-10 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md backdrop-blur-sm border border-white/20 group-hover:shadow-lg transition-all duration-300'>
                 <Droplet className='w-6 h-6 text-white drop-shadow-sm' />
               </div>
-              <span className='ml-2 text-xl font-bold text-gray-800 drop-shadow-sm group-hover:text-red-600 transition-colors duration-300'>BloodConnect</span>
+              <span className='ml-2 text-xl font-bold text-gray-800 drop-shadow-sm group-hover:text-red-600 transition-colors duration-300'>HiBlood</span>
             </Link>
           </div>
           <div className='hidden md:block'>
             <div className='ml-10 flex items-baseline space-x-1'>{navLinks}</div>
           </div>
           <div className='hidden md:flex items-center space-x-4 relative'>
-            {staffBadge}
             {isAuthenticated ? (
               <div className='relative ml-4 user-dropdown-container' ref={userDropdownRef}>
                 <button
                   onClick={handleUserDropdownToggle}
-                  className='flex items-center p-2 rounded-xl text-gray-700 hover:text-red-500 hover:bg-white/30 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/40 hover:shadow-md group relative z-50'
+                  className='flex items-center p-2 rounded-xl text-gray-700 hover:bg-white/30 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/40 hover:shadow-md group relative z-50'
                   type="button"
                   aria-expanded={isUserDropdownOpen}
                   aria-haspopup="true"
                 >
-                  <span className="sr-only">Mở menu người dùng</span>
+                  {/* <span className="sr-only">Mở menu người dùng</span> */}
                   <div className='w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg mr-2'>
                     <User className='w-4 h-4 text-white' />
                   </div>
@@ -267,7 +259,7 @@ const Navbar = () => {
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
                 
-                {/* Dropdown Menu - Fixed positioning to avoid overflow issues */}
+                {/* Dropdown Menu */}
                 {isUserDropdownOpen && (
                   <div 
                     className="fixed top-16 right-4 w-80 z-[9999] transform transition-all duration-300 ease-out opacity-100 translate-y-0 pointer-events-auto scale-100"
@@ -378,20 +370,9 @@ const Navbar = () => {
         </div>
       </div>
 
-      {isMobileMenuOpen && (
+      {/* {isMobileMenuOpen && (
         <div className='md:hidden bg-white border-t border-gray-200'>
           <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>{mobileNavLinks}</div>
-          {isStaff && (
-            <div className='px-2 pb-2'>
-              <Link
-                to='/staff'
-                className='block bg-orange-500 text-white text-center px-3 py-2 rounded-full text-sm font-medium hover:bg-orange-600 transition-colors'
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Staff Panel
-              </Link>
-            </div>
-          )}
           <div className='pt-4 pb-3 border-t border-gray-200'>
             {isAuthenticated ? (
               <div className='px-2'>{userLinks}</div>
@@ -413,7 +394,7 @@ const Navbar = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </nav>
   );
 };

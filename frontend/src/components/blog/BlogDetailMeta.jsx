@@ -1,7 +1,6 @@
 // src/components/blog/BlogDetailMeta.jsx
-import React from 'react';
+import { Clock, Edit, Trash2, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Clock, User, Edit, Trash2 } from 'lucide-react';
 import Button from '../common/Button';
 
 const BlogDetailMeta = ({ 
@@ -9,7 +8,8 @@ const BlogDetailMeta = ({
   canEdit, 
   canDelete, 
   onDelete, 
-  isDeleting 
+  isDeleting,
+  onEditClick
 }) => {
   const formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -37,7 +37,7 @@ const BlogDetailMeta = ({
       {(canEdit || canDelete) && (
         <div className='flex items-center space-x-3'>
           {canEdit && (
-            <Link to={`/blog/${post.id}/edit`}>
+            <Link to={`/blog/${post.id}/edit`} onClick={onEditClick}>
               <Button variant='outline' size='sm'>
                 <Edit className='w-4 h-4 mr-2' />
                 Chỉnh sửa

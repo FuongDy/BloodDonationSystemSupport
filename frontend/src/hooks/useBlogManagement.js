@@ -1,5 +1,5 @@
 // src/hooks/useBlogManagement.js
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import blogPostService from '../services/blogPostService';
 
@@ -40,7 +40,12 @@ export const useBlogManagement = () => {
         setPendingPosts({ content: [], totalElements: 0 });
       }
 
-      // Try to fetch draft posts (might not be available endpoint)
+      // Temporary disable draft posts API calls as endpoint might not exist
+      // or isn't correctly implemented yet
+      setDraftPosts({ content: [], totalElements: 0 });
+      
+      /* 
+      // Uncomment this when the draft API endpoint is ready
       try {
         const draftData = await blogPostService.getDraftPosts(0, 100);
         setDraftPosts({
@@ -51,6 +56,7 @@ export const useBlogManagement = () => {
         console.warn('Could not fetch draft posts (endpoint might not exist):', draftError);
         setDraftPosts({ content: [], totalElements: 0 });
       }
+      */
 
     } catch (error) {
       console.error('Error fetching blog posts:', error);

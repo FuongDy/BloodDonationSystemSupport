@@ -1,16 +1,16 @@
 // src/pages/admin/AdminUserListPage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { PlusCircle, RefreshCw, Users, UserCheck, UserX, Shield } from 'lucide-react';
+import { PlusCircle, Shield, UserCheck, Users, UserX } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import userService from '../../services/userService';
-import UserManagementTable from '../../components/admin/UserManagementTable';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
-import { AdminTableActions, AdminTableFilters } from '../../components/admin/common';
-import { useAuth } from '../../hooks/useAuth';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { AdminTableActions } from '../../components/admin/common';
+import AdminFiltersPanel from '../../components/admin/common/AdminFiltersPanel';
 import DashboardHeader from '../../components/admin/DashboardHeader';
+import UserManagementTable from '../../components/admin/UserManagementTable';
+import { useAuth } from '../../hooks/useAuth';
+import userService from '../../services/userService';
 
 const AdminUserListPage = () => {
   const [usersPage, setUsersPage] = useState({
@@ -23,19 +23,86 @@ const AdminUserListPage = () => {
   const [pageSize] = useState(10);
   const [sort, setSort] = useState(['id', 'asc']);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const { user } = useAuth();
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('Debounced search term:', searchTerm);
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const fetchUsers = useCallback(async (page, size, currentSort, search) => {
     setIsLoading(true);
     try {
-      const data = await userService.getAllUsers({
-        page,
-        size,
-        sort: currentSort,
-        keyword: search,
+      console.log('Fetching users with params:', { page, size, currentSort, search });
+      
+      // Convert sort array to string format expected by backend
+      const sortString = Array.isArray(currentSort) 
+        ? `${currentSort[0]},${currentSort[1]}` 
+        : currentSort;
+      
+      // If no search term, just fetch normally with pagination
+      if (!search || !search.trim()) {
+        const params = {
+          page,
+          size,
+          sort: sortString,
+        };
+        
+        console.log('API params (no search):', params);
+        const data = await userService.getAllUsers(params);
+        console.log('API response:', data);
+        setUsersPage(data);
+        return;
+      }
+      
+      // If search term exists, get all users and filter client-side
+      // This is a fallback if backend doesn't support search
+      const params = {
+        page: 0,
+        size: 1000, // Get a large number to get all users for filtering
+        sort: sortString,
+      };
+      
+      console.log('API params (for search):', params);
+      const data = await userService.getAllUsers(params);
+      console.log('API response (for search):', data);
+      
+      // Client-side filter
+      const searchTerm = search.toLowerCase().trim();
+      const filteredUsers = (data.content || []).filter(user => {
+        return (
+          user.id?.toString().toLowerCase().includes(searchTerm) ||
+          user.firstName?.toLowerCase().includes(searchTerm) ||
+          user.lastName?.toLowerCase().includes(searchTerm) ||
+          user.fullName?.toLowerCase().includes(searchTerm) ||
+          user.email?.toLowerCase().includes(searchTerm) ||
+          user.phoneNumber?.toLowerCase().includes(searchTerm) ||
+          user.phone?.toLowerCase().includes(searchTerm) ||
+          `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase().includes(searchTerm)
+        );
       });
-      setUsersPage(data);
+      
+      // Apply pagination to filtered results
+      const totalElements = filteredUsers.length;
+      const totalPages = Math.ceil(totalElements / size);
+      const startIndex = page * size;
+      const endIndex = startIndex + size;
+      const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+      
+      // Update users page with filtered and paginated results
+      setUsersPage({
+        content: paginatedUsers,
+        totalPages,
+        totalElements,
+      });
+      
     } catch (error) {
+      console.error('Fetch users error:', error);
       toast.error(`Lỗi khi tải dữ liệu: ${error.message}`);
       setUsersPage({
         content: [],
@@ -48,8 +115,8 @@ const AdminUserListPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchUsers(currentPage, pageSize, sort, searchTerm);
-  }, [currentPage, pageSize, sort, searchTerm, fetchUsers]);
+    fetchUsers(currentPage, pageSize, sort, debouncedSearchTerm);
+  }, [currentPage, pageSize, sort, debouncedSearchTerm, fetchUsers]);
 
   const handleRefresh = () => {
     setCurrentPage(0);
@@ -62,9 +129,20 @@ const AdminUserListPage = () => {
   };
 
   const handleSearch = term => {
+    console.log('Search term received:', term);
     setSearchTerm(term);
     setCurrentPage(0);
   };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSort(['id', 'asc']);
+    setCurrentPage(0);
+  };
+
+  // Check if filters are active
+  const hasActiveFilters = debouncedSearchTerm || (sort[0] !== 'id' || sort[1] !== 'asc');
 
   const handleSort = field => {
     const newDirection =
@@ -75,28 +153,31 @@ const AdminUserListPage = () => {
 
   // Header actions configuration
   const headerActions = [
+      {
+            label: 'Làm mới',
+            icon: Users,
+            variant: 'outline',
+            onClick: handleRefresh,
+        },
     ...(user?.role === 'Admin'
       ? [
-        {
-          label: 'Thêm người dùng',
-          icon: PlusCircle,
-          variant: 'primary',
-          component: Link,
-          to: '/admin/users/new',
-          disabled: isLoading,
-          className: `flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out ${isLoading ? 'cursor-not-allowed opacity-60' : ''
-            }`,
-        },
-      ]
+          {
+            label: 'Thêm người dùng',
+            icon: PlusCircle,
+            variant: 'primary',
+            to: '/admin/users/new',
+            disabled: isLoading,
+          },
+        ]
       : []),
   ];
 
   return (
     <AdminPageLayout>
       {/* Dashboard Header */}
-      <DashboardHeader
+      <DashboardHeader 
         title="Quản lý Người dùng"
-        description="Quản lý toàn bộ người dùng trong hệ thống BloodConnect, bao gồm người hiến máu, người cần máu và nhân viên."
+        description="Quản lý toàn bộ người dùng trong hệ thống HiBlood, bao gồm người hiến máu, người cần máu và nhân viên."
         variant="users"
         showActivityFeed={false}
         stats={[
@@ -124,15 +205,27 @@ const AdminUserListPage = () => {
       />
 
       <div className='space-y-6'>
-        {/* Actions and Filters */}
-        <div className='flex flex-col sm:flex-row justify-between gap-4'>
-          <AdminTableFilters
-            searchPlaceholder='Tìm kiếm theo ID, họ tên hoặc email...'
-            onSearch={handleSearch}
-            searchTerm={searchTerm}
-          />
+        {/* Header Actions */}
+        <div className='flex items-center justify-between'>
+          <div className="text-lg font-medium text-gray-700">
+            Danh sách người dùng
+          </div>
           <AdminTableActions actions={headerActions} isLoading={isLoading} />
         </div>
+
+        {/* Filters */}
+        <AdminFiltersPanel
+          searchValue={searchTerm}
+          onSearchChange={handleSearch}
+          searchPlaceholder="Tìm kiếm theo ID, họ tên hoặc email..."
+          filters={[]}
+          showViewMode={false}
+          totalCount={usersPage?.totalElements || 0}
+          filteredCount={usersPage?.totalElements || 0}
+          itemLabel="người dùng"
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={handleClearFilters}
+        />
 
         {/* Table Content */}
         <AdminContentWrapper

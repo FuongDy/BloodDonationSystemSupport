@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { Save, Eye, Upload, User, Phone, Calendar, MapPin, BriefcaseMedical, Shield } from 'lucide-react';
 import { format, isValid, parseISO } from 'date-fns'; // Đảm bảo có parseISO
+import { BriefcaseMedical, Eye, Save, Shield, Upload, User } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/useAuth';
-import userService from '../../services/userService';
 import bloodTypeService from '../../services/bloodTypeService';
+import userService from '../../services/userService';
 
 import Button from '../../components/common/Button';
 import InputField from '../../components/common/InputField';
@@ -21,7 +21,7 @@ const UserProfileEditPage = () => {
   const showToast = (type, message) => {
     toast.dismiss();
     toast[type](message, {
-      duration: 2500,
+      duration: 1500,
       position: 'top-center',
     });
   };
@@ -36,6 +36,7 @@ const UserProfileEditPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmittingInfo, setIsSubmittingInfo] = useState(false);
   const [isSubmittingIdCard, setIsSubmittingIdCard] = useState(false);
+  const [hasEverDonated, setHasEverDonated] = useState(false);
 
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
@@ -63,12 +64,14 @@ const UserProfileEditPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [userData, bloodTypesData] = await Promise.all([
+        const [userData, bloodTypesData, donationStatus] = await Promise.all([
           userService.getProfile(),
           bloodTypeService.getAll(),
+          userService.hasUserEverDonated(),
         ]);
         initializeForms(userData);
         setBloodTypes(bloodTypesData || []);
+        setHasEverDonated(donationStatus);
       } catch (error) {
         showToast('error', `Lỗi tải dữ liệu: ${error.message}`);
         navigate('/profile');
@@ -204,7 +207,13 @@ const UserProfileEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-1'>Nhóm máu</label>
-                <select name="bloodTypeId" value={formData.bloodTypeId} onChange={handleInfoChange} disabled={isSubmittingInfo || bloodTypes.length === 0} className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                <select 
+                  name="bloodTypeId" 
+                  value={formData.bloodTypeId} 
+                  onChange={handleInfoChange} 
+                  disabled={isSubmittingInfo || bloodTypes.length === 0 || hasEverDonated} 
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 ${hasEverDonated ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                >
                   <option value="">-- Chọn nhóm máu --</option>
                   {bloodTypes
                     .filter(
@@ -218,6 +227,11 @@ const UserProfileEditPage = () => {
                       </option>
                     ))}
                 </select>
+                {hasEverDonated && (
+                  <p className="mt-1 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                    ⚠️ Không thể thay đổi nhóm máu sau khi đã hiến máu ít nhất một lần vì lý do y tế
+                  </p>
+                )}
               </div>
               <InputField label="Ngày hiến gần nhất" name="lastDonationDate" type="date" value={formData.lastDonationDate} onChange={handleInfoChange} disabled={isSubmittingInfo} />
             </div>

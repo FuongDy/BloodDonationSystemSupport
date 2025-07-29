@@ -1,17 +1,17 @@
-import React from 'react';
-import LoadingSpinner from './LoadingSpinner'; // Giả sử spinner có sẵn
+// src/components/common/LinkButton.jsx
+import { Link } from 'react-router-dom';
 
-const Button = ({
+/**
+ * A Button component that can also work as a Link
+ */
+const LinkButton = ({
   children,
-  onClick,
-  type = 'button',
+  to,
   variant = 'primary',
   size = 'md',
   className = '',
   disabled = false,
-  isLoading = false,
-  iconLeft,
-  iconRight,
+  onClick,
   ...props
 }) => {
   const baseStyle =
@@ -32,26 +32,49 @@ const Button = ({
       'text-white bg-red-500 hover:bg-red-600 focus:ring-red-500 disabled:bg-red-300',
     outline:
       'text-red-600 bg-white border border-red-600 hover:bg-red-50 focus:ring-red-500 disabled:text-red-300 disabled:border-red-300 disabled:hover:bg-white',
-    icon: 'p-2 text-gray-500 hover:text-red-600 hover:bg-red-100 focus:ring-red-500 disabled:text-gray-300 disabled:hover:bg-transparent',
-    link: 'text-red-600 hover:text-red-800 focus:ring-red-500 underline disabled:text-gray-400 disabled:no-underline',
   };
 
-  const disabledStyle = 'opacity-60 cursor-not-allowed';
+  const disabledStyle = 'opacity-60 cursor-not-allowed pointer-events-none';
 
+  const combinedClassName = `${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${disabled ? disabledStyle : ''} ${className}`;
+
+  // If it's a link and not disabled, render as Link
+  if (to && !disabled) {
+    return (
+      <Link
+        to={to}
+        className={combinedClassName}
+        onClick={onClick}
+        {...props}
+      >
+        {children}
+      </Link>
+    );
+  }
+
+  // If it's a link but disabled, render as span
+  if (to && disabled) {
+    return (
+      <span
+        className={combinedClassName}
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }
+
+  // Otherwise render as button
   return (
     <button
-      type={type}
       onClick={onClick}
-      disabled={disabled || isLoading}
-      className={`${baseStyle} ${sizeStyles[size]} ${variantStyles[variant]} ${disabled || isLoading ? disabledStyle : ''} ${className}`}
+      disabled={disabled}
+      className={combinedClassName}
       {...props}
     >
-      {isLoading && <LoadingSpinner size='5' className='mr-2' />}
-      {!isLoading && iconLeft && <span className='mr-2'>{iconLeft}</span>}
       {children}
-      {!isLoading && iconRight && <span className='ml-2'>{iconRight}</span>}
     </button>
   );
 };
 
-export default Button;
+export default LinkButton;

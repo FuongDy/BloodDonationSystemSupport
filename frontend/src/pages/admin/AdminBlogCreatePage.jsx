@@ -40,7 +40,7 @@ const AdminBlogCreatePage = () => {
   const showToast = (type, message) => {
     toast.dismiss(); // Dismiss all existing toasts
     toast[type](message, {
-      duration: 2000, // 2 seconds instead of default 4s
+      duration: 1500, 
       position: 'top-center',
     });
   };
@@ -62,14 +62,14 @@ const AdminBlogCreatePage = () => {
       }
 
       await blogPostService.createPost(submitData);
-
+      
       showToast('success', 'Bài viết đã được tạo thành công!');
       navigate('/admin/blog-management');
     } catch (error) {
       // Handle specific validation errors from backend
       if (error.response?.status === 400) {
         const backendErrors = error.response.data;
-
+        
         // Map backend field errors to form fields
         if (backendErrors.title) {
           setFieldError('title', backendErrors.title);
@@ -80,7 +80,7 @@ const AdminBlogCreatePage = () => {
         if (backendErrors.imageUrl) {
           setFieldError('imageUrl', backendErrors.imageUrl);
         }
-
+        
         // Only show general error if no specific field errors
         if (!backendErrors.title && !backendErrors.content && !backendErrors.imageUrl) {
           showToast('error', backendErrors.message || 'Dữ liệu không hợp lệ');
@@ -129,7 +129,7 @@ const AdminBlogCreatePage = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Thông tin cơ bản
               </h3>
-
+              
               <div className="space-y-4">
                 <div>
                   <InputField
@@ -145,8 +145,6 @@ const AdminBlogCreatePage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-
                   <div>
                     <InputField
                       label="URL hình ảnh (tùy chọn)"
@@ -159,8 +157,6 @@ const AdminBlogCreatePage = () => {
                     />
                   </div>
                 </div>
-
-
               </div>
             </div>
 
@@ -169,7 +165,7 @@ const AdminBlogCreatePage = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Nội dung bài viết
               </h3>
-
+              
               <div>
                 <InputField
                   label="Nội dung"
@@ -192,9 +188,9 @@ const AdminBlogCreatePage = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Xem trước hình ảnh
                 </h3>
-                <img
-                  src={values.imageUrl}
-                  alt="Preview"
+                <img 
+                  src={values.imageUrl} 
+                  alt="Preview" 
                   className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-200"
                   onError={(e) => {
                     e.target.style.display = 'none';

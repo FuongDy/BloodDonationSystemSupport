@@ -1,17 +1,17 @@
 // src/pages/BlogPage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import blogPostService from '../services/blogPostService';
-import { useAuth } from '../hooks/useAuth';
-import { BLOG_PERMISSIONS } from '../utils/constants';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import {
-  BlogHeader,
   BlogActionBar,
-  BlogGrid,
   BlogEmptyState,
+  BlogGrid,
+  BlogHeroSection,
 } from '../components/blog';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAuth } from '../hooks/useAuth';
+import blogPostService from '../services/blogPostService';
+import { BLOG_PERMISSIONS } from '../utils/constants';
 
 const BlogPage = () => {
   const [posts, setPosts] = useState({
@@ -48,9 +48,12 @@ const BlogPage = () => {
   };
 
   return (
-    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-      <BlogHeader />
-      <BlogActionBar canCreate={canCreateBlog} />
+    <div>
+      {/* Hero Section */}
+      <BlogHeroSection />
+      
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <BlogActionBar canCreate={canCreateBlog} />
 
       {isLoading ? (
         <div className='flex justify-center items-center py-20'>
@@ -66,6 +69,7 @@ const BlogPage = () => {
       ) : (
         <BlogEmptyState canCreate={canCreateBlog} />
       )}
+      </div>
     </div>
   );
 };

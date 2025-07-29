@@ -1,5 +1,4 @@
 // src/components/blog/BlogDetailContent.jsx
-import React from 'react';
 import BlogDetailMeta from './BlogDetailMeta';
 
 const BlogDetailContent = ({ 
@@ -7,7 +6,8 @@ const BlogDetailContent = ({
   canEdit, 
   canDelete, 
   onDelete, 
-  isDeleting 
+  isDeleting,
+  onEditClick
 }) => {
   return (
     <article className='bg-white rounded-lg shadow-lg overflow-hidden'>
@@ -28,6 +28,7 @@ const BlogDetailContent = ({
           canDelete={canDelete}
           onDelete={onDelete}
           isDeleting={isDeleting}
+          onEditClick={onEditClick}
         />
 
         {/* Status Badge */}
