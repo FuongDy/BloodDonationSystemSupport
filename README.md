@@ -1,4 +1,21 @@
 
+# 🩸 HỆ THỐNG QUẢN LÝ HIẾN MÁU (Blood Donation Management System)
+
+## 📋 Tổng Quan Dự Án
+
+Đây là hệ thống quản lý hiến máu toàn diện được phát triển bằng **React** (Frontend) và **Spring Boot** (Backend), nhằm hỗ trợ quản lý quy trình hiến máu từ đăng ký, lập lịch, đến quản lý kho máu.
+
+---
+
+## 🏗️ Kiến Trúc Hệ Thống
+
+```
+fullstack04/
+├── frontendv3.03/          # Ứng dụng React Frontend
+├── backendv3.02/           # API Spring Boot Backend
+└── docs/                   # Tài liệu dự án
+```
+
 ---
 
 ## 🚀 Công Nghệ Sử Dụng
@@ -84,3 +101,91 @@
 ## 🌐 Kiến Trúc API
 
 ### RESTful Endpoints
+```
+/api/auth/*           # Xác thực
+/api/users/*          # Quản lý người dùng
+/api/appointments/*   # Lịch hẹn
+/api/blood-requests/* # Yêu cầu máu
+/api/admin/*          # Dành riêng cho admin
+/api/analytics/*      # Báo cáo & phân tích
+```
+
+### Real-time Features
+- **Socket.IO** cho thông báo
+- **Server-Sent Events** cho live update
+- **WebSocket** cho hỗ trợ chat
+
+---
+
+## 📱 Responsive Design
+
+- **Mobile-First** với TailwindCSS
+- **Hỗ trợ PWA**
+- **Chế độ offline** qua Service Workers
+- **Tương thích đa trình duyệt**
+
+---
+
+## 🧪 Chiến Lược Kiểm Thử
+
+### Frontend
+- **Component Testing** với React Testing Library
+- **Unit Testing** cho hooks và utils
+
+### Backend
+- **Unit Tests** với JUnit 5
+- **Integration Tests** với Spring Boot Test
+- **API Testing**
+
+---
+
+## 📈 Tối Ưu Hiệu Năng
+
+### Frontend
+- **Code Splitting** với React.lazy
+- **Tối ưu hình ảnh** qua Cloudinary
+- **Chiến lược caching** với React Query
+- **Tối ưu bundle** qua Vite
+
+### Backend
+- **Indexing** trong database
+- **Connection Pooling** với HikariCP
+- **Spring Cache**
+- **Phân trang dữ liệu lớn**
+
+---
+
+## ▶️ Cách Chạy Ứng Dụng
+
+### Frontend
+```bash
+cd frontendv3.03
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd backendv3.02
+mvn spring-boot:run
+```
+
+---
+
+## 🤝 Đóng Góp
+
+1. Fork repository
+2. Tạo feature branch
+3. Commit thay đổi
+4. Push lên branch
+5. Tạo Pull Request
+
+---
+
+## 📄 License
+
+Dự án này được phát triển cho mục đích giáo dục và nghiên cứu.
+
+**Phát triển bởi**: Nhóm HiCode  
+**Phiên bản**: 3.0  
+**Cập nhật lần cuối**: 2025
