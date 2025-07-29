@@ -1,13 +1,14 @@
 // src/pages/admin/AdminTestResultsPage.jsx
-import React, { useState } from 'react';
-import { TestTube, CheckCircle, XCircle, Users, FlaskConical } from 'lucide-react';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { CheckCircle, FlaskConical, TestTube, Users, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
-import DataTable from '../../components/common/DataTable';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import TestResultForm from '../../components/admin/TestResultForm';
 import { TestResultDetailModal } from '../../components/admin/modals';
+import Button from '../../components/common/Button';
+import DataTable from '../../components/common/DataTable';
+import DonationTypeBadge from '../../components/common/DonationTypeBadge';
+import StatusBadge from '../../components/common/StatusBadge';
 import { useTestResults } from '../../hooks/useTestResults';
 import { DONATION_STATUS, STATUS_COLORS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
@@ -62,6 +63,11 @@ const AdminTestResultsPage = () => {
           </div>
         </div>
       ),
+    },
+    {
+      key: 'donationType',
+      title: 'Loại đơn',
+      render: value => <DonationTypeBadge donationType={value} size="small" />,
     },
     {
       key: 'collectedVolumeMl',
@@ -216,7 +222,7 @@ const AdminTestResultsPage = () => {
             <div className='flex items-center'>
               <div className='flex-1 bg-gray-200 rounded-full h-3'>
                 <div
-                  className='bg-green-500 h-3 rounded-full transition-all duration-300'
+                  className='bg-green-500 h-3 rounded-full'
                   style={{
                     width: `${(passedTests / (passedTests + failedTests)) * 100}%`
                   }}

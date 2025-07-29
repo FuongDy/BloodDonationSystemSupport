@@ -31,7 +31,7 @@ const ContactDonorModal = ({ donor, isOpen, onClose }) => {
             <div className="p-4">
                 <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-800">{donor.fullName}</h2>
-                    <p className="text-lg text-red-600 font-semibold">{donor.bloodTypeDescription || donor.bloodType?.bloodGroup}</p>
+                    <p className="text-lg text-red-600 font-semibold">Nhóm máu: {donor.bloodType || donor.bloodType?.bloodGroup}</p>
                 </div>
                 <div className="space-y-4">
                     <InfoRow

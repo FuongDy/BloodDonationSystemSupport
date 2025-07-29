@@ -1,5 +1,5 @@
 // src/hooks/useDonationHistory.js
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import donationService from '../services/donationService';
 import { useAuth } from './useAuth';
@@ -57,115 +57,25 @@ export const useDonationHistory = () => {
       
       const userBloodType = getUserBloodType();
       
-      const mockData = [
-        {
-          id: 'DN001',
-          status: 'COMPLETED',
-          bloodType: userBloodType,
-          donor: {
-            id: user?.id,
-            fullName: user?.fullName || 'Nguyễn Văn A',
-            bloodType: userBloodType
-          },
-          note: 'Hiến máu tình nguyện định kỳ',
-          collectedVolumeMl: 450,
-          appointment: {
-            id: 'AP001',
-            scheduledDate: '2025-06-15T08:00:00Z',
-            address: '123 Đường ABC, Quận 1, TP.HCM',
-            hospital: 'Bệnh viện Chợ Rẫy'
-          },
-          createdAt: '2025-06-10T10:00:00Z'
-        },
-        {
-          id: 'DN002', 
-          status: 'APPOINTMENT_SCHEDULED',
-          bloodType: userBloodType,
-          donor: {
-            id: user?.id,
-            fullName: user?.fullName || 'Nguyễn Văn A',
-            bloodType: userBloodType
-          },
-          note: 'Hiến máu khẩn cấp theo yêu cầu',
-          appointment: {
-            id: 'AP002',
-            scheduledDate: '2025-07-05T14:00:00Z',
-            address: '456 Đường XYZ, Quận 3, TP.HCM',
-            hospital: 'Bệnh viện Chợ Rẫy'
-          },
-          createdAt: '2025-07-01T09:00:00Z'
-        },
-        {
-          id: 'DN003',
-          status: 'PENDING_APPROVAL', 
-          bloodType: userBloodType,
-          donor: {
-            id: user?.id,
-            fullName: user?.fullName || 'Nguyễn Văn A',
-            bloodType: userBloodType
-          },
-          note: 'Đăng ký hiến máu lần đầu',
-          createdAt: '2025-07-03T16:30:00Z'
-        },
-        {
-          id: 'DN004',
-          status: 'HEALTH_CHECK_PASSED',
-          bloodType: userBloodType,
-          donor: {
-            id: user?.id,
-            fullName: user?.fullName || 'Nguyễn Văn A',
-            bloodType: userBloodType
-          },
-          note: 'Hiến máu để giúp đỡ bệnh nhân khẩn cấp',
-          appointment: {
-            id: 'AP004',
-            scheduledDate: '2025-05-20T09:30:00Z',
-            address: '789 Đường DEF, Quận 7, TP.HCM',
-            hospital: 'Bệnh viện Chợ Rẫy'
-          },
-          createdAt: '2025-05-18T11:15:00Z'
-        },
-        {
-          id: 'DN005',
-          status: 'CANCELLED',
-          bloodType: userBloodType,
-          donor: {
-            id: user?.id,
-            fullName: user?.fullName || 'Nguyễn Văn A',
-            bloodType: userBloodType
-          },
-          note: 'Đã hủy do lý do sức khỏe',
-          appointment: {
-            id: 'AP005',
-            scheduledDate: '2025-04-10T15:00:00Z',
-            address: '321 Đường GHI, Quận 5, TP.HCM',
-            hospital: 'Bệnh viện Chợ Rẫy'
-          },
-          createdAt: '2025-04-05T13:45:00Z'
-        }
-      ];
+      // Gọi API để lấy dữ liệu thật
+      const response = await donationService.getMyDonationHistory();
       
-      // Thử API trước, nếu lỗi thì dùng mock data
-      try {
-        const response = await donationService.getMyDonationHistory();
-        if (response.data && response.data.length > 0) {
-          // Bổ sung thông tin còn thiếu từ API data
-          const enrichedData = response.data.map(process => ({
-            ...process,
-            bloodType: process.bloodType || process.donor?.bloodType || 'O+',
-            donor: process.donor || {
-              id: user?.id,
-              fullName: user?.fullName || 'Người hiến máu',
-              bloodType: process.bloodType || 'O+'
-            }
-          }));
-          setDonationProcesses(enrichedData);
-        } else {
-          setDonationProcesses(mockData);
-        }
-      } catch (apiError) {
-        console.log('API not available, using mock data:', apiError);
-        setDonationProcesses(mockData);
+      if (response.data) {
+        // Bổ sung thông tin còn thiếu từ API data
+        const enrichedData = response.data.map(process => ({
+          ...process,
+          donationType: process.donationType || 'STANDARD', // Mặc định là hiến máu định kỳ
+          bloodType: process.bloodType || process.donor?.bloodType || userBloodType,
+          donor: process.donor || {
+            id: user?.id,
+            fullName: user?.fullName || 'Người hiến máu',
+            bloodType: process.bloodType || userBloodType
+          }
+        }));
+        setDonationProcesses(enrichedData);
+      } else {
+        // Nếu API trả về null/undefined, set mảng rỗng
+        setDonationProcesses([]);
       }
       
     } catch (error) {

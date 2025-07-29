@@ -6,6 +6,16 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Đảm bảo tham số URL được mã hóa đúng cách
+  paramsSerializer: params => {
+    const searchParams = new URLSearchParams();
+    for (const key in params) {
+      if (params[key] != null) {
+        searchParams.append(key, params[key]);
+      }
+    }
+    return searchParams.toString();
+  },
 });
 
 // Add auth token to requests

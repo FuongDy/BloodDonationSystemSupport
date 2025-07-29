@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
 import { Activity, Stethoscope, Users } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
-import DataTable from '../../components/common/DataTable';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import HealthCheckForm from '../../components/admin/HealthCheckForm';
 import { HealthCheckDetailModal } from '../../components/admin/modals';
-import { useHealthChecks } from '../../hooks/useHealthChecks';
+import Button from '../../components/common/Button';
+import DataTable from '../../components/common/DataTable';
+import DonationTypeBadge from '../../components/common/DonationTypeBadge';
+import StatusBadge from '../../components/common/StatusBadge';
 import { useDonationProcess } from '../../contexts/DonationProcessContext';
+import { useHealthChecks } from '../../hooks/useHealthChecks';
 import { DONATION_STATUS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
 
@@ -61,6 +62,11 @@ const AdminHealthCheckPage = () => {
           </div>
         </div>
       ),
+    },
+    {
+      key: 'donationType',
+      title: 'Loại đơn',
+      render: value => <DonationTypeBadge donationType={value} size="small" />,
     },
     {
       key: 'appointment',
@@ -140,6 +146,15 @@ const AdminHealthCheckPage = () => {
     },
   ];
 
+  // Pagination state (admin style: 10/page, always visible)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const totalPages = Math.ceil(healthChecks.length / pageSize) || 1;
+  const paginatedHealthChecks = useMemo(() => {
+    const startIdx = currentPage * pageSize;
+    return healthChecks.slice(startIdx, startIdx + pageSize);
+  }, [healthChecks, currentPage, pageSize]);
+
   return (
     <AdminPageLayout
       title='Quản lý đơn khám sức khỏe'
@@ -149,6 +164,7 @@ const AdminHealthCheckPage = () => {
       <div className='p-6'>
         {/* Stats Cards */}
         <div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-6'>
+          {/* ...existing code for stats cards... */}
           <div className='bg-white rounded-lg shadow p-4'>
             <div className='flex items-center'>
               <div className='p-2 bg-blue-100 rounded-lg'>
@@ -162,7 +178,6 @@ const AdminHealthCheckPage = () => {
               </div>
             </div>
           </div>
-          
           <div className='bg-white rounded-lg shadow p-4'>
             <div className='flex items-center'>
               <div className='p-2 bg-green-100 rounded-lg'>
@@ -176,7 +191,6 @@ const AdminHealthCheckPage = () => {
               </div>
             </div>
           </div>
-
           <div className='bg-white rounded-lg shadow p-4'>
             <div className='flex items-center'>
               <div className='p-2 bg-red-100 rounded-lg'>
@@ -190,7 +204,6 @@ const AdminHealthCheckPage = () => {
               </div>
             </div>
           </div>
-
           <div className='bg-white rounded-lg shadow p-4'>
             <div className='flex items-center'>
               <div className='p-2 bg-gray-100 rounded-lg'>
@@ -212,10 +225,32 @@ const AdminHealthCheckPage = () => {
         >
           <div className='bg-white rounded-lg shadow'>
             <DataTable 
-              data={healthChecks} 
+              data={paginatedHealthChecks} 
               columns={columns} 
               loading={isLoading} 
             />
+          </div>
+          {/* Pagination (admin style, always visible) */}
+          <div className="flex justify-end mt-6">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">
+                Trang {currentPage + 1} / {totalPages}
+              </span>
+              <button
+                className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
+                disabled={currentPage === 0}
+              >
+                Trước
+              </button>
+              <button
+                className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Sau
+              </button>
+            </div>
           </div>
         </AdminContentWrapper>
 

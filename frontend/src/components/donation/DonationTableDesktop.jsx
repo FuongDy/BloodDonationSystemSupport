@@ -1,18 +1,18 @@
 // src/components/donation/DonationTableDesktop.jsx
-import React from 'react';
 import {
-  Calendar,
-  MapPin,
-  Award,
   Activity,
-  Droplets,
+  Award,
   Building2,
+  Calendar,
+  Droplets,
+  MapPin,
 } from 'lucide-react';
+import { getProcessBloodType } from '../../utils/bloodTypeUtils';
+import { HOSPITAL_INFO } from '../../utils/constants';
+import { formatDateTime } from '../../utils/formatters';
+import DonationTypeBadge from '../common/DonationTypeBadge';
 import StatusBadge from '../common/StatusBadge';
 import { getDonationStatusConfig } from './DonationStatusConfig';
-import { formatDateTime } from '../../utils/formatters';
-import { HOSPITAL_INFO } from '../../utils/constants';
-import { getProcessBloodType } from '../../utils/bloodTypeUtils';
 
 const BloodTypeDisplay = ({ process, user }) => {
   const bloodType = getProcessBloodType(process, user);
@@ -58,7 +58,7 @@ const DonationInfo = ({ process }) => {
   );
 };
 
-const DonationTableDesktop = ({ donationProcesses, user }) => {
+const DonationTableDesktop = ({ donationProcesses, user, onViewDetails }) => {
   return (
     <div className='hidden lg:block'>
       <div className='overflow-x-auto'>
@@ -67,6 +67,9 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
             <tr>
               <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
                 Trạng thái & Nhóm máu
+              </th>
+              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+                Loại hiến máu
               </th>
               <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
                 Thông tin hiến máu
@@ -79,6 +82,9 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
               </th>
               <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
                 Ngày tạo đơn đăng ký
+              </th>
+              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+                Thao tác
               </th>
             </tr>
           </thead>
@@ -108,6 +114,14 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
                         />
                       </div>
                     </div>
+                  </td>
+
+                  {/* Donation Type */}
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <DonationTypeBadge 
+                      donationType={process.donationType || 'STANDARD'} 
+                      size="normal"
+                    />
                   </td>
 
                   {/* Donation Info */}
@@ -178,6 +192,17 @@ const DonationTableDesktop = ({ donationProcesses, user }) => {
                     <div className='text-xs text-gray-500 mt-1'>
                       ID: {process.id}
                     </div>
+                  </td>
+
+                  {/* Actions */}
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <button
+                      onClick={() => onViewDetails && onViewDetails(process)}
+                      className='inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors'
+                    >
+                      <Activity className='w-4 h-4 mr-1' />
+                      Xem chi tiết
+                    </button>
                   </td>
                 </tr>
               );

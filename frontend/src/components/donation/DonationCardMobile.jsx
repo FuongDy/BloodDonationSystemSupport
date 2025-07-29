@@ -1,19 +1,19 @@
 // src/components/donation/DonationCardMobile.jsx
-import React from 'react';
 import {
-  Calendar,
-  MapPin,
-  Droplets,
-  FileText,
-  Building2,
+    Building2,
+    Calendar,
+    Droplets,
+    FileText,
+    MapPin,
 } from 'lucide-react';
+import { getProcessBloodType } from '../../utils/bloodTypeUtils';
+import { HOSPITAL_INFO } from '../../utils/constants';
+import { formatDateTime } from '../../utils/formatters';
+import DonationTypeBadge from '../common/DonationTypeBadge';
 import StatusBadge from '../common/StatusBadge';
 import { getDonationStatusConfig } from './DonationStatusConfig';
-import { formatDateTime } from '../../utils/formatters';
-import { HOSPITAL_INFO } from '../../utils/constants';
-import { getProcessBloodType } from '../../utils/bloodTypeUtils';
 
-const DonationCardMobile = ({ process, user }) => {
+const DonationCardMobile = ({ process, user, onViewDetails }) => {
   const statusConfig = getDonationStatusConfig(process.status);
   const StatusIcon = statusConfig.icon;
 
@@ -45,10 +45,16 @@ const DonationCardMobile = ({ process, user }) => {
             </div>
           </div>
         </div>
-        <StatusBadge 
-          status={process.status || 'PENDING_APPROVAL'} 
-          type="donation" 
-        />
+        <div className='flex flex-col items-end space-y-2'>
+          <StatusBadge 
+            status={process.status || 'PENDING_APPROVAL'} 
+            type="donation" 
+          />
+          <DonationTypeBadge 
+            donationType={process.donationType || 'STANDARD'} 
+            size="small"
+          />
+        </div>
       </div>
 
       {/* Note */}
@@ -92,14 +98,22 @@ const DonationCardMobile = ({ process, user }) => {
         <div className='text-xs text-gray-500'>
           ID: {process.id} • {formatDateTime(process.createdAt)}
         </div>
-        {process.collectedVolumeMl && (
-          <div className='flex items-center text-sm text-green-600'>
-            <Droplets className='w-4 h-4 mr-1' />
-            <span className='font-semibold'>
-              {process.collectedVolumeMl}ml
-            </span>
-          </div>
-        )}
+        <div className='flex items-center space-x-2'>
+          {process.collectedVolumeMl && (
+            <div className='flex items-center text-sm text-green-600'>
+              <Droplets className='w-4 h-4 mr-1' />
+              <span className='font-semibold'>
+                {process.collectedVolumeMl}ml
+              </span>
+            </div>
+          )}
+          <button
+            onClick={() => onViewDetails && onViewDetails(process)}
+            className='inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 transition-colors'
+          >
+            Xem chi tiết
+          </button>
+        </div>
       </div>
     </div>
   );

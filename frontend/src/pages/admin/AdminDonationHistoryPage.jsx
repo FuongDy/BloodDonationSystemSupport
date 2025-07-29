@@ -1,18 +1,17 @@
 // src/pages/admin/AdminDonationHistoryPage.jsx
-import React, { useState, useMemo } from 'react';
-import { History, TrendingUp, Users, Heart, Activity, Eye, RefreshCw, Download, Calendar } from 'lucide-react';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
+import { Activity, Eye, Heart, History, RefreshCw, TrendingUp } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import DashboardHeader from '../../components/admin/DashboardHeader';
 import AdminFiltersPanel from '../../components/admin/common/AdminFiltersPanel';
-import { useAdminDonationHistory } from '../../hooks/useAdminDonationHistory';
 import {
-  DonationDetailPanel,
-  DonationHistoryEmptyState,
+    DonationDetailPanel,
+    DonationHistoryEmptyState,
 } from '../../components/admin/donationHistory';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
 import Modal from '../../components/common/Modal';
+import StatusBadge from '../../components/common/StatusBadge';
+import { useAdminDonationHistory } from '../../hooks/useAdminDonationHistory';
 import { formatDateTime } from '../../utils/formatters';
 
 const columns = [
@@ -163,12 +162,21 @@ const AdminDonationHistoryPage = () => {
 
   // Header actions
   const headerActions = [
-    {
-      label: 'Làm mới',
-      icon: RefreshCw,
-      variant: 'outline',
-      onClick: refreshData || (() => window.location.reload()),
-    },
+    // {
+    //   label: 'Làm mới',
+    //   icon: RefreshCw,
+    //   variant: 'outline',
+    //   onClick: refreshData || (() => window.location.reload()),
+    // },
+    // {
+    //   label: 'Xuất báo cáo',
+    //   icon: Download,
+    //   variant: 'primary',
+    //   onClick: () => {
+    //     // TODO: Implement export functionality
+    //     console.log('Export report');
+    //   },
+    // },
   ];
 
   return (
@@ -253,7 +261,7 @@ const AdminDonationHistoryPage = () => {
                       {filteredDonations.map((donation) => (
                         <tr
                           key={donation.id}
-                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="cursor-pointer"
                           onClick={() => handleViewDetail(donation)}
                         >
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -285,7 +293,7 @@ const AdminDonationHistoryPage = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button
-                              className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                              className="text-red-600 flex items-center gap-1"
                               onClick={e => { 
                                 e.stopPropagation(); 
                                 handleViewDetail(donation); 
@@ -306,7 +314,7 @@ const AdminDonationHistoryPage = () => {
                 {filteredDonations.map((donation) => (
                   <div
                     key={donation.id}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 cursor-pointer"
                     onClick={() => handleViewDetail(donation)}
                   >
                     <div className="flex items-start justify-between mb-4">
@@ -338,7 +346,7 @@ const AdminDonationHistoryPage = () => {
                     
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <button
-                        className="w-full text-center text-red-600 hover:text-red-700 font-medium flex items-center justify-center gap-2"
+                        className="w-full text-center text-red-600 font-medium flex items-center justify-center gap-2"
                         onClick={e => { 
                           e.stopPropagation(); 
                           handleViewDetail(donation); 

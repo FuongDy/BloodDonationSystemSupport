@@ -23,7 +23,7 @@ const DonationProcessTabContent = () => {
             <li>Ngủ đủ giấc vào đêm trước.</li>
             <li>Ăn nhẹ trong vòng 3 giờ trước khi hiến máu.</li>
             <li>Uống nhiều nước trước và sau khi hiến.</li>
-            <li>Mang theo giấy tờ tùy thân và danh sách thuốc (nếu có).</li>
+            <li>Mang theo giấy tờ tùy thân và danh sách thuốc đang sử dụng (nếu có).</li>
           </ul>
         </div>
         <div>
@@ -34,7 +34,7 @@ const DonationProcessTabContent = () => {
             <li>Từ 17 tuổi trở lên.</li>
             <li>Cân nặng ít nhất 50 kg.</li>
             <li>Có sức khỏe tốt, không mắc bệnh truyền nhiễm.</li>
-            <li>Không hiến máu toàn phần trong 56 ngày qua.</li>
+            <li>Không hiến máu toàn phần trong 90 ngày qua.</li>
           </ul>
         </div>
       </section>

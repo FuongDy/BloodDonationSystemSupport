@@ -1,5 +1,5 @@
 // src/pages/admin/AdminAppointmentManagementPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Calendar } from 'lucide-react';
 
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
@@ -55,6 +55,15 @@ const AdminAppointmentManagementPage = () => {
     setShowDetailModal(true);
   };
 
+  // Pagination state (admin style: 10/page, always visible)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const totalPages = Math.ceil(appointments.length / pageSize) || 1;
+  const paginatedAppointments = useMemo(() => {
+    const startIdx = currentPage * pageSize;
+    return appointments.slice(startIdx, startIdx + pageSize);
+  }, [appointments, currentPage, pageSize]);
+
   const headerActions = [
     {
       label: 'Tạo lịch hẹn',
@@ -93,7 +102,7 @@ const AdminAppointmentManagementPage = () => {
           emptyMessage='Chưa có lịch hẹn nào'
         >
           <AppointmentTable
-            appointments={appointments}
+            appointments={paginatedAppointments}
             isLoading={isLoading}
             onReschedule={openRescheduleModal}
             onViewDetail={handleViewDetail}
@@ -108,6 +117,28 @@ const AdminAppointmentManagementPage = () => {
               },
             ]}
           />
+          {/* Pagination (admin style, always visible) */}
+          <div className="flex justify-end mt-6">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">
+                Trang {currentPage + 1} / {totalPages}
+              </span>
+              <button
+                className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 0))}
+                disabled={currentPage === 0}
+              >
+                Trước
+              </button>
+              <button
+                className="px-3 py-1 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages - 1))}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Sau
+              </button>
+            </div>
+          </div>
         </AdminContentWrapper>
 
         {/* Create Appointment Modal */}

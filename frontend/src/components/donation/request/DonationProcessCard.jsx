@@ -29,6 +29,16 @@ const DonationProcessCard = () => {
       title: 'Nghỉ ngơi',
       description: 'Thưởng thức đồ ăn nhẹ',
     },
+     {
+      number: 6,
+      title: 'Kết quả xét nghiệm',
+      description: 'Kết quả sẽ được gửi qua email',
+    },
+     {
+      number: 7,
+      title: 'Hoàn tất',
+      description: 'Cảm ơn bạn đã hiến máu',
+    },
   ];
 
   return (

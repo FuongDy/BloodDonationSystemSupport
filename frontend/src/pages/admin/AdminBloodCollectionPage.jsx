@@ -1,14 +1,14 @@
-import React from 'react';
-import { Heart, Droplets, Users, Award } from 'lucide-react';
+import { Award, Droplets, Heart, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
-import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
-import DataTable from '../../components/common/DataTable';
-import StatusBadge from '../../components/common/StatusBadge';
-import Button from '../../components/common/Button';
+import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import BloodCollectionForm from '../../components/admin/BloodCollectionForm';
-import { useBloodCollection } from '../../hooks/useBloodCollection';
+import Button from '../../components/common/Button';
+import DataTable from '../../components/common/DataTable';
+import DonationTypeBadge from '../../components/common/DonationTypeBadge';
+import StatusBadge from '../../components/common/StatusBadge';
 import { useDonationProcess } from '../../contexts/DonationProcessContext';
+import { useBloodCollection } from '../../hooks/useBloodCollection';
 import { DONATION_STATUS, STATUS_COLORS } from '../../utils/constants';
 import { formatDateTime } from '../../utils/formatters';
 
@@ -45,6 +45,11 @@ const AdminBloodCollectionPage = () => {
           </div>
         </div>
       ),
+    },
+    {
+      key: 'donationType',
+      title: 'Loại đơn',
+      render: value => <DonationTypeBadge donationType={value} size="small" />,
     },
     {
       key: 'appointment',
@@ -230,3 +235,4 @@ const AdminBloodCollectionPage = () => {
 };
 
 export default AdminBloodCollectionPage;
+

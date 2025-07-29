@@ -193,6 +193,120 @@ const resendOTP = async emailData => {
     }
 };
 
+/**
+ * Send forgot password request
+ * @param {string} email - User email
+ * @returns {Promise<Object>} Response
+ */
+const forgotPassword = async (email) => {
+    try {
+        const response = await apiClient.post('/auth/forgot-password', { email });
+        return {
+            success: true,
+            data: response.data,
+            status: response.status
+        };
+    } catch (error) {
+        console.error('Auth service forgot password error:', error);
+        if (error.response) {
+            console.error('Error response status:', error.response.status);
+            console.error('Error response data:', error.response.data);
+        } else {
+            console.error('Network or other error (no response):', error);
+        }
+        throw error;
+    }
+};
+
+/**
+ * Reset password with token
+ * @param {string} token - Reset token
+ * @param {string} newPassword - New password
+ * @returns {Promise<Object>} Response
+ */
+const resetPassword = async (token, newPassword) => {
+    try {
+        console.log('Resetting password with token (length):', token.length);
+        console.log('New password (length):', newPassword.length);
+        
+        // Đảm bảo token được xử lý đúng (không hiển thị toàn bộ token vì lý do bảo mật)
+        const tokenPreview = token.length > 10 ? 
+            `${token.substring(0, 5)}...${token.substring(token.length - 5)}` : 
+            '***token-too-short***';
+        console.log('Token preview:', tokenPreview);
+        
+        // Thử nhiều kiểu payload khác nhau để phù hợp với mong đợi của backend
+        const payload = {
+            token: token,
+            newPassword: newPassword, // Một số API mong đợi newPassword
+            password: newPassword     // Một số API khác mong đợi password
+        };
+        
+        console.log('Reset password payload structure:', 
+                    { token: tokenPreview, password: '*'.repeat(newPassword.length) });
+        
+        // Thử sử dụng cách truyền tham số khác
+        const response = await apiClient.post('/auth/reset-password', payload);
+        
+        console.log('Reset password response status:', response.status);
+        console.log('Reset password response data:', response.data);
+        
+        return {
+            success: true,
+            data: response.data,
+            status: response.status
+        };
+    } catch (error) {
+        console.error('Auth service reset password error:', error);
+        if (error.response) {
+            console.error('Error response status:', error.response.status);
+            console.error('Error response data:', error.response.data);
+            
+            // Thông báo chi tiết hơn về lỗi
+            if (typeof error.response.data === 'string') {
+                console.error('Error details (string):', error.response.data);
+            } else if (error.response.data?.message) {
+                console.error('Error message:', error.response.data.message);
+            }
+        } else {
+            console.error('Network or other error (no response):', error);
+        }
+        throw error;
+    }
+};
+
+/**
+ * Validate reset password token
+ * @param {string} token - Reset token
+ * @returns {Promise<Object>} Response
+ */
+const validateResetToken = async (token) => {
+    try {
+        console.log('Validating reset token, token length:', token.length);
+        
+        // Thử sử dụng endpoint cụ thể với token trong URL
+        // Nhiều API sẽ mong đợi token trong URL path thay vì query param
+        const response = await apiClient.post('/auth/validate-reset-token', { token });
+        
+        console.log('Token validation response:', response);
+        
+        return {
+            success: true,
+            data: response.data,
+            status: response.status
+        };
+    } catch (error) {
+        console.error('Auth service validate reset token error:', error);
+        if (error.response) {
+            console.error('Error response status:', error.response.status);
+            console.error('Error response data:', error.response.data);
+        } else {
+            console.error('Network or other error (no response):', error);
+        }
+        throw error;
+    }
+};
+
 // No need for logout() or getCurrentUser() here anymore,
 // as they are managed by AuthContext and apiClient interceptors.
 
@@ -204,6 +318,9 @@ export const authService = {
     register,
     verifyOTP,
     resendOTP,
+    forgotPassword,
+    resetPassword,
+    validateResetToken,
 };
 
 export default authService;

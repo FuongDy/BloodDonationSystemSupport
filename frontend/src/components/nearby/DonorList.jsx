@@ -53,7 +53,7 @@ const DonorList = ({ donors, isLoading, error, hasSearched, searchParams, bloodT
                     <DonorResultCard
                         key={donor.id}
                         donor={donor}
-                        onContact={onContact} // Pass onContact to each card
+                        onContact={onContact} 
                     />
                 ))}
             </div>
