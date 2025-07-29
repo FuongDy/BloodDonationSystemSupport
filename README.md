@@ -31,7 +31,6 @@ fullstack04/
 - **Maps**: Mapbox GL + React Map GL
 - **Charts**: Recharts 3.0.2
 - **Notifications**: React Hot Toast 2.5.2
-- **Real-time**: Socket.IO Client 4.8.1
 
 ### Backend (backendv3.02/)
 - **Framework**: Spring Boot 3.5.0
@@ -169,18 +168,6 @@ npm run dev
 cd backendv3.02
 mvn spring-boot:run
 ```
-
----
-
-## 🤝 Đóng Góp
-
-1. Fork repository
-2. Tạo feature branch
-3. Commit thay đổi
-4. Push lên branch
-5. Tạo Pull Request
-
----
 
 ## 📄 License
 
