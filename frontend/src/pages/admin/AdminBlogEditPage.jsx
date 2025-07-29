@@ -1,14 +1,15 @@
-// src/pages/admin/AdminBlogCreatePage.jsx
+// src/pages/admin/AdminBlogEditPage.jsx
 import { Form, Formik } from 'formik';
 import { ArrowLeft, FileText } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import Button from '../../components/common/Button';
 import InputField from '../../components/common/InputField';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 import blogPostService from '../../services/blogPostService';
 
 // Validation schema theo backend requirements
@@ -25,16 +26,40 @@ const validationSchema = Yup.object({
     .nullable()
 });
 
-// Initial values
-const initialValues = {
-  title: '',
-  content: '',
-  imageUrl: '',
-};
-
-const AdminBlogCreatePage = () => {
+const AdminBlogEditPage = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialValues, setInitialValues] = useState({
+    title: '',
+    content: '',
+    imageUrl: '',
+  });
+
+  // Load blog post data
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setIsLoading(true);
+        const post = await blogPostService.getPostById(id);
+        setInitialValues({
+          title: post.title || '',
+          content: post.content || '',
+          imageUrl: post.imageUrl || '',
+        });
+      } catch (error) {
+        toast.error('Không thể tải thông tin bài viết');
+        navigate('/admin/blog-management');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchPost();
+    }
+  }, [id, navigate]);
 
   // Tối ưu toast với duration ngắn và dismiss cũ
   const showToast = (type, message) => {
@@ -46,7 +71,7 @@ const AdminBlogCreatePage = () => {
   };
 
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     setSubmitting(true);
 
     try {
@@ -61,9 +86,9 @@ const AdminBlogCreatePage = () => {
         submitData.imageUrl = values.imageUrl.trim();
       }
 
-      await blogPostService.createPost(submitData);
+      await blogPostService.updatePost(id, submitData);
       
-      showToast('success', 'Bài viết đã được tạo thành công!');
+      showToast('success', 'Bài viết đã được cập nhật thành công!');
       navigate('/admin/blog-management');
     } catch (error) {
       // Handle specific validation errors from backend
@@ -86,10 +111,10 @@ const AdminBlogCreatePage = () => {
           showToast('error', backendErrors.message || 'Dữ liệu không hợp lệ');
         }
       } else {
-        showToast('error', 'Có lỗi xảy ra khi tạo bài viết');
+        showToast('error', 'Có lỗi xảy ra khi cập nhật bài viết');
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
       setSubmitting(false);
     }
   };
@@ -103,7 +128,7 @@ const AdminBlogCreatePage = () => {
       disabled: isSubmitting,
     },
     {
-      label: 'Tạo bài viết',
+      label: 'Cập nhật bài viết',
       icon: FileText,
       variant: 'primary',
       onClick: submitForm,
@@ -111,16 +136,30 @@ const AdminBlogCreatePage = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <AdminPageLayout
+        title="Chỉnh sửa bài viết"
+        description="Đang tải thông tin bài viết..."
+      >
+        <div className="flex justify-center items-center py-20">
+          <LoadingSpinner size="12" />
+        </div>
+      </AdminPageLayout>
+    );
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
+      enableReinitialize={true}
     >
       {({ values, errors, touched, handleChange, handleBlur, isSubmitting, submitForm }) => (
         <AdminPageLayout
-          title="Tạo bài viết mới"
-          description="Tạo bài viết blog mới cho hệ thống hiến máu"
+          title="Chỉnh sửa bài viết"
+          description="Chỉnh sửa bài viết blog trong hệ thống hiến máu"
           headerActions={getHeaderActions(isSubmitting, submitForm)}
         >
           <Form className="max-w-4xl mx-auto space-y-6">
@@ -217,7 +256,7 @@ const AdminBlogCreatePage = () => {
                 disabled={isLoading || isSubmitting}
                 icon={FileText}
               >
-                {isSubmitting ? 'Đang tạo...' : 'Tạo bài viết'}
+                {isSubmitting ? 'Đang cập nhật...' : 'Cập nhật bài viết'}
               </Button>
             </div>
           </Form>
@@ -227,4 +266,4 @@ const AdminBlogCreatePage = () => {
   );
 };
 
-export default AdminBlogCreatePage;
+export default AdminBlogEditPage;

@@ -32,6 +32,7 @@ import RequestDonationPage from '../pages/RequestDonationPage';
 // Admin pages
 import AdminAppointmentManagementPage from '../pages/admin/AdminAppointmentManagementPage';
 import AdminBlogCreatePage from '../pages/admin/AdminBlogCreatePage';
+import AdminBlogEditPage from '../pages/admin/AdminBlogEditPage';
 import AdminBlogManagementPage from '../pages/admin/AdminBlogManagementPage';
 // import AdminBloodCompatibilityPage from '../pages/admin/AdminBloodCompatibilityPage';
 import AdminBloodInventoryPage from '../pages/admin/AdminBloodInventoryPage';
@@ -117,6 +118,7 @@ const AppRoutes = () => (
           <Route path='blood-inventory' element={<AdminBloodInventoryPage />} />
           <Route path='blog-management' element={<AdminBlogManagementPage />} />
           <Route path='blog/create' element={<AdminBlogCreatePage />} />
+          <Route path='blog/:id/edit' element={<AdminBlogEditPage />} />
           <Route path='appointment-management' element={<AdminAppointmentManagementPage />} />
           <Route path='reports' element={<AdminReportsPage />} />
           <Route path='find-donor' element={<AdminFindDonorPage />} />

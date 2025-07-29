@@ -1,5 +1,8 @@
 // src/components/blog/BlogPostGrid.jsx
+import { Edit, Eye, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../hooks/useAuth';
+import blogPostService from '../../services/blogPostService';
 import BlogPostCard from './BlogPostCard';
 
 const BlogPostGrid = ({ 
@@ -8,7 +11,8 @@ const BlogPostGrid = ({
   onDelete,
   showApproval = false,
   viewMode = 'cards',
-  className = '' 
+  className = '',
+  isAdminPage = false
 }) => {
   if (viewMode === 'table') {
     return (
@@ -42,6 +46,7 @@ const BlogPostGrid = ({
                   onStatusChange={onStatusChange}
                   onDelete={onDelete}
                   showApproval={showApproval}
+                  isAdminPage={isAdminPage}
                 />
               ))}
             </tbody>
@@ -60,6 +65,7 @@ const BlogPostGrid = ({
           onStatusChange={onStatusChange}
           onDelete={onDelete}
           showApproval={showApproval}
+          isAdminPage={isAdminPage}
         />
       ))}
     </div>
@@ -67,13 +73,13 @@ const BlogPostGrid = ({
 };
 
 // Component cho table row
-const BlogPostTableRow = ({ post, onStatusChange, onDelete, showApproval }) => {
+const BlogPostTableRow = ({ post, onStatusChange, onDelete, showApproval, isAdminPage = false }) => {
   const { user } = useAuth();
   
   // Check permissions
   const isAuthor = user && post.authorId === user.id;
   const isAdmin = user && user.role === 'Admin';
-  const canEdit = isAuthor; // Chỉ tác giả mới có thể sửa
+  const canEdit = isAuthor || (isAdmin && isAdminPage); // Tác giả hoặc Admin (trong admin page) có thể sửa
   const canDelete = isAuthor || isAdmin; // Tác giả hoặc Admin có thể xóa
 
   const getStatusBadge = (status) => {
@@ -97,13 +103,21 @@ const BlogPostTableRow = ({ post, onStatusChange, onDelete, showApproval }) => {
     );
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!canDelete) {
-      alert('Bạn không có quyền xóa bài viết này');
+      toast.error('Bạn không có quyền xóa bài viết này');
       return;
     }
+    
     if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
-      onDelete(post.id);
+      try {
+        await blogPostService.deletePost(post.id);
+        toast.success('Đã xóa bài viết thành công!');
+        onDelete(); // Refresh the list
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || 'Không thể xóa bài viết';
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -134,26 +148,32 @@ const BlogPostTableRow = ({ post, onStatusChange, onDelete, showApproval }) => {
         {post.createdAt ? new Date(post.createdAt).toLocaleDateString('vi-VN') : 'N/A'}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button 
             onClick={() => post.onViewDetail && post.onViewDetail(post.id)}
-            className="text-blue-600 hover:text-blue-900"
+            className="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 transition-colors duration-200 border border-blue-200"
+            title="Xem chi tiết"
           >
+            <Eye className="w-3 h-3 mr-1" />
             Xem
           </button>
           {canEdit && (
             <a 
-              href={`/blog/${post.id}/edit`}
-              className="text-indigo-600 hover:text-indigo-900"
+              href={isAdminPage ? `/admin/blog/${post.id}/edit` : `/blog/${post.id}/edit`}
+              className="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800 transition-colors duration-200 border border-indigo-200"
+              title="Chỉnh sửa bài viết"
             >
+              <Edit className="w-3 h-3 mr-1" />
               Sửa
             </a>
           )}
           {canDelete && (
             <button 
               onClick={handleDelete}
-              className="text-red-600 hover:text-red-900"
+              className="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200 border border-red-200"
+              title="Xóa bài viết"
             >
+              <Trash2 className="w-3 h-3 mr-1" />
               Xóa
             </button>
           )}

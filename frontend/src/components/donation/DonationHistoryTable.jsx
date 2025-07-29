@@ -16,7 +16,7 @@ const DonationHistoryTable = ({ donationProcesses, onViewDetails }) => {
         onViewDetails={onViewDetails}
       />
       
-      {/* Mobile Card View */}
+      {/* Mobile Card View
       <div className='lg:hidden space-y-4 p-4'>
         {donationProcesses.map(process => (
           <DonationCardMobile 
@@ -26,7 +26,7 @@ const DonationHistoryTable = ({ donationProcesses, onViewDetails }) => {
             onViewDetails={onViewDetails}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

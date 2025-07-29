@@ -36,11 +36,11 @@ const DonationInfo = ({ process }) => {
   
   return (
     <div className='max-w-xs'>
-      {hasNote && (
+      {/* {hasNote && (
         <p className='text-sm text-gray-700 line-clamp-2 mb-2'>
           {process.note}
         </p>
-      )}
+      )} */}
       {hasVolume && (
         <div className='flex items-center text-sm text-green-600'>
           <Droplets className='w-4 h-4 mr-1' />
@@ -62,28 +62,28 @@ const DonationTableDesktop = ({ donationProcesses, user, onViewDetails }) => {
   return (
     <div className='hidden lg:block'>
       <div className='overflow-x-auto'>
-        <table className='w-full'>
+        <table className='w-full min-w-[1200px]'>
           <thead className='bg-gray-50 border-b border-gray-200'>
             <tr>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/6'>
                 Trạng thái & Nhóm máu
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/8'>
                 Loại hiến máu
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
-                Thông tin hiến máu
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/6'>
+                Số lượng máu
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/5'>
                 Lịch hẹn
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/8'>
                 Kết quả
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/6'>
                 Ngày tạo đơn đăng ký
               </th>
-              <th className='px-6 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider'>
+              <th className='px-8 py-5 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider w-1/8'>
                 Thao tác
               </th>
             </tr>
@@ -164,23 +164,21 @@ const DonationTableDesktop = ({ donationProcesses, user, onViewDetails }) => {
                   </td>
 
                   {/* Results */}
-                  <td className='px-6 py-4'>
-                    <div className='space-y-1'>
-                      {process.status === 'COMPLETED' &&
-                      process.collectedVolumeMl ? (
-                        <div className='flex items-center text-sm text-green-600'>
-                          <Award className='w-4 h-4 mr-2' />
-                          <span>Thành công</span>
-                        </div>
-                      ) : process.status === 'CANCELLED' ? (
-                        <div className='flex items-center text-sm text-red-600'>
-                          <Activity className='w-4 h-4 mr-2' />
-                          <span>Đã hủy</span>
-                        </div>
-                      ) : (
-                        <span className='text-sm text-gray-500'>-</span>
-                      )}
-                    </div>
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    {process.status === 'COMPLETED' &&
+                    process.collectedVolumeMl ? (
+                      <div className='inline-flex items-center text-sm text-green-600 bg-green-50 px-2 py-1 rounded-md'>
+                        <Award className='w-4 h-4 mr-2' />
+                        <span className='font-medium'>Thành công</span>
+                      </div>
+                    ) : process.status === 'TESTING_FAILED' ? (
+                      <div className='inline-flex items-center text-sm text-red-600 bg-red-50 px-2 py-1 rounded-md'>
+                        <Activity className='w-4 h-4 mr-2' />
+                        <span className='font-medium'>Thất bại</span>
+                      </div>
+                    ) : (
+                      <span className='text-sm text-gray-500'>-</span>
+                    )}
                   </td>
 
                   {/* Creation Date */}

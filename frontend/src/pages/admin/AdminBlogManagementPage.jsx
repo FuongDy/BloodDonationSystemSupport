@@ -1,6 +1,6 @@
 // src/pages/admin/AdminBlogManagementPage.jsx
 import { Calendar, Eye, FileText, Plus, TrendingUp, Users } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AdminContentWrapper from '../../components/admin/AdminContentWrapper';
@@ -78,9 +78,7 @@ const AdminBlogManagementPage = () => {
   const statusOptions = [
     { value: 'ALL', label: 'Tất cả trạng thái' },
     { value: 'PUBLISHED', label: 'Đã xuất bản' },
-    { value: 'DRAFT', label: 'Bản nháp' },
     { value: 'PENDING_APPROVAL', label: 'Chờ duyệt' },
-    { value: 'REJECTED', label: 'Bị từ chối' },
   ];
 
   // Filters configuration for AdminFiltersPanel
@@ -186,6 +184,7 @@ const AdminBlogManagementPage = () => {
             onDelete={handleRefresh}
             showApproval={false} // Admin/staff không cần duyệt
             viewMode={viewMode}
+            isAdminPage={true}
           />
           {/* Pagination (admin style) */}
           {filteredPosts.length > pageSize && (

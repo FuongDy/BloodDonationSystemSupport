@@ -127,7 +127,7 @@ const DonationDetailModal = ({ isOpen, onClose, donation, user }) => {
               </div>
             </div>
 
-            {/* Note */}
+            {/* Note
             {donation.note && donation.note.trim() && (
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-3">
@@ -136,7 +136,7 @@ const DonationDetailModal = ({ isOpen, onClose, donation, user }) => {
                 </div>
                 <p className="text-gray-900">{donation.note}</p>
               </div>
-            )}
+            )} */}
 
             {/* Appointment Information */}
             {donation.appointment && (
@@ -146,13 +146,6 @@ const DonationDetailModal = ({ isOpen, onClose, donation, user }) => {
                   <span className="text-sm font-medium text-gray-700">Thông tin lịch hẹn</span>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm text-gray-500">Ngày giờ hẹn:</span>
-                    <span className="font-medium text-gray-900">
-                      {formatDateTime(donation.appointment.scheduledDate)}
-                    </span>
-                  </div>
                   
                   <div className="flex items-center space-x-2">
                     <Building2 className="w-4 h-4 text-green-600" />
@@ -190,14 +183,6 @@ const DonationDetailModal = ({ isOpen, onClose, donation, user }) => {
                     {formatDateTime(donation.createdAt)}
                   </span>
                 </div>
-                {donation.appointment && (
-                  <div>
-                    <span className="text-sm text-gray-500">Ngày hẹn hiến:</span>
-                    <span className="ml-2 font-medium text-gray-900">
-                      {formatDate(donation.appointment.scheduledDate)}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

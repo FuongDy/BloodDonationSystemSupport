@@ -18,7 +18,7 @@ import DateTimeDisplay from '../common/DateTimeDisplay';
 import InfoRow from '../common/InfoRow';
 import StatusBadge from '../common/StatusBadge';
 
-const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false }) => {
+const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false, isAdminPage = false }) => {
   const { user } = useAuth();
   
   // Safe access to post properties
@@ -29,8 +29,20 @@ const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false }) 
   // Check permissions
   const isAuthor = user && post.authorId === user.id;
   const isAdmin = user && user.role === 'Admin';
-  const canEdit = isAuthor; // Chỉ tác giả mới có thể sửa
+  const canEdit = isAuthor || (isAdmin && isAdminPage); // Tác giả hoặc Admin (trong admin page) có thể sửa
   const canDelete = isAuthor || isAdmin; // Tác giả hoặc Admin có thể xóa
+  
+  // Debug permissions
+  console.log('BlogPostCard Debug:', {
+    userId: user?.id,
+    userRole: user?.role,
+    postAuthorId: post.authorId,
+    isAuthor,
+    isAdmin,
+    isAdminPage,
+    canEdit,
+    canDelete
+  });
   const handleApprove = async () => {
     try {
       await blogPostService.approvePost(post.id);
@@ -86,12 +98,13 @@ const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false }) 
 
   // Chỉ thêm nút sửa nếu user có quyền
   if (canEdit) {
+    const editPath = isAdminPage ? `/admin/blog/${post.id}/edit` : `/blog/${post.id}/edit`;
     actions.push({
       label: 'Sửa',
       icon: Edit,
       variant: 'outline',
       component: Link,
-      to: `/blog/${post.id}/edit`,
+      to: editPath,
     });
   }
 
@@ -163,7 +176,7 @@ const BlogPostCard = ({ post, onStatusChange, onDelete, showApproval = false }) 
             <InfoRow icon={Eye} label='Lượt xem' value={post.viewCount} />
           )}
         </div>
-        <ActionButtonGroup actions={actions} />
+        <ActionButtonGroup actions={actions} orientation="horizontal" />
       </div>
     </div>
   );

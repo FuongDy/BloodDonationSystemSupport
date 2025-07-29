@@ -1,5 +1,5 @@
 // src/components/home/HeroSection.jsx
-import { ArrowRight, Droplet } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../common/Button';
@@ -16,31 +16,33 @@ const HeroSection = () => {
   }), []);
 
   return (
-    <section className='relative bg-gradient-to-br from-red-50 to-pink-50 min-h-[80vh] flex items-center'>
-      {/* Simplified background - removed heavy animations */}
-      <div className='absolute inset-0 bg-white/60'></div>
+    <section className='relative min-h-screen flex items-center -mt-16 pt-16'>
+      {/* Cover Image Background */}
+      <div 
+        className='absolute inset-0 bg-cover bg-center bg-no-repeat blur-sm'
+        style={{
+          backgroundImage: 'url(/CoverImageBDSS.png)'
+        }}
+      ></div>
+      
+      {/* Overlay for better text readability */}
+      <div className='absolute inset-0 bg-black/50'></div>
       
       <PageContainer className='relative section-padding'>
         <div className='text-center'>
-          {/* Simplified icon - removed heavy animations */}
-          <div className='mb-8'>
-            <div className='inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-6 shadow-lg border border-red-100'>
-              <Droplet className='w-10 h-10 text-red-600' />
-            </div>
-          </div>
 
           {/* Simplified title - removed complex gradients and animations */}
-          <h1 className='text-5xl md:text-6xl font-bold mb-8 text-gray-800'>
+          <h1 className='text-4xl md:text-6xl font-bold mb-8 text-white drop-shadow-lg'>
             {heroContent.title.part1}
             <br />
-            <span className='text-red-600'>
+            <span className='text-red-500'>
               {heroContent.title.part2}
             </span>
           </h1>
 
           {/* Simplified description */}
-          <p className='text-lg md:text-xl mb-12 max-w-3xl mx-auto text-gray-600 leading-relaxed'>
-            <span className='text-red-600 font-semibold'>HiBlood</span> {heroContent.description}
+          <p className='text-xl md:text-3xl mb-12 max-w-3xl mx-auto text-white/90 leading-relaxed drop-shadow'>
+            <span className='text-white font-semibold'>HiBlood</span> {heroContent.description}
           </p>
 
           {/* Simplified buttons */}
@@ -58,7 +60,7 @@ const HeroSection = () => {
               <Button 
                 variant='outline' 
                 size='lg' 
-                className='border-red-600 text-red-600 hover:bg-red-50 font-semibold py-3 px-8 rounded-lg transition-colors duration-200'
+                className='border-white text-red-600 hover:bg-red-100 hover:text-red-600 font-semibold py-3 px-8 rounded-lg transition-all duration-200 backdrop-blur-sm'
               >
                 Tìm hiểu thêm
               </Button>

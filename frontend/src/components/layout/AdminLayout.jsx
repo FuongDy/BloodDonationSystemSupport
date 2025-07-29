@@ -79,7 +79,7 @@ const AdminLayout = () => {
       path: '/admin/emergency-requests',
       icon: MessageSquareWarning,
       label: 'Quản lý yêu cầu khẩn cấp',
-      roles: ['Staff'],
+      roles: ['Staff', 'Admin'],
     },
     // Donation Process Management - Separated into individual pages
     {

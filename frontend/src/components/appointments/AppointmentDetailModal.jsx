@@ -164,7 +164,7 @@ const AppointmentDetailModal = ({ isOpen, onClose, appointment }) => {
                 </div>
               )}
               
-              {appointment.processNote && (
+              {/* {appointment.processNote && (
                 <div className="bg-yellow-50 p-4 rounded-lg">
                   <div className="flex items-start space-x-2">
                     <FileText className="w-4 h-4 text-yellow-600 mt-0.5" />
@@ -174,7 +174,7 @@ const AppointmentDetailModal = ({ isOpen, onClose, appointment }) => {
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           )}
 

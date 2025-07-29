@@ -42,9 +42,9 @@ const StatusBadge = ({ status, type = 'user', className, ...props }) => {
           case DONATION_STATUS.BLOOD_COLLECTED:
             return 'Đã lấy máu';
           case DONATION_STATUS.TESTING_PASSED:
-            return 'Xét nghiệm đạt';
+            return 'Đạt';
           case DONATION_STATUS.TESTING_FAILED:
-            return 'Xét nghiệm không đạt';
+            return 'Không đạt';
           case DONATION_STATUS.COMPLETED:
             return 'Hoàn thành';
           case DONATION_STATUS.CANCELLED:

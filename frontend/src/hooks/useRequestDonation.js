@@ -94,7 +94,7 @@ export const useRequestDonation = () => {
             showToast('success', 'Đăng ký hiến máu thành công! Chúng tôi sẽ sớm liên hệ với bạn');
             navigate('/my-donation-history');
         } catch (error) {
-            showToast('error', getErrorMessage(error));
+            showToast('error', 'Bạn chỉ có thể đăng ký hiến máu 1 lần trong vòng 90 ngày.');
         } finally {
             setLoading(false);
         }
