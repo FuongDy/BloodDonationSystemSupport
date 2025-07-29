@@ -56,7 +56,7 @@ fullstack04/
 7. **Xem blog y tế & thông tin sức khỏe**
 
 ### 👨‍💼 Quản Trị Viên
-1. **Dashboard tổng quan** với thống kê real-time
+1. **Dashboard tổng quan** 
 2. **Quản lý người dùng** (CRUD)
 3. **Quản lý lịch hẹn**
 4. **Quản lý kho máu**
@@ -84,7 +84,7 @@ fullstack04/
 
 ### Authentication & Authorization
 - **JWT Token** có cơ chế refresh
-- **Phân quyền Role-based**: USER / ADMIN
+- **Phân quyền Role-based**: USER / ADMIN / STAFF
 - **Xác minh OTP** qua email
 - **Khôi phục mật khẩu** với token hết hạn
 - **CORS Configuration** cho cross-origin requests
@@ -109,16 +109,6 @@ fullstack04/
 /api/analytics/*      # Báo cáo & phân tích
 
 ---
-
-## 📱 Responsive Design
-
-- **Mobile-First** với TailwindCSS
-- **Hỗ trợ PWA**
-- **Chế độ offline** qua Service Workers
-- **Tương thích đa trình duyệt**
-
----
-
 ## 🧪 Chiến Lược Kiểm Thử
 
 ### Frontend
