@@ -107,12 +107,6 @@ fullstack04/
 /api/blood-requests/* # Yêu cầu máu
 /api/admin/*          # Dành riêng cho admin
 /api/analytics/*      # Báo cáo & phân tích
-```
-
-### Real-time Features
-- **Socket.IO** cho thông báo
-- **Server-Sent Events** cho live update
-- **WebSocket** cho hỗ trợ chat
 
 ---
 
