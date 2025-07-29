@@ -8,10 +8,7 @@ import com.hicode.backend.dto.admin.DonationProcessResponse;
 import com.hicode.backend.dto.admin.UpdateDonationStatusRequest;
 import com.hicode.backend.model.entity.*;
 import com.hicode.backend.model.enums.*;
-import com.hicode.backend.repository.DonationProcessRepository;
-import com.hicode.backend.repository.HealthCheckRepository;
-import com.hicode.backend.repository.UserRepository;
-import com.hicode.backend.repository.BloodTypeRepository; // <<< THÊM IMPORT
+import com.hicode.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -19,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException; // <<< THÊM IMPORT
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -37,8 +34,10 @@ public class DonationService {
     @Autowired private AppointmentService appointmentService;
     @Autowired private InventoryService inventoryService;
     @Autowired private EmailService emailService;
-    @Autowired private PdfService pdfService; // <<< THÊM DEPENDENCY
+    @Autowired private PdfService pdfService;
     @Autowired private CloudinaryService cloudinaryService;
+    @Autowired private DonationAppointmentRepository appointmentRepository;
+
 
 
     /**
@@ -47,6 +46,9 @@ public class DonationService {
     @Transactional
     public DonationProcessResponse createDonationRequest() {
         User currentUser = userService.getCurrentUser();
+        if (Boolean.FALSE.equals(currentUser.getIsReadyToDonate())) {
+            throw new IllegalStateException("Bạn chưa đủ điều kiện để tham gia hiến máu khẩn cấp.");
+        }
         DonationProcess process = new DonationProcess();
         process.setDonor(currentUser);
         process.setStatus(DonationStatus.PENDING_APPROVAL);
@@ -83,7 +85,18 @@ public class DonationService {
         if (process.getStatus() != DonationStatus.PENDING_APPROVAL) {
             throw new IllegalStateException("This request is not pending approval.");
         }
-        if (request.getNewStatus() == DonationStatus.REJECTED || request.getNewStatus() == DonationStatus.APPOINTMENT_PENDING) {
+        if(process.getDonationType() == DonationType.EMERGENCY && request.getNewStatus() == DonationStatus.APPOINTMENT_PENDING){
+            process.setStatus(DonationStatus.APPOINTMENT_SCHEDULED);
+            process.setNote("Emmergency donation approved. Auto-creating appointment for this case and immediate move to health check");
+
+            DonationAppointment appointment = new DonationAppointment();
+            appointment.setDonationProcess(process);
+            appointment.setAppointmentDate(LocalDate.now());
+            appointment.setLocation("Bệnh viện Huyết học - FPT");
+            appointmentRepository.save(appointment);
+            appointment.setNotes("Auto schedule generation for Emergency donation process");
+            donationProcessRepository.save(process);
+        } else if (request.getNewStatus() == DonationStatus.REJECTED || request.getNewStatus() == DonationStatus.APPOINTMENT_PENDING) {
             process.setStatus(request.getNewStatus());
             process.setNote(request.getNote());
         } else {
@@ -127,6 +140,12 @@ public class DonationService {
         }
         process.setCollectedVolumeMl(request.getCollectedVolumeMl());
         process.setStatus(DonationStatus.BLOOD_COLLECTED);
+
+        User donor = process.getDonor();
+        donor.setIsReadyToDonate(false);
+        donor.setLastDonationDate(LocalDate.now());
+        userRepository.save(donor);
+
         process.setNote("Blood collected ("+ request.getCollectedVolumeMl() +"ml). Awaiting test results.");
         return mapToResponse(donationProcessRepository.save(process));
     }
@@ -159,11 +178,7 @@ public class DonationService {
         if (request.getIsSafe()) {
             inventoryService.addUnitToInventory(process, request.getBloodUnitId());
             process.setStatus(DonationStatus.COMPLETED);
-            process.setNote("Blood unit " + request.getBloodUnitId() + " passed tests and added to inventory.");
-
-            donor.setIsReadyToDonate(false);
-            donor.setLastDonationDate(LocalDate.now());
-            userRepository.save(donor);
+            process.setNote("Đơn vị máu ID: " + request.getBloodUnitId() + " đã vượt qua kiểm tra và được thêm vào kho.");
 
             byte[] pdfBytes = null;
             try {

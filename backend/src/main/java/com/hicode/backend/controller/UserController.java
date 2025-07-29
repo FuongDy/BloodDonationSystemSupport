@@ -23,6 +23,12 @@ public class UserController {
     public ResponseEntity<UserResponse> getCurrentUserProfile() {
         return ResponseEntity.ok(userService.getUserProfile());
     }
+    
+    @GetMapping("/me/has-donated")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Boolean> hasUserEverDonated() {
+        return ResponseEntity.ok(userService.hasUserEverDonated());
+    }
 
     @PutMapping("/me/profile")
     @PreAuthorize("isAuthenticated()")

@@ -66,7 +66,7 @@ public class AuthController {
             AuthResponse authResponse = authService.loginUser(loginRequest);
             return ResponseEntity.ok(authResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Login failed: " + e.getMessage());
+            return ResponseEntity.status(401).body("Kiểm tra lại thông tin đăng nhập: " + e.getMessage());
         }
     }
 

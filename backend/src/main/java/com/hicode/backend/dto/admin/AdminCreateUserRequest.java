@@ -10,10 +10,6 @@ import java.time.LocalDate;
 @Setter
 public class AdminCreateUserRequest {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 100)
-    private String username;
-
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     @Size(max = 150)

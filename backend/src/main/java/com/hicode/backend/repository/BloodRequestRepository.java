@@ -2,6 +2,7 @@ package com.hicode.backend.repository;
 
 import com.hicode.backend.model.entity.BloodRequest;
 import com.hicode.backend.model.enums.RequestStatus;
+import com.hicode.backend.model.enums.UrgencyLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +41,9 @@ public interface BloodRequestRepository extends JpaRepository<BloodRequest, Long
     List<BloodRequest> findByStatus(RequestStatus status);
 
     List<BloodRequest> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    
+    // Methods for dashboard stats
+    long countByStatus(RequestStatus status);
+    long countByCreatedAtBefore(LocalDateTime date);
+    long countByUrgency(UrgencyLevel urgency);
 }

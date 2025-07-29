@@ -31,5 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     long countByCreatedAtBefore(LocalDateTime date);
 
+    // Simple query to get users who have completed donations
+    @Query("SELECT DISTINCT u FROM User u JOIN DonationProcess dp ON u.id = dp.donor.id WHERE dp.status = :status ORDER BY u.createdAt DESC")
+    List<User> findUsersByDonationStatus(@Param("status") com.hicode.backend.model.enums.DonationStatus status, org.springframework.data.domain.Pageable pageable);
+
     Optional<User> findByPasswordResetToken(String token);
 }

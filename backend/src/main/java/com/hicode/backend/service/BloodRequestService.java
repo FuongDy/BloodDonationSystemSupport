@@ -74,6 +74,9 @@ public class BloodRequestService {
     @Transactional
     public DonationPledge pledgeForRequest(Long requestId) {
         User currentUser = userService.getCurrentUser();
+        if (Boolean.FALSE.equals(currentUser.getIsReadyToDonate())) {
+            throw new IllegalStateException("Bạn chưa đủ điều kiện để tham gia hiến máu khẩn cấp.");
+        }
         BloodRequest bloodRequest = bloodRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("Blood request not found"));
 
@@ -86,7 +89,7 @@ public class BloodRequestService {
             throw new IllegalStateException("You have already pledged for this blood request.");
         }
 
-        // === LOGIC MỚI: TỰ ĐỘNG TẠO QUY TRÌNH HIẾN MÁU KHẨN CẤP ===
+        // TỰ ĐỘNG TẠO QUY TRÌNH HIẾN MÁU KHẨN CẤP ===
         createEmergencyDonationProcess(currentUser, bloodRequest);
         // ==========================================================
 
@@ -103,25 +106,20 @@ public class BloodRequestService {
     private void createEmergencyDonationProcess(User donor, BloodRequest forRequest) {
         DonationProcess process = new DonationProcess();
         process.setDonor(donor);
-
-        DonationAppointment donationAppointment = new DonationAppointment();
-        donationAppointment.setDonationProcess(process);
-        donationAppointment.setAppointmentDate(LocalDate.now());
-
-        process.setDonationAppointment(donationAppointment);
-        donationAppointment.setLocation(forRequest.getHospital());
-        process.setStatus(DonationStatus.APPOINTMENT_SCHEDULED); // Chuyển sang chờ kiểm tra sức khỏe.
+        process.setStatus(DonationStatus.PENDING_APPROVAL); // Bắt đầu từ trạng thái chờ duyệt
         process.setDonationType(DonationType.EMERGENCY); // Gán đúng loại là KHẨN CẤP
         process.setNote("Donor pledged for emergency request ID: " + forRequest.getId() + " for patient " + forRequest.getPatientName());
 
         donationProcessRepository.save(process);
     }
 
-    // ... các phương thức còn lại không thay đổi ...
     @Transactional(readOnly = true)
     public List<BloodRequestResponse> searchActiveRequests() {
         List<BloodRequest> requests = bloodRequestRepository.findByStatusWithDetails(RequestStatus.PENDING);
-        return requests.stream().map(this::mapToResponse).collect(Collectors.toList());
+        return requests.stream()
+                .sorted((r1, r2) -> r2.getId().compareTo(r1.getId())) // Sort by ID descending
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

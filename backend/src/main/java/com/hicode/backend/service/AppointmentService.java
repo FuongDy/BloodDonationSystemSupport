@@ -60,10 +60,10 @@ public class AppointmentService {
         process.setStatus(DonationStatus.APPOINTMENT_SCHEDULED);
 
         String formattedDate = request.getAppointmentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        process.setNote("Appointment scheduled for " + formattedDate + " at " + request.getLocation());
+        process.setNote("Lịch hẹn hiến máu đã tạo. Ngày: " + formattedDate + " at " + request.getLocation());
         processRepository.save(process);
 
-        // === LOGIC MỚI: GỬI EMAIL XÁC NHẬN LỊCH HẸN ===
+        //GỬI EMAIL XÁC NHẬN LỊCH HẸN
         sendAppointmentConfirmationEmail(process.getDonor(), savedAppointment);
         // =============================================
 
@@ -130,6 +130,14 @@ public class AppointmentService {
         if (entity.getDonationProcess() != null) {
             response.setProcessId(entity.getDonationProcess().getId());
             response.setDonor(userService.mapToUserResponse(entity.getDonationProcess().getDonor()));
+            
+            // Thêm thông tin về status và type từ donation process
+            response.setStatus(entity.getDonationProcess().getStatus());
+            response.setDonationType(entity.getDonationProcess().getDonationType());
+            response.setProcessNote(entity.getDonationProcess().getNote());
+            response.setCollectedVolumeMl(entity.getDonationProcess().getCollectedVolumeMl());
+            response.setCreatedAt(entity.getDonationProcess().getCreatedAt());
+            response.setUpdatedAt(entity.getDonationProcess().getUpdatedAt());
         }
         if(entity.getStaff() != null) {
             response.setStaff(userService.mapToUserResponse(entity.getStaff()));

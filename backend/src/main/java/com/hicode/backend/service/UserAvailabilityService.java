@@ -22,10 +22,6 @@ public class UserAvailabilityService {
 
     private static final int RECOVERY_DAYS = 84; // Thời gian phục hồi là 84 ngày (12 tuần)
 
-    /**
-     * Tác vụ này sẽ tự động chạy vào lúc 2 giờ sáng mỗi ngày.
-     * Cron expression: "0 0 2 * * ?" (giây phút giờ * * ?)
-     */
     @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void updateDonorAvailability() {

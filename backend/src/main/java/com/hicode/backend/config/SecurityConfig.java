@@ -55,8 +55,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/blood-requests/search/active").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/blood-requests/{id}/pledge").hasAnyRole("MEMBER", "ADMIN")
-                        // PHÂN LUỒNG TRIỆT ĐỂ CHO ADMIN VÀ STAFF
+                        
+                        // Chỉ ADMIN mới được truy cập
+                        .requestMatchers("/api/admin/users/**").hasRole("ADMIN")           // Quản lí người dùng
+                        .requestMatchers("/api/admin/blog-posts/**").hasRole("ADMIN")     // Quản lí blog  
+                        .requestMatchers("/api/admin/reports/**").hasRole("ADMIN")        // Báo cáo hệ thống
+                        
+                        // ADMIN và STAFF đều được truy cập
+                        .requestMatchers("/api/admin/dashboard/**").hasAnyRole("ADMIN", "STAFF")          // Dashboard
+                        .requestMatchers("/api/admin/blood-requests/**").hasAnyRole("ADMIN", "STAFF")     // Quản lí yêu cầu máu khẩn cấp
+                        .requestMatchers("/api/admin/donation-process/**").hasAnyRole("ADMIN", "STAFF")   // Quy trình hiến máu
+                        .requestMatchers("/api/admin/donation-history/**").hasAnyRole("ADMIN", "STAFF")  // Quản lý lịch sử hiến máu
+                        .requestMatchers("/api/admin/inventory/**").hasAnyRole("ADMIN", "STAFF")         // Quản lí kho máu
+                        .requestMatchers("/api/admin/donors/**").hasAnyRole("ADMIN", "STAFF")            // Tìm người hiến máu
+                        
+                        // Fallback cho các admin endpoints khác (ADMIN và STAFF)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .anyRequest().authenticated()
                 );
 

@@ -7,9 +7,11 @@ import com.hicode.backend.model.entity.BloodType;
 import com.hicode.backend.model.entity.Role;
 import com.hicode.backend.model.entity.User;
 import com.hicode.backend.model.enums.UserStatus;
+import com.hicode.backend.model.enums.DonationStatus;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.RoleRepository;
 import com.hicode.backend.repository.UserRepository;
+import com.hicode.backend.repository.DonationProcessRepository;
 import com.hicode.backend.repository.specifications.UserSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +40,8 @@ public class UserService {
     private RoleRepository roleRepository;
     @Autowired
     private BloodTypeRepository bloodTypeRepository;
+    @Autowired
+    private DonationProcessRepository donationProcessRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -54,10 +59,42 @@ public class UserService {
         User currentUser = getCurrentUser();
         return mapToUserResponse(currentUser);
     }
+    
+    @Transactional(readOnly = true)
+    public boolean hasUserEverDonated() {
+        User currentUser = getCurrentUser();
+        return donationProcessRepository.existsByDonorIdAndStatusIn(
+            currentUser.getId(),
+            Arrays.asList(
+                DonationStatus.COMPLETED,
+                DonationStatus.BLOOD_COLLECTED,
+                DonationStatus.TESTING_PASSED,
+                DonationStatus.TESTING_FAILED
+            )
+        );
+    }
 
     @Transactional
     public UserResponse updateUserProfile(UpdateUserRequest updateUserRequest) {
         User currentUser = getCurrentUser();
+        
+        // Kiểm tra nếu người dùng muốn cập nhật nhóm máu
+        if (updateUserRequest.getBloodTypeId() != null) {
+            // Kiểm tra xem người dùng đã từng hiến máu chưa
+            boolean hasEverDonated = donationProcessRepository.existsByDonorIdAndStatusIn(
+                currentUser.getId(),
+                Arrays.asList(
+                    DonationStatus.COMPLETED,
+                    DonationStatus.BLOOD_COLLECTED,
+                    DonationStatus.TESTING_PASSED,
+                    DonationStatus.TESTING_FAILED
+                )
+            );
+            
+            if (hasEverDonated) {
+                throw new IllegalStateException("Không thể thay đổi nhóm máu sau khi đã hiến máu ít nhất một lần. Thông tin nhóm máu đã được xác nhận y tế.");
+            }
+        }
 
         if (updateUserRequest.getFullName() != null) currentUser.setFullName(updateUserRequest.getFullName());
         if (updateUserRequest.getPhone() != null) currentUser.setPhone(updateUserRequest.getPhone());
@@ -111,15 +148,12 @@ public class UserService {
 
     @Transactional
     public UserResponse createUserByAdmin(AdminCreateUserRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Error: Username '" + request.getUsername() + "' is already taken!");
-        }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Error: Email '" + request.getEmail() + "' is already in use!");
         }
 
         User user = new User();
-        user.setUsername(request.getUsername());
+        user.setUsername(request.getEmail()); // Use email as username
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
