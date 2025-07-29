@@ -28,7 +28,7 @@ const NotificationManager = () => {
 
         const commonOptions = {
           id: notification.id,
-          duration: notification.duration || 3000,
+          duration: notification.duration || 1500,
         };
 
         // Show toast dựa trên type với enhanced error handling
@@ -36,7 +36,7 @@ const NotificationManager = () => {
           case 'error':
             toast.error(notification.message, {
               ...commonOptions,
-              duration: notification.duration || 4000,
+              duration: notification.duration || 1500,
             });
             break;
           case 'success':
@@ -80,20 +80,20 @@ const App = () => (
             position='top-center'
             reverseOrder={false}
             toastOptions={{
-              duration: 4000,
+              duration: 1500,
               style: {
                 background: '#363636',
                 color: '#fff',
               },
               success: {
-                duration: 3000,
+                duration: 1500,
                 theme: {
                   primary: '#10b981',
                   secondary: '#black',
                 },
               },
               error: {
-                duration: 5000,
+                duration: 1500,
                 theme: {
                   primary: '#ef4444',
                   secondary: '#black',
