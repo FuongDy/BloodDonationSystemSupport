@@ -1,6 +1,5 @@
 package com.hicode.backend.dto.admin;
 
-import com.hicode.backend.model.enums.BloodComponentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -15,8 +14,6 @@ public class CreateBloodTypeRequest {
     @Size(max = 3)
     private String bloodGroup;
 
-    @NotNull
-    private BloodComponentType componentType;
 
     @Size(max = 50)
     private String description;

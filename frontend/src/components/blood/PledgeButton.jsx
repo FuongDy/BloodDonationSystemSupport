@@ -1,13 +1,13 @@
 // src/components/blood/PledgeButton.jsx
-import React, { useState } from 'react';
 import { Heart, Users } from 'lucide-react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-import bloodRequestService from '../../services/bloodRequestService';
-import donationService from '../../services/donationService';
-import Button from '../common/Button';
 import { useAuth } from '../../hooks/useAuth';
 import useAuthRedirect from '../../hooks/useAuthRedirect';
+import bloodRequestService from '../../services/bloodRequestService';
+import { isBloodTypeCompatible } from '../../utils/bloodCompatibility';
+import Button from '../common/Button';
 
 const PledgeButton = ({ request, onPledgeSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,32 +28,38 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
     if (!canProceed) return;
 
     if (hasUserPledged) {
-      toast.error('Bạn đã đăng ký hiến máu cho yêu cầu này rồi.');
+      toast.error('Bạn chỉ có thể đăng kí hiến máu 1 lần trong vòng 90 ngày');
+      return;
+    }
+
+    // Kiểm tra tương thích nhóm máu
+    const userBloodType = user?.bloodType;
+    const requiredBloodType = request.bloodType?.bloodGroup || request.bloodType;
+    
+    // Cho phép nếu:
+    // 1. Người dùng chưa có nhóm máu (hiến máu lần đầu)
+    // 2. Người dùng có nhóm máu tương thích
+    if (userBloodType && !isBloodTypeCompatible(userBloodType, requiredBloodType)) {
+      toast.error(
+        `Rất tiếc, nhóm máu ${userBloodType} của bạn không phù hợp với yêu cầu nhóm máu ${requiredBloodType}. Cảm ơn bạn đã quan tâm!`,
+        { duration: 1500 }
+      );
       return;
     }
 
     setIsLoading(true);
     try {
-      // 1. Pledge for the blood request
+      // Pledge for the blood request (this automatically creates emergency donation process)
       await bloodRequestService.pledgeForRequest(request.id);
-      
-      // 2. Create donation process so it appears in admin/staff workflow
-      try {
-        await donationService.createDonationRequest();
-        console.log('Donation process created for emergency blood request pledge');
-      } catch (donationError) {
-        console.warn('Failed to create donation process:', donationError);
-        // Don't fail the entire operation if donation process creation fails
-      }
       
       toast.success(
         'Đăng ký hiến máu thành công! Vui lòng đến bệnh viện trong 24-48 giờ để hoàn thành hiến máu.',
-        { duration: 6000 }
+        { duration: 1500 }
       );
       onPledgeSuccess?.();
     } catch (error) {
       if (error.response?.status === 409) {
-        toast.error('Bạn đã đăng ký hiến máu cho yêu cầu này rồi.');
+        toast.error('Bạn chỉ có thể đăng kí hiến máu 1 lần trong vòng 90 ngày');
       } else {
         toast.error('Không thể đăng ký hiến máu. Vui lòng thử lại.');
       }
@@ -66,6 +72,13 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
     (request.quantityInUnits || request.quantityNeeded || 1);
   const isUrgent = request.urgency === 'URGENT';
   const isCritical = request.urgency === 'CRITICAL';
+
+  // Kiểm tra tương thích nhóm máu
+  const userBloodType = user?.bloodType;
+  const requiredBloodType = request.bloodType?.bloodGroup || request.bloodType;
+  const isFirstTimeDonor = !userBloodType; // Chưa có thông tin nhóm máu
+  const isCompatible = !userBloodType || isBloodTypeCompatible(userBloodType, requiredBloodType);
+  const showIncompatibleWarning = userBloodType && !isCompatible;
 
   return (
     <div className='space-y-3'>
@@ -85,15 +98,17 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
       {/* Pledge button */}
       <Button
         onClick={handlePledge}
-        disabled={isLoading || hasUserPledged || !isAuthenticated}
+        disabled={isLoading || hasUserPledged || !isAuthenticated || showIncompatibleWarning}
         variant={
           hasUserPledged
             ? 'outline'
-            : isCritical
-              ? 'danger'
-              : isUrgent
-                ? 'warning'
-                : 'primary'
+            : showIncompatibleWarning
+              ? 'outline'
+              : isCritical
+                ? 'danger'
+                : isUrgent
+                  ? 'warning'
+                  : 'primary'
         }
         className='w-full flex items-center justify-center'
       >
@@ -104,7 +119,9 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
           ? 'Đang xử lý...'
           : hasUserPledged
             ? 'Đã đăng ký hiến máu'
-            : 'Đăng ký hiến máu'}
+            : showIncompatibleWarning
+              ? 'Nhóm máu không phù hợp'
+              : 'Đăng ký hiến máu'}
       </Button>
       {!isAuthenticated && (
         <p className='text-xs text-gray-500 text-center'>
@@ -114,6 +131,25 @@ const PledgeButton = ({ request, onPledgeSuccess }) => {
       {hasUserPledged && (
         <p className='text-xs text-green-600 text-center'>
           ✓ Cảm ơn bạn đã đăng ký hiến máu cho yêu cầu này
+        </p>
+      )}
+      
+      {/* Hiển thị thông tin tương thích nhóm máu */}
+      {isAuthenticated && isFirstTimeDonor && (
+        <p className='text-xs text-blue-600 text-center'>
+          ℹ️ Chúng tôi sẽ xác định nhóm máu của bạn trong quá trình hiến máu
+        </p>
+      )}
+      
+      {isAuthenticated && userBloodType && isCompatible && !hasUserPledged && (
+        <p className='text-xs text-green-600 text-center'>
+          ✓ Nhóm máu {userBloodType} của bạn phù hợp với yêu cầu này
+        </p>
+      )}
+      
+      {showIncompatibleWarning && (
+        <p className='text-xs text-orange-600 text-center'>
+          ⚠️ Nhóm máu {userBloodType} của bạn không phù hợp với yêu cầu nhóm máu {requiredBloodType}
         </p>
       )}
     </div>

@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { authService } from '../services/authService';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { authService } from '../services/authService';
 
 export const AuthContext = createContext(null);
 
@@ -23,50 +23,23 @@ export const AuthProvider = ({ children }) => {
   const login = async credentials => {
     setIsLoading(true);
     try {
-      // Temporary mock login for testing Staff role
-      if (credentials.email === 'staff@test.com' && credentials.password === 'staff123') {
-        const mockStaffData = {
-          token: 'mock-staff-token',
-          user: {
-            id: 2,
-            email: 'staff@test.com',
-            fullName: 'Trần Thị Bình',
-            role: 'Staff',
-            phone: '0987654321',
-            bloodType: { bloodGroup: 'A+' }
-          }
-        };
-        handleAuthSuccess(mockStaffData);
-        toast.success('Đăng nhập thành công với tài khoản Staff!');
-        return;
-      }
-      
-      // Temporary mock login for testing Admin role
-      if (credentials.email === 'admin@test.com' && credentials.password === 'admin123') {
-        const mockAdminData = {
-          token: 'mock-admin-token',
-          user: {
-            id: 1,
-            email: 'admin@test.com',
-            fullName: 'Nguyễn Văn An',
-            role: 'Admin',
-            phone: '0123456789',
-            bloodType: { bloodGroup: 'O+' }
-          }
-        };
-        handleAuthSuccess(mockAdminData);
-        toast.success('Đăng nhập thành công với tài khoản Admin!');
-        return;
-      }
-      
       const data = await authService.login(credentials);
       handleAuthSuccess(data);
-      toast.success('Đăng nhập thành công!');
+      toast.success('Đăng nhập thành công!', { duration: 1500 });
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || 'Email hoặc mật khẩu không đúng.';
+      console.error('Login error:', error);
+      let errorMessage = 'Email hoặc mật khẩu không đúng.';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data && typeof error.response.data === 'string') {
+        errorMessage = error.response.data;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast.error(errorMessage);
-      throw error; // Re-throw for component-level handling if needed
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -258,6 +231,66 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const forgotPassword = async (email) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.forgotPassword(email);
+      return response;
+    } catch (error) {
+      console.error('Forgot password error in AuthContext:', error);
+      
+      let errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (token, newPassword) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.resetPassword(token, newPassword);
+      return response;
+    } catch (error) {
+      console.error('Reset password error in AuthContext:', error);
+      
+      let errorMessage = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const validateResetToken = async (token) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.validateResetToken(token);
+      return response;
+    } catch (error) {
+      console.error('Validate reset token error in AuthContext:', error);
+      
+      let errorMessage = 'Link reset mật khẩu không hợp lệ hoặc đã hết hạn.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const contextValue = {
     user,
     setUser,
@@ -271,11 +304,28 @@ export const AuthProvider = ({ children }) => {
     verifyAndRegister,
     verifyOTP,
     resendOTP,
+    forgotPassword,
+    resetPassword,
+    validateResetToken,
   };
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {!isAuthenticating && children}
+      {isAuthenticating ? (
+        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center">
+          <div className="text-center bg-white rounded-2xl shadow-xl p-8 max-w-sm mx-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Đang tải...
+            </h3>
+            <p className="text-gray-600 text-sm">Vui lòng đợi trong giây lát</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

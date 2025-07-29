@@ -1,11 +1,11 @@
 // src/components/admin/DonationProcessTable.jsx
-import React from 'react';
-import { Calendar, User, MapPin } from 'lucide-react';
-import DataTable from '../common/DataTable';
-import StatusBadge from '../common/StatusBadge';
-import DateTimeDisplay from '../common/DateTimeDisplay';
-import DonationProcessActions from './DonationProcessActions';
+import { Calendar, MapPin, User } from 'lucide-react';
 import { formatDateTime } from '../../utils/formatters';
+import DataTable from '../common/DataTable';
+import DateTimeDisplay from '../common/DateTimeDisplay';
+import DonationTypeBadge from '../common/DonationTypeBadge';
+import StatusBadge from '../common/StatusBadge';
+import DonationProcessActions from './DonationProcessActions';
 
 const DonationProcessTable = ({ processes, isLoading, onActionClick }) => {
   const columns = [
@@ -27,6 +27,11 @@ const DonationProcessTable = ({ processes, isLoading, onActionClick }) => {
           </div>
         </div>
       ),
+    },
+    {
+      key: 'donationType',
+      title: 'Loại đơn',
+      render: value => <DonationTypeBadge donationType={value} size="small" />,
     },
     {
       key: 'status',

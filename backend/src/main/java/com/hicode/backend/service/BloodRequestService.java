@@ -108,7 +108,7 @@ public class BloodRequestService {
         process.setDonor(donor);
         process.setStatus(DonationStatus.PENDING_APPROVAL); // Bắt đầu từ trạng thái chờ duyệt
         process.setDonationType(DonationType.EMERGENCY); // Gán đúng loại là KHẨN CẤP
-        process.setNote("Donor pledged for emergency request ID: " + forRequest.getId() + " for patient " + forRequest.getPatientName());
+        process.setNote("Đăng kí  ID: " + forRequest.getId() + " for patient " + forRequest.getPatientName());
 
         donationProcessRepository.save(process);
     }

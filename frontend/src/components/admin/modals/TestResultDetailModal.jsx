@@ -1,9 +1,9 @@
 // src/components/admin/modals/TestResultDetailModal.jsx
-import React from 'react';
-import { X, TestTube, User, Heart, FileText, FlaskConical, CheckCircle, XCircle, Clock, Activity } from 'lucide-react';
+import { Activity, CheckCircle, Clock, FileText, FlaskConical, Heart, TestTube, User, XCircle } from 'lucide-react';
+import { formatDateTime } from '../../../utils/formatters';
+import DonationTypeBadge from '../../common/DonationTypeBadge';
 import Modal from '../../common/Modal';
 import StatusBadge from '../../common/StatusBadge';
-import { formatDateTime } from '../../../utils/formatters';
 
 const TestResultDetailModal = ({ 
   isOpen, 
@@ -117,6 +117,12 @@ const TestResultDetailModal = ({
                   <FlaskConical className="w-4 h-4 mr-1 text-blue-500" />
                   {testResult.collectedVolumeMl || testResult.volumeCollected || 'N/A'} ml
                 </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Loại đơn:</label>
+                <div className="mt-1">
+                  <DonationTypeBadge type={testResult.donationProcess?.donationType || testResult.donationType} />
+                </div>
               </div>
             </div>
           </div>

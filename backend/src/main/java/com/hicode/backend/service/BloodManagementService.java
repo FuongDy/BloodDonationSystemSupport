@@ -3,9 +3,7 @@ package com.hicode.backend.service;
 import com.hicode.backend.dto.*;
 import com.hicode.backend.dto.admin.*;
 import com.hicode.backend.model.entity.BloodType;
-import com.hicode.backend.model.entity.BloodTypeCompatibility;
 import com.hicode.backend.model.entity.User;
-import com.hicode.backend.repository.BloodTypeCompatibilityRepository;
 import com.hicode.backend.repository.BloodTypeRepository;
 import com.hicode.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,8 +24,6 @@ public class BloodManagementService {
 
     @Autowired
     private BloodTypeRepository bloodTypeRepository;
-    @Autowired
-    private BloodTypeCompatibilityRepository bloodCompatibilityRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -76,10 +72,6 @@ public class BloodManagementService {
         if (!bloodTypeRepository.existsById(id)) {
             throw new EntityNotFoundException("BloodType not found with id: " + id);
         }
-        List<BloodTypeCompatibility> relatedCompatibilities = bloodCompatibilityRepository.findByDonorBloodTypeIdOrRecipientBloodTypeId(id, id);
-        if (!relatedCompatibilities.isEmpty()) {
-            bloodCompatibilityRepository.deleteAllInBatch(relatedCompatibilities);
-        }
         bloodTypeRepository.deleteById(id);
     }
 
@@ -94,90 +86,12 @@ public class BloodManagementService {
                 .collect(Collectors.toList());
     }
 
-    public Page<BloodCompatibilityDetailResponse> getAllCompatibilityRules(Pageable pageable) {
-        return bloodCompatibilityRepository.findAll(pageable).map(this::mapToBloodCompatibilityDetailResponse);
-    }
-
-    public BloodCompatibilityDetailResponse getCompatibilityRuleById(Integer id) {
-        BloodTypeCompatibility rule = bloodCompatibilityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Compatibility Rule not found with id: " + id));
-        return mapToBloodCompatibilityDetailResponse(rule);
-    }
-
-    @Transactional
-    public BloodCompatibilityDetailResponse createCompatibilityRule(CreateBloodCompatibilityRequest request) {
-        BloodType donor = bloodTypeRepository.findById(request.getDonorBloodTypeId())
-                .orElseThrow(() -> new EntityNotFoundException("Donor BloodType not found."));
-        BloodType recipient = bloodTypeRepository.findById(request.getRecipientBloodTypeId())
-                .orElseThrow(() -> new EntityNotFoundException("Recipient BloodType not found."));
-
-        bloodCompatibilityRepository.findByDonorBloodTypeIdAndRecipientBloodTypeId(request.getDonorBloodTypeId(), request.getRecipientBloodTypeId())
-                .ifPresent(r -> { throw new IllegalArgumentException("This compatibility rule already exists."); });
-
-        BloodTypeCompatibility rule = new BloodTypeCompatibility();
-        BeanUtils.copyProperties(request, rule, "donorBloodTypeId", "recipientBloodTypeId");
-        rule.setDonorBloodType(donor);
-        rule.setRecipientBloodType(recipient);
-
-        return mapToBloodCompatibilityDetailResponse(bloodCompatibilityRepository.save(rule));
-    }
-
-    @Transactional
-    public BloodCompatibilityDetailResponse updateCompatibilityRule(Integer id, UpdateBloodCompatibilityRequest request) {
-        BloodTypeCompatibility rule = bloodCompatibilityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Compatibility Rule not found with id: " + id));
-
-        if (request.getIsCompatible() != null) rule.setIsCompatible(request.getIsCompatible());
-        if (request.getNotes() != null) rule.setNotes(request.getNotes());
-
-        return mapToBloodCompatibilityDetailResponse(bloodCompatibilityRepository.save(rule));
-    }
-
-    @Transactional
-    public void deleteCompatibilityRule(Integer id) {
-        if (!bloodCompatibilityRepository.existsById(id)) {
-            throw new EntityNotFoundException("Compatibility Rule not found with id: " + id);
-        }
-        bloodCompatibilityRepository.deleteById(id);
-    }
-
-    /**
-     * PHƯƠNG THỨC MỚI: Tìm các nhóm máu của người hiến (donor) tương thích với nhóm máu của bệnh nhân.
-     */
-    @Transactional(readOnly = true)
-    public List<BloodTypeResponse> findCompatibleDonorTypesForUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-
-        BloodType recipientBloodType = user.getBloodType();
-        if (recipientBloodType == null) {
-            // Nếu bệnh nhân chưa có thông tin nhóm máu, trả về danh sách rỗng
-            return Collections.emptyList();
-        }
-
-        List<BloodTypeCompatibility> compatibilities = bloodCompatibilityRepository
-                .findByRecipientBloodTypeIdAndIsCompatibleTrue(recipientBloodType.getId());
-
-        return compatibilities.stream()
-                .map(BloodTypeCompatibility::getDonorBloodType)
-                .map(this::mapToBloodTypeResponse)
-                .collect(Collectors.toList());
-    }
 
 
     private BloodTypeResponse mapToBloodTypeResponse(BloodType bloodType) {
         if (bloodType == null) return null;
         BloodTypeResponse res = new BloodTypeResponse();
         BeanUtils.copyProperties(bloodType, res);
-        return res;
-    }
-
-    private BloodCompatibilityDetailResponse mapToBloodCompatibilityDetailResponse(BloodTypeCompatibility rule) {
-        if (rule == null) return null;
-        BloodCompatibilityDetailResponse res = new BloodCompatibilityDetailResponse();
-        BeanUtils.copyProperties(rule, res, "donorBloodType", "recipientBloodType");
-        res.setDonorBloodType(mapToBloodTypeResponse(rule.getDonorBloodType()));
-        res.setRecipientBloodType(mapToBloodTypeResponse(rule.getRecipientBloodType()));
         return res;
     }
 }
