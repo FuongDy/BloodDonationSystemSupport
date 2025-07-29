@@ -27,7 +27,7 @@ const createNotificationSlice = set => ({
           {
             id: Date.now() + Math.random(),
             type: 'info',
-            duration: 5000,
+            duration: 1500,
             ...notification,
           },
         ],

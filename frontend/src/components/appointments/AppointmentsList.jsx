@@ -1,9 +1,8 @@
 // src/components/appointments/AppointmentsList.jsx
-import React from 'react';
 import EmptyState from '../common/EmptyState';
 import AppointmentCard from './AppointmentCard';
 
-const AppointmentsList = ({ appointments, onRequestReschedule }) => {
+const AppointmentsList = ({ appointments, onRequestReschedule, onViewDetail }) => {
   if (appointments.length === 0) {
     return (
       <EmptyState
@@ -24,6 +23,7 @@ const AppointmentsList = ({ appointments, onRequestReschedule }) => {
           key={appointment.id}
           appointment={appointment}
           onRequestReschedule={onRequestReschedule}
+          onViewDetail={onViewDetail}
         />
       ))}
     </div>

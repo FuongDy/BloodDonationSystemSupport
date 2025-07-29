@@ -1,21 +1,21 @@
 // src/components/admin/appointments/AppointmentTable.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Calendar,
-  Clock,
-  MapPin,
-  User,
-  Phone,
-  Mail,
-  Edit3,
   CheckCircle,
+  Clock,
+  Edit3,
+  Mail,
+  MapPin,
+  Phone,
+  User,
 } from 'lucide-react';
-import DataTable from '../../common/DataTable';
-import Button from '../../common/Button';
-import StatusBadge from '../../common/StatusBadge';
-import { formatDateTime } from '../../../utils/formatters';
+import { useNavigate } from 'react-router-dom';
 import { STATUS_COLORS } from '../../../utils/constants';
+import { formatDateTime } from '../../../utils/formatters';
+import Button from '../../common/Button';
+import DataTable from '../../common/DataTable';
+import DonationTypeBadge from '../../common/DonationTypeBadge';
+import StatusBadge from '../../common/StatusBadge';
 
 const AppointmentTable = ({ 
   appointments, 
@@ -55,6 +55,11 @@ const AppointmentTable = ({
           </div>
         </div>
       ),
+    },
+    {
+      key: 'donationType',
+      title: 'Loại đơn',
+      render: (_, process) => <DonationTypeBadge donationType={process.donationType} size="small" />,
     },
     {
       key: 'appointment',

@@ -1,5 +1,5 @@
 // src/hooks/useMyAppointments.js
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { appointmentService } from '../services/appointmentService';
 import { useAuth } from './useAuth';
@@ -10,6 +10,10 @@ export const useMyAppointments = () => {
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const [rescheduleReason, setRescheduleReason] = useState('');
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  
+  // New state for detail modal
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   
   const { isAuthenticated } = useAuth();
 
@@ -58,18 +62,33 @@ export const useMyAppointments = () => {
     }
   };
 
+  // New function to handle view detail
+  const handleViewDetail = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedAppointment(null);
+  };
+
   return {
     // State
     appointments,
     isLoading,
     showRescheduleDialog,
     rescheduleReason,
+    showDetailModal,
+    selectedAppointment,
     
     // Actions
     setRescheduleReason,
     setShowRescheduleDialog,
     handleOpenReschedule,
     handleConfirmReschedule,
+    handleViewDetail,
+    handleCloseDetailModal,
     fetchMyAppointments,
   };
 };

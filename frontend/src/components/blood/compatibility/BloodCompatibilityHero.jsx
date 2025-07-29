@@ -1,5 +1,4 @@
 // src/components/blood/compatibility/BloodCompatibilityHero.jsx
-import React from 'react';
 import { HeartHandshake } from 'lucide-react';
 
 const BloodCompatibilityHero = () => {

@@ -9,7 +9,7 @@ import AdminPageLayout from '../../components/admin/AdminPageLayout';
 import Button from '../../components/common/Button';
 import InputField from '../../components/common/InputField';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import RoomBedSelector from '../../components/staff/RoomBedSelector';
+import RoomBedSelector from '../../components/admin/RoomBedSelector';
 import bloodRequestService from '../../services/bloodRequestService';
 import bloodTypeService from '../../services/bloodTypeService';
 import { HOSPITAL_INFO } from '../../utils/constants';
@@ -34,7 +34,7 @@ const AdminCreateEmergencyRequestPage = () => {
   const showToast = (type, message) => {
     toast.dismiss();
     toast[type](message, {
-      duration: 2500,
+      duration: 1500,
       position: 'top-center',
     });
   };

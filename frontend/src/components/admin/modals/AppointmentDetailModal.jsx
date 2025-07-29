@@ -1,10 +1,10 @@
 // src/components/admin/modals/AppointmentDetailModal.jsx
-import React from 'react';
-import { X, Calendar, Clock, MapPin, User, Phone, Mail, Heart, FileText } from 'lucide-react';
+import { Calendar, FileText, Heart, Mail, MapPin, Phone, User } from 'lucide-react';
+import { APPOINTMENT_STATUS } from '../../../utils/constants';
+import { formatDate, formatDateTime } from '../../../utils/formatters';
+import DonationTypeBadge from '../../common/DonationTypeBadge';
 import Modal from '../../common/Modal';
 import StatusBadge from '../../common/StatusBadge';
-import { formatDateTime, formatDate, formatTime } from '../../../utils/formatters';
-import { APPOINTMENT_STATUS } from '../../../utils/constants';
 
 const AppointmentDetailModal = ({ 
   isOpen, 
@@ -101,6 +101,12 @@ const AppointmentDetailModal = ({
                   <Heart className="w-4 h-4 mr-1 text-red-500" />
                   {appointment.donor?.bloodType || 'N/A'}
                 </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Loại đơn:</label>
+                <div className="flex items-center mt-1">
+                  <DonationTypeBadge donationType={appointment.donationType} size="small" />
+                </div>
               </div>
             </div>
           </div>
